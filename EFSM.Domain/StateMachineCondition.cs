@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace EFSM.Domain
 {
-    public class ConditionMetadata
+    public class StateMachineCondition
     {
         /// <summary>
         /// If a simple condition, this is the source of the condition.
@@ -18,7 +18,7 @@ namespace EFSM.Domain
         /// <summary>
         /// The child conditions that make up this group.
         /// </summary>
-        public List<ConditionMetadata> Conditions { get; set; }
+        public List<StateMachineCondition> Conditions { get; set; }
 
         /// <summary>
         /// If null, this is a simple condition (just SourceInputId and Value should be populated). Otherwise, only Conditions should be populated.

@@ -24,7 +24,13 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="generated.h">
+    <ClInclude Include="efsm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="efsm_options.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="efsm_generated.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -32,10 +38,13 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EFSM.Sample.c">
+    <ClCompile Include="efsm_core.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="generated.c">
+    <ClCompile Include="efsm_generated.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
