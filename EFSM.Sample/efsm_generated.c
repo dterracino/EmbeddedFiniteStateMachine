@@ -67,7 +67,7 @@ EFSM_STATE_MACHINE efsm_sm_1;
 
 EFSM_INT efsm_states[EFSM_NUM_STATE_MACHINES];
 
-EFSM_STATE_MACHINE efsn_stateMachines[EFSM_NUM_STATE_MACHINES];
+EFSM_STATE_MACHINE efsm_stateMachines[EFSM_NUM_STATE_MACHINES];
 
 unsigned char efsm_inputs_MAIN[1];
 unsigned char efsm_inputs_BLOWER[1];

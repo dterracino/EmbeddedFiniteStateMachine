@@ -4,6 +4,8 @@ namespace EFSM.Domain
     {
         public string Name { get; set; }
 
+        public State[] States { get; set; }
+
         public StateMachineInput[] Inputs { get; set; }
 
         /// <summary>

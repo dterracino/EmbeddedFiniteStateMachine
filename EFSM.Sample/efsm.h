@@ -1,9 +1,9 @@
 #ifndef EFSM_H
 #define EFSM_H
 
+
 #include "efsm_generated.h"
 #include "efsm_options.h"
-
 
 /* The condition types */
 typedef enum {
@@ -91,7 +91,7 @@ typedef struct {
 typedef struct {
 
 	EFSM_INT statesLen;
-	EFSM_STATE states[];
+	EFSM_STATE * states;
 
 } EFSM_STATES;
 
@@ -122,6 +122,6 @@ typedef struct {
 
 extern unsigned char * efsm_inputs[];
 extern EFSM_INT efsm_states[];
-extern EFSM_STATE_MACHINE efsn_stateMachines[];
+extern EFSM_STATE_MACHINE efsm_stateMachines[];
 
 #endif

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.14
+VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EFSM.Sample", "EFSM.Sample\EFSM.Sample.vcxproj", "{B3DCC3C7-67FB-4DDA-8814-D1D495DF7EE1}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFSM.Generator", "EFSM.Generator\EFSM.Generator.csproj", "{0767C268-1A8C-4FEE-8727-888C83C6EF61}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFSM.Generator.Console", "EFSM.Generator.Console\EFSM.Generator.Console.csproj", "{F1E0BBA4-9E37-4726-8D97-C2FD2A72EABF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFSM.Designer", "EFSM.Designer\EFSM.Designer.csproj", "{8FA15C9F-A7FB-462B-9DAD-BF51E33BE0A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +69,18 @@ Global
 		{F1E0BBA4-9E37-4726-8D97-C2FD2A72EABF}.Release|x64.Build.0 = Release|Any CPU
 		{F1E0BBA4-9E37-4726-8D97-C2FD2A72EABF}.Release|x86.ActiveCfg = Release|Any CPU
 		{F1E0BBA4-9E37-4726-8D97-C2FD2A72EABF}.Release|x86.Build.0 = Release|Any CPU
+		{8FA15C9F-A7FB-462B-9DAD-BF51E33BE0A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FA15C9F-A7FB-462B-9DAD-BF51E33BE0A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FA15C9F-A7FB-462B-9DAD-BF51E33BE0A4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8FA15C9F-A7FB-462B-9DAD-BF51E33BE0A4}.Debug|x64.Build.0 = Debug|Any CPU
+		{8FA15C9F-A7FB-462B-9DAD-BF51E33BE0A4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8FA15C9F-A7FB-462B-9DAD-BF51E33BE0A4}.Debug|x86.Build.0 = Debug|Any CPU
+		{8FA15C9F-A7FB-462B-9DAD-BF51E33BE0A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FA15C9F-A7FB-462B-9DAD-BF51E33BE0A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FA15C9F-A7FB-462B-9DAD-BF51E33BE0A4}.Release|x64.ActiveCfg = Release|Any CPU
+		{8FA15C9F-A7FB-462B-9DAD-BF51E33BE0A4}.Release|x64.Build.0 = Release|Any CPU
+		{8FA15C9F-A7FB-462B-9DAD-BF51E33BE0A4}.Release|x86.ActiveCfg = Release|Any CPU
+		{8FA15C9F-A7FB-462B-9DAD-BF51E33BE0A4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
