@@ -1,0 +1,91 @@
+﻿<Window x:Class="EFSM.Designer.View.StateMachineDialogWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EFSM.Designer.View"
+        xmlns:viewModel="clr-namespace:EFSM.Designer.ViewModel"
+        xmlns:controls="clr-namespace:Cas.Common.WPF.Controls;assembly=Cas.Common.WPF"
+        mc:Ignorable="d"
+        
+        Title="{Binding Path=Title}" Height="400" Width="600">
+    <Window.Resources>
+        <Style TargetType="GridSplitter" x:Key="ColumnGridSplitter">
+            <Setter Property="ResizeDirection" Value="Columns"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="Background" Value="Gray"/>
+            <Setter Property="ResizeBehavior" Value="PreviousAndNext"/>
+        </Style>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <TabControl>
+            <TabItem Header="States">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <ToolBar Grid.Row="0">
+                        <Button Content="Delete" Command="{Binding DeleteCommand}"/>
+                        <Separator/>
+                        <RadioButton Content="Pointer"/>
+                        <RadioButton Content="Connections"/>
+                        <Separator/>
+                        <Button ToolTip="Undo (Ctrl+U)" Command="{Binding Path=UndoCommand}">
+                            <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/Arrow_UndoRevertRestore_16xLG_color.png" Width="16"/>
+                        </Button>
+                        <Button ToolTip="Redo (Ctrl+Y)" Command="{Binding Path=RedoCommand}">
+                            <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/Arrow_RedoRetry_16xLG_color.png" Width="16"/>
+                        </Button>
+                    </ToolBar>
+
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+
+                        <local:ToolsView DataContext="{x:Static viewModel:ViewModelLocator.StateTools}" Grid.Column="0"></local:ToolsView>
+                        <GridSplitter Grid.Column="1" Style="{StaticResource ColumnGridSplitter}"/>
+                        <ScrollViewer Grid.Column="2" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
+                            <local:StateMachineView DataContext="{Binding StateMachineViewModel}" Background="Gray"></local:StateMachineView>
+                        </ScrollViewer>
+                        <GridSplitter Grid.Column="3" Style="{StaticResource ColumnGridSplitter}"/>
+                        <local:PropertyGridView Grid.Column="4" SelectionService="{Binding Path=StateMachineViewModel.SelectionService}" />
+                    </Grid>
+                    
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Inputs">
+
+            </TabItem>
+
+            <TabItem Header="Output Actions">
+
+            </TabItem>
+        </TabControl>
+
+        <StackPanel Grid.Row="1" HorizontalAlignment="Right" Orientation="Horizontal">
+            <StackPanel.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Margin" Value="4"/>
+                    <Setter Property="MinWidth" Value="60"></Setter>
+                </Style>
+            </StackPanel.Resources>
+
+            <Button Command="{Binding Path=OkCommand}" IsDefault="True">_OK</Button>
+            <Button IsCancel="True">_Cancel</Button>
+        </StackPanel>
+    </Grid>
+</Window>

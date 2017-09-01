@@ -13,5 +13,12 @@ namespace EFSM.Domain
         public Guid[] ExitActions { get; set; }
 
         public StateMachineTransition[] Transitions { get; set; }
+
+        public double X { get; set; }
+
+        public double Y { get; set; }
+
+        public int StateType { get; set; }
+
     }
 }

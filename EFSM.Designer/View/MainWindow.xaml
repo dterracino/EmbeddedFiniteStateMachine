@@ -18,10 +18,10 @@
         <Menu>
             <MenuItem Header="_File">
                 <MenuItem Header="New"/>
-                <MenuItem Header="Open..."/>
+                <MenuItem Header="Open..." Command="{Binding OpenCommand}"/>
                 <Separator/>
                 <MenuItem Header="_Save" InputGestureText="Ctrl+S"/>
-                <MenuItem Header="Save _As"/>
+                <MenuItem Header="Save _As" Command="{Binding SaveAsStateMachineCommand}"/>
                 <Separator/>
                 <MenuItem Header="E_xit" x:Name="ExitMenuItem" Click="ExitMenuItem_OnClick"/>
             </MenuItem>
@@ -37,11 +37,20 @@
             <Separator/>
             <Button ToolTip="Generate C code...">Generate</Button>
         </ToolBar>
-        
-        <ListBox Grid.Row="2" ToolTip="State Machines" ItemsSource="{Binding Path=StateMachines}">
+
+        <ListBox Grid.Row="2" ToolTip="State Machines" ItemsSource="{Binding Path=StateMachineProjectViewModel.StateMachineViewModels}" Margin="0,0,354,0">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Path=Name}"/>
+                    <TextBlock Text="{Binding Path=Name}">
+
+                        <TextBlock.InputBindings>
+                            <MouseBinding MouseAction="LeftDoubleClick" 
+                                          Command="{Binding DataContext.OpenDialogCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=DataContext}"
+                                          />
+                        </TextBlock.InputBindings>
+                        
+                    </TextBlock>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

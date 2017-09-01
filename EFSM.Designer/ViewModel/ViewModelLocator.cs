@@ -1,6 +1,7 @@
-﻿using System;
-using EFSM.Domain;
+﻿using Autofac;
+using EFSM.Designer.Model;
 using GalaSoft.MvvmLight;
+using System;
 
 namespace EFSM.Designer.ViewModel
 {
@@ -10,19 +11,45 @@ namespace EFSM.Designer.ViewModel
 
         private static MainViewModel CreateMain()
         {
-            var main = new MainViewModel();
+            MainViewModel main = ApplicationContainer.Container.Resolve<MainViewModel>();
 
             if (ViewModelBase.IsInDesignModeStatic)
             {
-                main.StateMachines.Add(new StateMachineViewModel(new StateMachine() { Name = "State Machine 1"}));
-                main.StateMachines.Add(new StateMachineViewModel(new StateMachine() { Name = "State Machine 2" }));
-                main.StateMachines.Add(new StateMachineViewModel(new StateMachine() { Name = "State Machine 3" }));
+                //main.StateMachineProjectViewModel = new StateMachineProjectViewModel(new StateMachineProject(null)
+                //{
+                //    StateMachines = new[]
+                //                   {
+                //        new StateMachine() { Name = "State Machine 1"},
+                //        new StateMachine() { Name = "State Machine 2"},
+                //        new StateMachine() { Name = "State Machine 3"}
+                //    }
+                //});
             }
-
 
             return main;
         }
 
-        public static MainViewModel Main => _main.Value;
+        public static StateMachineViewModel StateMachineDialogViewModel
+        {
+            get { return ApplicationContainer.Container.Resolve<StateMachineViewModel>(); }
+        }
+
+        //public static MainViewModel Main => _main.Value;
+
+        public static MainViewModel Main
+        {
+            get
+            {
+                return ApplicationContainer.Container.Resolve<MainViewModel>();
+            }
+        }
+
+        public static ToolsViewModel<StateFactory> StateTools
+        {
+            get
+            {
+                return new ToolsViewModel<StateFactory>(new StateTools().Tools);
+            }
+        }
     }
 }

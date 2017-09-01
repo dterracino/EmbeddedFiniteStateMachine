@@ -1,0 +1,97 @@
+﻿<UserControl x:Class="EFSM.Designer.View.StateView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EFSM.Designer.View"
+             xmlns:metadata="clr-namespace:EFSM.Designer.Metadata"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:converters="clr-namespace:Cas.Common.WPF.Converters;assembly=Cas.Common.WPF"
+             xmlns:converters1="clr-namespace:EFSM.Designer.Converters"
+             xmlns:behavior="clr-namespace:EFSM.Designer.Behaviors"
+             xmlns:controls="clr-namespace:Cas.Common.WPF.Controls;assembly=Cas.Common.WPF"
+             mc:Ignorable="d"              
+             d:DesignHeight="300" d:DesignWidth="300">
+    
+    <UserControl.InputBindings>
+        <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding Path=EditCommand}"></MouseBinding>
+    </UserControl.InputBindings>
+
+    <UserControl.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="Edit..." Command="{Binding Path=EditCommand}"/>
+            <MenuItem Header="Delete" Command="{Binding Path=DeleteCommand}">
+                <MenuItem.Icon>
+                    <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/Delete.gif" Width="16"  />
+                </MenuItem.Icon>
+            </MenuItem>
+        </ContextMenu>
+    </UserControl.ContextMenu>
+
+    <i:Interaction.Behaviors>
+        <behavior:DesignerDragBehavior IsEnabled="{Binding Path=Parent.IsPointerMode}" SelectionService="{Binding Path=Parent.SelectionService}"/>
+        <behavior:TransitionCreatorBehavior IsEnabled="{Binding Path=Parent.IsConnectorMode}" TransitionCreator="{Binding Path=Parent}"/>
+    </i:Interaction.Behaviors>
+
+    <UserControl.Resources>
+        <converters1:CenterConverter x:Key="CenterConverter"/>
+        <converters:CollapsedWhenFalseConverter x:Key="CollapsedWhenFalseConverter"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Ellipse Fill="LightBlue" Width="{Binding Path=Width}" Height="{Binding Path=Height}" Stroke="#7676FE" StrokeThickness="1" Visibility="{Binding Path=IsSelected, Converter={StaticResource CollapsedWhenFalseConverter}}" Opacity="0.6">
+            <Ellipse.RenderTransform>
+                <TransformGroup>
+                    <TranslateTransform X="{Binding Path=Width, Converter={StaticResource CenterConverter}}" Y="{Binding Path=Height, Converter={StaticResource CenterConverter}}"></TranslateTransform>
+                    <ScaleTransform ScaleX="1.15" ScaleY="1.15" />
+                </TransformGroup>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+
+        <Ellipse Width="{Binding Path=Width}" Height="{Binding Path=Height}" Stroke="Gray" StrokeThickness="1" x:Name="StateEllipse">
+            <Ellipse.ToolTip>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Margin" Value="4"/>
+                        </Style>
+                    </Grid.Resources>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold">Entry Actions</TextBlock>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=ToolTip.EntryActions}"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" FontWeight="Bold">Exit Actions</TextBlock>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=ToolTip.ExitActions}"/>
+
+                </Grid>
+            </Ellipse.ToolTip>
+            <Ellipse.Style>
+                <Style TargetType="Ellipse">
+                    <Setter Property="Fill" Value="LightGray"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=StateType}" Value="{x:Static metadata:StateType.Initial}">
+                            <Setter Property="Fill" Value="#FBC7C1"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Ellipse.Style>
+            <Ellipse.RenderTransform>
+                <TranslateTransform X="{Binding Path=Width, Converter={StaticResource CenterConverter}}" Y="{Binding Path=Height, Converter={StaticResource CenterConverter}}"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+
+        <TextBlock Text="{Binding Path=Name}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black">
+            <TextBlock.RenderTransform>
+                <TranslateTransform X="{Binding Path=Width, Converter={StaticResource CenterConverter}}" Y="{Binding Path=Height, Converter={StaticResource CenterConverter}}"/>
+            </TextBlock.RenderTransform>
+        </TextBlock>
+    </Grid>
+</UserControl>

@@ -1,0 +1,128 @@
+﻿<UserControl x:Class="EFSM.Designer.View.TransitionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EFSM.Designer.View"
+             xmlns:controls="clr-namespace:Cas.Common.WPF.Controls;assembly=Cas.Common.WPF"
+             xmlns:converters="clr-namespace:EFSM.Designer.Converters"
+             xmlns:behavior="clr-namespace:EFSM.Designer.Behaviors"
+             xmlns:viewModel="clr-namespace:EFSM.Designer.ViewModel"
+             d:DataContext="{d:DesignInstance viewModel:TransitionViewModel, d:IsDesignTimeCreatable=False}"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="Edit..." Command="{Binding Path=EditCommand}"/>
+            <MenuItem Header="Delete" Command="{Binding Path=DeleteCommand}">
+                <MenuItem.Icon>
+                    <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/Delete.gif" Width="16"  />
+                </MenuItem.Icon>
+            </MenuItem>
+        </ContextMenu>
+    </UserControl.ContextMenu>
+
+
+    <UserControl.Resources>
+        <converters:CenterConverter x:Key="CenterConverter"/>
+    </UserControl.Resources>
+    <Grid>
+
+        <!-- The "IsSelected" indicator -->
+        <Path Data="{Binding Path=LineGeometry}" StrokeThickness="10" IsHitTestVisible="True" x:Name="SelectionPath" Stroke="Transparent">
+            <i:Interaction.Behaviors>
+                <behavior:SelectableBehavior SelectionService="{Binding Path=Parent.SelectionService}"/>
+            </i:Interaction.Behaviors>
+            <Path.InputBindings>
+                <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding Path=EditCommand}"/>
+            </Path.InputBindings>
+        </Path>
+
+        <!-- The main line -->
+        <Path  x:Name="Path" Data="{Binding Path=LineGeometry}" IsHitTestVisible="False" >
+            <Path.Style>
+                <Style TargetType="Path">
+                    <Setter Property="Stroke" Value="Black"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=IsSelected}" Value="true">
+                            <Setter Property="Stroke" Value="Red"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Path.Style>
+        </Path>
+
+        <!-- Text -->
+        <TextBlock Text="{Binding Path=Name}" Foreground="Black" x:Name="NameTextBlock" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#8BFFFFFF" >
+            <TextBlock.ToolTip>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Margin" Value="4"/>
+                        </Style>
+                    </Grid.Resources>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold">Condition</TextBlock>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=ToolTip.Condition}"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" FontWeight="Bold">Actions</TextBlock>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=ToolTip.Actions}"/>
+
+                </Grid>
+            </TextBlock.ToolTip>
+            <TextBlock.RenderTransform>
+                <TransformGroup>
+                    <TranslateTransform X="{Binding Path=PerpindicularPoint.X}" Y="{Binding Path=PerpindicularPoint.Y}"/>
+                    <TranslateTransform Y="-25"/>
+                    <TranslateTransform X="{Binding ElementName=NameTextBlock, Path=ActualWidth, Converter={StaticResource CenterConverter}}"/>
+                </TransformGroup>
+            </TextBlock.RenderTransform>
+        </TextBlock>
+
+        <!-- The grab / tweeze point -->
+        <Path StrokeThickness="1" IsHitTestVisible="True" x:Name="GrabPoint">
+            <i:Interaction.Behaviors>
+                <behavior:SimpleMoveableBehavior/>
+            </i:Interaction.Behaviors>
+
+            <Path.Style>
+                <Style TargetType="Path">
+                    <Setter Property="Stroke" Value="Transparent"/>
+                    <Setter Property="Fill" Value="Transparent"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=GrabPoint, Path=IsMouseOver}" Value="True">
+                            <Setter Property="Stroke" Value="Black"/>
+                            <Setter Property="Fill" Value="Orange"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Path.Style>
+
+            <Path.Data>
+                <GeometryGroup>
+                    <EllipseGeometry Center="{Binding Path=PerpindicularPoint}" RadiusX="5" RadiusY="5"/>
+                </GeometryGroup>
+            </Path.Data>
+        </Path>
+
+        <!-- The arrow -->
+        <Path Stroke="Black" StrokeThickness="1" Data="M -10 -10 0 0 10 -10 Z" Fill="Black"  >
+            <Path.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform Angle="{Binding Path=ArrowAngle}"></RotateTransform>
+                    <TranslateTransform X="{Binding Path=ArrowLocation.X}" Y="{Binding Path=ArrowLocation.Y}"/>
+                </TransformGroup>
+            </Path.RenderTransform>
+        </Path>
+
+    </Grid>
+</UserControl>

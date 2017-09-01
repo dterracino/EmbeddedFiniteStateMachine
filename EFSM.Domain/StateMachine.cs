@@ -8,6 +8,8 @@ namespace EFSM.Domain
 
         public StateMachineInput[] Inputs { get; set; }
 
+        public StateMachineTransition[] Transitions { get; set; }
+
         /// <summary>
         /// The available actions
         /// </summary>

@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using EFSM.Domain;
+﻿using EFSM.Domain;
+using System;
 
 namespace EFSM.Generator.Console
 {
@@ -18,7 +17,7 @@ namespace EFSM.Generator.Console
             {
                 Id = state1Id,
                 Name = "Start State",
-                EntryActions = new Guid[] {}
+                EntryActions = new Guid[] { }
             };
 
             var state2 = new State()
