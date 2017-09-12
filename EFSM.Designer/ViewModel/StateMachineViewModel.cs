@@ -23,10 +23,16 @@ namespace EFSM.Designer.ViewModel
 
         private StateViewModel _sourceForNewTransition;
         private StateMachine _model;
-        private StateMachineDialogWindowViewModel _parent;
 
         private IUndoProvider _undoProvider;
         private IIsDirtyService _dirtyService;
+
+        private ObservableCollection<StateMachineInputViewModel> _inputs = new ObservableCollection<StateMachineInputViewModel>();
+        public ObservableCollection<StateMachineInputViewModel> Inputs
+        {
+            get { return _inputs; }
+            set { _inputs = value; RaisePropertyChanged(); }
+        }
 
         private ObservableCollection<StateViewModel> _states = new ObservableCollection<StateViewModel>();
         public ObservableCollection<StateViewModel> States
@@ -35,12 +41,11 @@ namespace EFSM.Designer.ViewModel
             set { _states = value; RaisePropertyChanged(); }
         }
 
-        public StateMachineViewModel(StateMachine model, IViewService viewService, StateMachineDialogWindowViewModel parent)
+        public StateMachineViewModel(StateMachine model, IViewService viewService, IUndoProvider undoProvider, IIsDirtyService dirtyService)
         {
             _model = model;
-            //_parent = parent;
-            _undoProvider = parent;
-            _dirtyService = parent.DirtyService;
+            _undoProvider = undoProvider;
+            _dirtyService = dirtyService;
 
             InitiateModel();
 
@@ -53,6 +58,7 @@ namespace EFSM.Designer.ViewModel
         {
             AddStateViewModels();
             AddTransitionViewModel();
+            AddInputViewModel();
         }
 
 
@@ -152,8 +158,18 @@ namespace EFSM.Designer.ViewModel
                 {
                     var source = States.First(s => s.Id == item.SourceStateId);
                     var target = States.First(s => s.Id == item.TargetStateId);
-                    var transition = AddTransition(source, target, item.Name);
+                    var transition = AddTransition(source, target, item.Name, item.Condition);
                 }
+            }
+        }
+
+        private void AddInputViewModel()
+        {
+            Inputs.Clear();
+
+            if (_model.Inputs != null)
+            {
+                Inputs.AddRange(_model.Inputs.Select(i => new StateMachineInputViewModel(i)));
             }
         }
 
@@ -299,6 +315,7 @@ namespace EFSM.Designer.ViewModel
         {
             _model.States = States.Select(s => s.GetModel()).ToArray();
             _model.Transitions = Transitions.Select(t => t.GetModel()).ToArray();
+            _model.Inputs = Inputs.Select(i => i.GetModel()).ToArray();
             return _model.Clone();
         }
 
@@ -318,17 +335,18 @@ namespace EFSM.Designer.ViewModel
             IsCreatingTransition = false;
         }
 
-        public TransitionViewModel AddTransition(StateViewModel source, StateViewModel target, string transitionName)
+        public TransitionViewModel AddTransition(StateViewModel source, StateViewModel target, string transitionName, StateMachineCondition condition = null)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (target == null) throw new ArgumentNullException(nameof(target));
 
-            StateMachineTransition transition = new StateMachineTransition { Name = transitionName, SourceStateId = source.Id, TargetStateId = target.Id };
+            StateMachineTransition transition = new StateMachineTransition { Name = transitionName, SourceStateId = source.Id, TargetStateId = target.Id, Condition = condition };
 
             var transitionViewModel = new TransitionViewModel(this, transition, _undoProvider)
             {
                 Source = source,
-                Target = target
+                Target = target,
+
             };
 
             Transitions.Add(transitionViewModel);

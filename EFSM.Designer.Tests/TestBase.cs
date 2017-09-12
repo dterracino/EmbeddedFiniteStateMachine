@@ -1,44 +1,41 @@
 ﻿using Autofac;
-using Cas.Common.WPF;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
 using EFSM.Designer.Engine;
 using EFSM.Designer.Interfaces;
-using EFSM.Designer.View;
 using EFSM.Designer.ViewModel;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
+using NSubstitute;
 
-namespace EFSM.Designer
+namespace EFSM.Designer.Tests
 {
-    public static class ApplicationContainer
+    public abstract class TestBase
     {
+        public TestBase()
+        {
+            ApplicationContainer.Container = CreateTestContainer();
+        }
 
-        public static IContainer Container { get; set; }
-
-        static ApplicationContainer()
+        private IContainer CreateTestContainer()
         {
             var builder = new ContainerBuilder();
 
-            // ViewService
-            IViewService viewService = new ViewService();
-
-            viewService.Register<StateMachineDialogWindowViewModel, StateMachineDialogWindow>();
-            viewService.Register<SimulationViewModel, SimulationWindow>();
-
-            builder.RegisterInstance(viewService).As<IViewService>();
+            builder.RegisterInstance(Substitute.For<IViewService>()).As<IViewService>();
 
             // Register all view models
             builder.RegisterAssemblyTypes(typeof(MainViewModel).Assembly)
                 .Where(t => t.IsSubclassOf(typeof(ViewModelBase)))
                 .AsSelf();
 
+            builder.RegisterType(Substitute.For<IUndoProvider>().GetType()).As<IUndoProvider>();
+            builder.RegisterType(Substitute.For<IIsDirtyService>().GetType()).As<IIsDirtyService>();
 
             builder.RegisterType<FilePersistor>().As<IPersistor>();
             builder.RegisterType<SelectionService>().As<ISelectionService>();
             builder.RegisterType<UndoService<StateMachine>>().As<IUndoService<StateMachine>>();
 
-            Container = builder.Build();
+            return builder.Build();
         }
     }
 }

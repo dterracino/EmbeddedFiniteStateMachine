@@ -133,6 +133,9 @@
     <Compile Include="Common\TransitionPropertyGridSource.cs" />
     <Compile Include="Common\UndoService.cs" />
     <Compile Include="Const\DesignerConstants.cs" />
+    <Compile Include="Controls\InputUserControl.xaml.cs">
+      <DependentUpon>InputUserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\CenterConverter.cs" />
     <Compile Include="Engine\FilePersistor.cs" />
     <Compile Include="Extensions\INamedEntityExtensions.cs" />
@@ -162,10 +165,17 @@
     <Compile Include="Model\StatePropertyGridSource.cs" />
     <Compile Include="Model\StateTools.cs" />
     <Compile Include="ViewModel\DesignerViewModelBase.cs" />
+    <Compile Include="ViewModel\SimulationViewModel.cs" />
+    <Compile Include="ViewModel\InputsViewModel.cs" />
+    <Compile Include="ViewModel\StateMachineConditionViewModel.cs" />
+    <Compile Include="ViewModel\StateMachineEvaluateViewModel.cs" />
+    <Compile Include="ViewModel\StateMachineInputViewModel.cs" />
     <Compile Include="ViewModel\StateMachineReferenceViewModel.cs" />
+    <Compile Include="ViewModel\StateMachineSimulationViewModel.cs" />
     <Compile Include="ViewModel\StateMachineViewModel.cs" />
     <Compile Include="ViewModel\StateMachineDialogWindowViewModel.cs" />
     <Compile Include="ViewModel\ProjectViewModel.cs" />
+    <Compile Include="ViewModel\StateMachineViewModelBase.cs" />
     <Compile Include="ViewModel\StateToolTipViewModel.cs" />
     <Compile Include="ViewModel\StateViewModel.cs" />
     <Compile Include="ViewModel\ToolCategoryViewModel.cs" />
@@ -173,6 +183,12 @@
     <Compile Include="ViewModel\ToolViewModel.cs" />
     <Compile Include="ViewModel\TransitionToolTipViewModel.cs" />
     <Compile Include="ViewModel\TransitionViewModel.cs" />
+    <Compile Include="View\SimulationWindow.xaml.cs">
+      <DependentUpon>SimulationWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\InputsView.xaml.cs">
+      <DependentUpon>InputsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\PropertyGridView.xaml.cs">
       <DependentUpon>PropertyGridView.xaml</DependentUpon>
     </Compile>
@@ -191,6 +207,18 @@
     <Compile Include="View\TransitionView.xaml.cs">
       <DependentUpon>TransitionView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\InputUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\SimulationWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\InputsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -274,6 +302,8 @@
     <Resource Include="Images\Arrow_RedoRetry_16xLG_color.png" />
     <Resource Include="Images\Arrow_UndoRevertRestore_16xLG_color.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Images\StatusAnnotations_Play_32xLG_color.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

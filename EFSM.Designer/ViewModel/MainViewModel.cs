@@ -44,7 +44,11 @@ namespace EFSM.Designer.ViewModel
 
         private void OpenDialog(StateMachineReferenceViewModel stateMachineViewModel)
         {
-            stateMachineViewModel.Edit();
+            if (stateMachineViewModel.Edit())
+            {
+                // Save
+            }
+                ;
         }
 
         private void New()

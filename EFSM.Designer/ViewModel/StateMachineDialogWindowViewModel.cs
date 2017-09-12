@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
 using EFSM.Designer.Interfaces;
 using EFSM.Domain;
@@ -13,12 +14,15 @@ namespace EFSM.Designer.ViewModel
         public string Title => "State Machine Editor";
 
         private readonly IUndoService<StateMachine> _undoService;
+        private IViewService _viewService;
+        private StateMachine _stateMachine;
         public IIsDirtyService DirtyService { get; private set; } = new IsDirtyService();
 
         public ICommand DeleteCommand { get; private set; }
         public ICommand OkCommand { get; private set; }
         public ICommand UndoCommand { get; private set; }
         public ICommand RedoCommand { get; private set; }
+        public ICommand EvaluationCommand { get; private set; }
 
         private StateMachineViewModel _stateMachineViewModel = null;
         public StateMachineViewModel StateMachineViewModel
@@ -34,11 +38,9 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
-        private StateMachine _stateMachine;
-
-
-        public StateMachineDialogWindowViewModel(StateMachine stateMachine)
+        public StateMachineDialogWindowViewModel(StateMachine stateMachine, IViewService viewService)
         {
+            _viewService = viewService;
             _stateMachine = stateMachine;
             InitiateStateMachineViewModel();
 
@@ -47,18 +49,36 @@ namespace EFSM.Designer.ViewModel
             _undoService.Clear(SaveMomento());
 
             DirtyService.MarkClean();
+            InitializeCommands();
+        }
 
+        private void InitializeCommands()
+        {
             DeleteCommand = new RelayCommand(Delete);
             OkCommand = new RelayCommand(OkButtonClick);
             UndoCommand = new RelayCommand(Undo, CanUndo);
             RedoCommand = new RelayCommand(Redo, CanRedo);
+            EvaluationCommand = new RelayCommand(Evaluate);
+        }
+
+        private void Evaluate()
+        {
+            var viewModel = ApplicationContainer.Container.Resolve<SimulationViewModel>(
+                new TypedParameter(typeof(StateMachine), GetModel()),
+                new TypedParameter(typeof(StateMachineDialogWindowViewModel), this)
+                );
+
+            _viewService.ShowDialog(viewModel);
         }
 
         private void InitiateStateMachineViewModel()
         {
             StateMachineViewModel = ApplicationContainer.Container.Resolve<StateMachineViewModel>
-               (new TypedParameter(typeof(StateMachine), _stateMachine),
-               new TypedParameter(typeof(StateMachineDialogWindowViewModel), this));
+               (
+                new TypedParameter(typeof(StateMachine), _stateMachine),
+                new TypedParameter(typeof(IUndoProvider), this),
+                new TypedParameter(typeof(IIsDirtyService), DirtyService)
+               );
         }
 
         public StateMachine GetModel()

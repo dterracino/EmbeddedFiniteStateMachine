@@ -67,8 +67,8 @@
                                                             <RowDefinition Height="Auto"/>
                                                         </Grid.RowDefinitions>
 
-                                                        <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource HeaderStyle}">Id</TextBlock>
-                                                        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Path=Tool.ComponentTypeId}"/>
+                                                        <!--<TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource HeaderStyle}">Id</TextBlock>
+                                                        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Path=Tool.ComponentTypeId}"/>-->
 
                                                         <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource HeaderStyle}">Name</TextBlock>
                                                         <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Path=Name}"/>

@@ -28,12 +28,19 @@ namespace EFSM.Designer.ViewModel
             return _model.Clone();
         }
 
-        public void Edit()
+        public bool Edit()
         {
             StateMachineDialogWindowViewModel viewModel = ApplicationContainer.Container
                 .Resolve<StateMachineDialogWindowViewModel>(
                 new TypedParameter(typeof(StateMachine), GetModel()));
-            _viewService.ShowDialog(viewModel);
+
+            if (_viewService.ShowDialog(viewModel) == true)
+            {
+                _model = viewModel.GetModel();
+                return true;
+            }
+
+            return false;
         }
     }
 }

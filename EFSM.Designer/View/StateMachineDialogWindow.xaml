@@ -44,6 +44,9 @@
                         <Button ToolTip="Redo (Ctrl+Y)" Command="{Binding Path=RedoCommand}">
                             <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/Arrow_RedoRetry_16xLG_color.png" Width="16"/>
                         </Button>
+                        <Button Command="{Binding Path=EvaluationCommand}">
+                            <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/StatusAnnotations_Play_32xLG_color.png" Width="16"/>
+                        </Button>
                     </ToolBar>
 
                     <Grid Grid.Row="1">
@@ -55,7 +58,17 @@
                             <ColumnDefinition Width="200"/>
                         </Grid.ColumnDefinitions>
 
-                        <local:ToolsView DataContext="{x:Static viewModel:ViewModelLocator.StateTools}" Grid.Column="0"></local:ToolsView>
+                        <Grid Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <local:ToolsView DataContext="{x:Static viewModel:ViewModelLocator.StateTools}" Grid.Column="0"></local:ToolsView>
+
+                        </Grid>
+                        
+                       
+                        
                         <GridSplitter Grid.Column="1" Style="{StaticResource ColumnGridSplitter}"/>
                         <ScrollViewer Grid.Column="2" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
                             <local:StateMachineView DataContext="{Binding StateMachineViewModel}" Background="Gray"></local:StateMachineView>

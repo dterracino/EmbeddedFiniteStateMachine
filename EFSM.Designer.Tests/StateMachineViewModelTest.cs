@@ -1,20 +1,25 @@
-﻿using Cas.Common.WPF;
+﻿using Autofac;
+using Cas.Common.WPF.Interfaces;
+using EFSM.Designer.Interfaces;
 using EFSM.Designer.ViewModel;
 using EFSM.Domain;
+using NSubstitute;
 using System;
 using Xunit;
 
 namespace EFSM.Designer.Tests
 {
-    public class StateMachineViewModelTest
+    public class StateMachineViewModelTest : TestBase
     {
+
         [Fact]
         public void GetModel_InsertedStateViewModels_StateMachineHasStates()
         {
             var stateMachine = new StateMachine();
-            var provider = new StateMachineDialogWindowViewModel(stateMachine);
-            var viewModel = new StateMachineViewModel(stateMachine, new ViewService(), provider);
-            viewModel.States.Add(new StateViewModel(new State(), viewModel, provider));
+            var viewModel = ApplicationContainer.Container.Resolve<StateMachineViewModel>(
+                new TypedParameter(typeof(StateMachine), stateMachine)
+                );
+            viewModel.States.Add(new StateViewModel(new State(), viewModel, Substitute.For<IUndoProvider>()));
             StateMachine stateMachineModel = viewModel.GetModel();
             Assert.Equal(1, stateMachineModel.States.Length);
         }
@@ -30,7 +35,7 @@ namespace EFSM.Designer.Tests
                 States = new[] { new State { Id = guid1 }, new State { Id = guid2 } }
 
             };
-            var vm = new StateMachineDialogWindowViewModel(stateMachine);
+            var vm = new StateMachineDialogWindowViewModel(stateMachine, Substitute.For<IViewService>());
             TransitionViewModel transition = vm.StateMachineViewModel.Transitions[0];
             transition.DeleteCommand.Execute(null);
             Assert.Empty(vm.StateMachineViewModel.Transitions);

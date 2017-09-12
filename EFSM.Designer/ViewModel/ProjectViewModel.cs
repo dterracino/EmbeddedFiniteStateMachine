@@ -4,6 +4,7 @@ using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Interfaces;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -26,7 +27,7 @@ namespace EFSM.Designer.ViewModel
         {
             _project = project;
             _viewService = viewService;
-            AddStateMachines();
+            InitializeStateMachines();
         }
 
         public string Filename
@@ -35,7 +36,7 @@ namespace EFSM.Designer.ViewModel
             set { _filename = value; RaisePropertyChanged(); }
         }
 
-        private void AddStateMachines()
+        private void InitializeStateMachines()
         {
             if (_project.StateMachines != null)
             {
@@ -48,11 +49,6 @@ namespace EFSM.Designer.ViewModel
         {
             Filename = fileName;
             persistor.SaveProject(_project, fileName);
-        }
-
-        public void Edit(StateMachineViewModel stateMachineViewModel)
-        {
-
         }
 
         public StateMachineProject GetModel()

@@ -11,5 +11,7 @@ namespace EFSM.Domain
         public string Name { get; set; }
 
         public Guid[] TransitionActions { get; set; }
+
+        public StateMachineCondition Condition { get; set; }
     }
 }

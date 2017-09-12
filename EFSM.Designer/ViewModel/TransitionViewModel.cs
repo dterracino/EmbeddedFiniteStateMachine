@@ -29,7 +29,8 @@ namespace EFSM.Designer.ViewModel
 
         private readonly Lazy<TransitionPropertyGridSource> _propertyGridSource;
         //private IList<StateMachineActionMetadata> _actions;
-        private StateMachineCondition _condition;
+        private StateMachineConditionViewModel _condition;
+        public StateMachineConditionViewModel Condition => _condition;
 
         private Point _startLocation;
         private IUndoProvider _undoProvider;
@@ -45,6 +46,7 @@ namespace EFSM.Designer.ViewModel
 
             DeleteCommand = new RelayCommand(Delete, CanDelete);
             EditCommand = new RelayCommand(Edit, CanEdit);
+            _condition = new StateMachineConditionViewModel(model.Condition);
         }
 
         public ICommand DeleteCommand { get; private set; }
