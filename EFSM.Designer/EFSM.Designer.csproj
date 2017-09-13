@@ -165,10 +165,10 @@
     <Compile Include="Model\StatePropertyGridSource.cs" />
     <Compile Include="Model\StateTools.cs" />
     <Compile Include="ViewModel\DesignerViewModelBase.cs" />
+    <Compile Include="ViewModel\SimulationStateMachineViewModel.cs" />
     <Compile Include="ViewModel\SimulationViewModel.cs" />
     <Compile Include="ViewModel\InputsViewModel.cs" />
     <Compile Include="ViewModel\StateMachineConditionViewModel.cs" />
-    <Compile Include="ViewModel\StateMachineEvaluateViewModel.cs" />
     <Compile Include="ViewModel\StateMachineInputViewModel.cs" />
     <Compile Include="ViewModel\StateMachineReferenceViewModel.cs" />
     <Compile Include="ViewModel\StateMachineSimulationViewModel.cs" />
@@ -185,9 +185,6 @@
     <Compile Include="ViewModel\TransitionViewModel.cs" />
     <Compile Include="View\SimulationWindow.xaml.cs">
       <DependentUpon>SimulationWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\InputsView.xaml.cs">
-      <DependentUpon>InputsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\PropertyGridView.xaml.cs">
       <DependentUpon>PropertyGridView.xaml</DependentUpon>
@@ -212,10 +209,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\SimulationWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\InputsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -281,6 +274,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="test.csdsn" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

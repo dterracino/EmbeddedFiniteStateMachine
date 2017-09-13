@@ -33,13 +33,11 @@ namespace EFSM.Designer.ViewModel
         public StateMachineConditionViewModel Condition => _condition;
 
         private Point _startLocation;
-        private IUndoProvider _undoProvider;
         private StateMachineTransition _model;
 
-        public TransitionViewModel(StateMachineViewModel parent, StateMachineTransition model, IUndoProvider undoProvider)
+        public TransitionViewModel(StateMachineViewModel parent, StateMachineTransition model)
         {
             _parent = parent ?? throw new ArgumentNullException(nameof(parent));
-            _undoProvider = undoProvider ?? throw new ArgumentNullException(nameof(undoProvider));
             _model = model ?? throw new ArgumentNullException(nameof(model));
 
             _propertyGridSource = new Lazy<TransitionPropertyGridSource>(() => new TransitionPropertyGridSource(this));
@@ -248,8 +246,7 @@ namespace EFSM.Designer.ViewModel
             {
                 _model.Name = value;
                 RaisePropertyChanged();
-                _undoProvider.SaveUndoState();
-                //Parent.DirtyService.MarkDirty();
+                _parent.SaveUndoState();
             }
         }
 

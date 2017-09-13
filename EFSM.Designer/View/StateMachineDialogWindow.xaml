@@ -3,12 +3,17 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:local="clr-namespace:EFSM.Designer.View"
         xmlns:viewModel="clr-namespace:EFSM.Designer.ViewModel"
         xmlns:controls="clr-namespace:Cas.Common.WPF.Controls;assembly=Cas.Common.WPF"
+        xmlns:behaviors="clr-namespace:Cas.Common.WPF.Behaviors;assembly=Cas.Common.WPF"
         mc:Ignorable="d"
         
         Title="{Binding Path=Title}" Height="400" Width="600">
+    <i:Interaction.Behaviors>
+        <behaviors:CloseableBehavior/>
+    </i:Interaction.Behaviors>
     <Window.Resources>
         <Style TargetType="GridSplitter" x:Key="ColumnGridSplitter">
             <Setter Property="ResizeDirection" Value="Columns"/>
@@ -44,7 +49,7 @@
                         <Button ToolTip="Redo (Ctrl+Y)" Command="{Binding Path=RedoCommand}">
                             <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/Arrow_RedoRetry_16xLG_color.png" Width="16"/>
                         </Button>
-                        <Button Command="{Binding Path=EvaluationCommand}">
+                        <Button Command="{Binding Path=SimulationCommand}">
                             <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/StatusAnnotations_Play_32xLG_color.png" Width="16"/>
                         </Button>
                     </ToolBar>

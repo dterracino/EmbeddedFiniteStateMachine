@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using EFSM.Designer.Common;
 using EFSM.Designer.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -11,21 +12,30 @@ namespace EFSM.Designer.ViewModel
 {
     public abstract class DesignerViewModelBase : ViewModelBase, ISelectable, IAreaSelector
     {
+        public ICommand OnMouseLeftButtonDownCommand { get; private set; }
+        public ICommand OnDropCommand { get; private set; }
+        public ICommand DeleteCommand { get; private set; }
+
         private bool _isSelected;
         private readonly ISelectionService _selectionService;
         private bool _isSelectionBoxVisible;
         private Rect _selectionBox;
-        //private readonly IIsDirtyService _dirtyService;
+        private readonly IIsDirtyService _dirtyService;
 
-        protected DesignerViewModelBase(/*IIsDirtyService dirtyService = null,*/ ISelectionService selectionService = null)
+        protected DesignerViewModelBase(IIsDirtyService dirtyService = null, ISelectionService selectionService = null)
         {
             _selectionService = selectionService ?? ApplicationContainer.Container.Resolve<ISelectionService>();
-            //_dirtyService = dirtyService ?? new IsDirtyService();
+            _dirtyService = dirtyService ?? new IsDirtyService();
 
-            DeleteCommand = new RelayCommand(Delete, CanDelete);
+            InitiateCommands();
         }
 
-        public ICommand DeleteCommand { get; private set; }
+        private void InitiateCommands()
+        {
+            DeleteCommand = new RelayCommand(Delete, CanDelete);
+            OnMouseLeftButtonDownCommand = new RelayCommand<MouseEventArgs>(OnMouseLeftButtonDown);
+            OnDropCommand = new RelayCommand<DragEventArgs>(OnDrop);
+        }
 
         protected IEnumerable<IDeleteable> GetSelectedDeleteables()
         {
@@ -72,10 +82,10 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
-        //public IIsDirtyService DirtyService
-        //{
-        //    get { return _dirtyService; }
-        //}
+        public IIsDirtyService DirtyService
+        {
+            get { return _dirtyService; }
+        }
 
         public ISelectionService SelectionService
         {
@@ -138,6 +148,14 @@ namespace EFSM.Designer.ViewModel
         public virtual void SelectBox(Rect rec)
         {
 
+        }
+
+        public virtual void OnDrop(DragEventArgs e)
+        {           
+        }
+
+        public virtual void OnMouseLeftButtonDown(MouseEventArgs e)
+        {            
         }
     }
 }

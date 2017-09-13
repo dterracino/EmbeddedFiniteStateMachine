@@ -32,7 +32,7 @@
         <!-- The "IsSelected" indicator -->
         <Path Data="{Binding Path=LineGeometry}" StrokeThickness="10" IsHitTestVisible="True" x:Name="SelectionPath" Stroke="Transparent">
             <i:Interaction.Behaviors>
-                <behavior:SelectableBehavior SelectionService="{Binding Path=Parent.SelectionService}"/>
+                <behavior:SelectableBehavior IsEnabled="{Binding Path=Parent.IsPointerMode}" SelectionService="{Binding Path=Parent.SelectionService}"/>
             </i:Interaction.Behaviors>
             <Path.InputBindings>
                 <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding Path=EditCommand}"/>

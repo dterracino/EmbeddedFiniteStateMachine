@@ -4,7 +4,7 @@ using EFSM.Designer.Metadata;
 using EFSM.Designer.Model;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -21,23 +21,30 @@ namespace EFSM.Designer.ViewModel
         public StateMachineViewModel Parent { get; private set; }
         private Point _startLocation;
 
-        private IUndoProvider _undoProvider;
-
         private readonly List<TransitionViewModel> _transitions = new List<TransitionViewModel>();
 
         public ICommand EditCommand { get; private set; }
         public ICommand DeleteCommand { get; private set; }
 
-        public StateViewModel(State state, StateMachineViewModel parent, IUndoProvider undoProvider)
+        public StateViewModel(State state, StateMachineViewModel parent)
         {
             _state = state;
-            _undoProvider = undoProvider;
 
             Parent = parent;
             Location = new Point(_state.X, _state.Y);
-            EditCommand = new RelayCommand(Edit);
-            DeleteCommand = new RelayCommand(Delete);
+            EditCommand = new RelayCommand(Edit, CanEdit);
+            DeleteCommand = new RelayCommand(Delete, CanDelete);
             _propertyGridSource = new StatePropertyGridSource(this);
+        }
+
+        private bool CanEdit()
+        {
+            return !Parent.IsReadOnly;
+        }
+
+        private bool CanDelete()
+        {
+            return !Parent.IsReadOnly;
         }
 
         private void Edit()
@@ -80,13 +87,13 @@ namespace EFSM.Designer.ViewModel
         public Guid Id
         {
             get { return _state.Id; }
-            set { _state.Id = value; RaisePropertyChanged(); _undoProvider.SaveUndoState(); }
+            set { _state.Id = value; RaisePropertyChanged(); Parent.SaveUndoState(); }
         }
 
         public string Name
         {
             get { return _state.Name; }
-            set { _state.Name = value; RaisePropertyChanged(); _undoProvider.SaveUndoState(); }
+            set { _state.Name = value; RaisePropertyChanged(); Parent.SaveUndoState(); }
         }
 
         public Guid[] EntryActions
@@ -104,13 +111,13 @@ namespace EFSM.Designer.ViewModel
         public double X
         {
             get { return _state.X; }
-            set { _state.X = value; RaisePropertyChanged(); _undoProvider.SaveUndoState(); }
+            set { _state.X = value; RaisePropertyChanged(); Parent.SaveUndoState(); }
         }
 
         public double Y
         {
             get { return _state.Y; }
-            set { _state.Y = value; RaisePropertyChanged(); _undoProvider.SaveUndoState(); }
+            set { _state.Y = value; RaisePropertyChanged(); Parent.SaveUndoState(); }
         }
 
         public StateType StateType
@@ -184,7 +191,7 @@ namespace EFSM.Designer.ViewModel
             }
 
             Parent.States.Remove(this);
-            _undoProvider.SaveUndoState();
+            Parent.SaveUndoState();
         }
     }
 }

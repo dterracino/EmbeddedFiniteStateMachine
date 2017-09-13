@@ -3,7 +3,6 @@ using Cas.Common.WPF.Interfaces;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using System;
 using System.Linq;
 using System.Windows.Input;
 
@@ -12,11 +11,19 @@ namespace EFSM.Designer.ViewModel
     public class SimulationViewModel : ViewModelBase
     {
         private StateMachine _model;
-        private StateMachineDialogWindowViewModel _parent;
 
+        private StateViewModel _currentState = null;
+        public StateViewModel CurrentState
+        {
+            get { return _currentState; }
+            set
+            {
+                _currentState = value; if (value != null)
+                {
 
-        private TransitionViewModel _currentTransition = null;
-        private StateViewModel _currentState => _currentTransition?.Source;
+                }
+            }
+        }
 
         public ICommand SimulationCommand { get; private set; }
 
@@ -34,10 +41,9 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
-        public SimulationViewModel(StateMachine model, StateMachineDialogWindowViewModel parent)
+        public SimulationViewModel(StateMachine model)
         {
             _model = model;
-            _parent = parent;
             InitializeModel();
             InitializeCommands();
             SelectInitialState();
@@ -50,40 +56,50 @@ namespace EFSM.Designer.ViewModel
 
         private void Simulate()
         {
-            Guid? inputGuid = _currentTransition.Condition.SourceInputId;
+            var transitionViewModels = StateMachineViewModel.Transitions.Where(t => t.Source.Id == _currentState.Id);
 
-            if (inputGuid != null)
+            foreach (var transitionViewModel in transitionViewModels)
             {
-                var input = GetInputByGuid(inputGuid.Value);
-
-                if (input.IsOn == _currentTransition.Condition.Value.Value)
+                if (IsConditionFulfilled(transitionViewModel))
                 {
-                    StateMachineViewModel.SelectionService.Select(_currentTransition.Target);
+                    SetCurrentState(transitionViewModel.Target);
                 }
             }
-
         }
 
-        private StateMachineInputViewModel GetInputByGuid(Guid id)
+        private bool IsConditionFulfilled(TransitionViewModel transition)
         {
-            return StateMachineViewModel.Inputs.First(i => i.Id == id);
+            if (transition == null || transition.Condition == null || transition.Condition.SourceInputId == null)
+            {
+                return false;
+            }
+
+            var input = StateMachineViewModel.GetInputById(transition.Condition.SourceInputId.Value);
+
+            if (input.IsOn != transition.Condition.Value)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private void InitializeModel()
         {
-            StateMachineViewModel = new StateMachineViewModel(_model, ApplicationContainer.Container.Resolve<IViewService>(), _parent, _parent.DirtyService);
+            StateMachineViewModel = new SimulationStateMachineViewModel(_model, ApplicationContainer.Container.Resolve<IViewService>());
         }
 
         private void SelectInitialState()
         {
-            var initialTransition = StateMachineViewModel.Transitions.First(t => t.Source.StateType == Metadata.StateType.Initial);
-            SetCurrentTransition(initialTransition);
+            var initialState = StateMachineViewModel.States.First(s => s.StateType == Metadata.StateType.Initial);
+            SetCurrentState(initialState);
         }
 
-        private void SetCurrentTransition(TransitionViewModel transition)
+        private void SetCurrentState(StateViewModel state)
         {
-            _currentTransition = transition;
-            StateMachineViewModel.SelectionService.Select(transition.Source);
+            _currentState = state;
+            StateMachineViewModel.SelectionService.SelectNone();
+            StateMachineViewModel.SelectionService.Select(state);
         }
     }
 }

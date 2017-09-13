@@ -6,7 +6,6 @@ using EFSM.Designer.Interfaces;
 using EFSM.Designer.Metadata;
 using EFSM.Designer.Model;
 using EFSM.Domain;
-using GalaSoft.MvvmLight.CommandWpf;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -18,8 +17,6 @@ namespace EFSM.Designer.ViewModel
 {
     public class StateMachineViewModel : DesignerViewModelBase
     {
-        public ICommand OnMouseLeftButtonDownCommand { get; private set; }
-        public ICommand OnDropCommand { get; private set; }
 
         private StateViewModel _sourceForNewTransition;
         private StateMachine _model;
@@ -41,17 +38,22 @@ namespace EFSM.Designer.ViewModel
             set { _states = value; RaisePropertyChanged(); }
         }
 
-        public StateMachineViewModel(StateMachine model, IViewService viewService, IUndoProvider undoProvider, IIsDirtyService dirtyService)
+        public StateMachineViewModel(StateMachine model, IViewService viewService, IUndoProvider undoProvider, IIsDirtyService dirtyService, bool isReadOnly = false)
         {
             _model = model;
             _undoProvider = undoProvider;
             _dirtyService = dirtyService;
+            _isReadOnly = isReadOnly;
 
             InitiateModel();
 
 
-            OnMouseLeftButtonDownCommand = new RelayCommand<MouseEventArgs>(OnMouseLeftButtonDown);
-            OnDropCommand = new RelayCommand<DragEventArgs>(OnDrop);
+
+        }
+
+        public StateMachineInputViewModel GetInputById(Guid id)
+        {
+            return Inputs.FirstOrDefault(i => i.Id == id);
         }
 
         private void InitiateModel()
@@ -60,9 +62,6 @@ namespace EFSM.Designer.ViewModel
             AddTransitionViewModel();
             AddInputViewModel();
         }
-
-
-
 
         public void AddNewState(StateFactory factory, Point location)
         {
@@ -94,14 +93,13 @@ namespace EFSM.Designer.ViewModel
             string name = stateType == StateType.Initial ? "Initial State" : States.CreateUniqueName("State {0}"); ;
 
             //Create the new view model.
-            var state = new StateViewModel(new State { Name = name, Id = Guid.NewGuid() }, this, _undoProvider)
+            var state = new StateViewModel(new State { Name = name, Id = Guid.NewGuid() }, this)
             {
                 Location = location.Value
             };
 
             States.Add(state);
-            _undoProvider.SaveUndoState();
-            _dirtyService.MarkDirty();
+            SaveUndoState();
         }
 
         private Point FindLocationForNewState()
@@ -121,7 +119,7 @@ namespace EFSM.Designer.ViewModel
             return States.Any(s => Math.Abs(point.X - s.Location.X) < 10 && Math.Abs(point.Y - s.Location.Y) < 10);
         }
 
-        private void OnDrop(DragEventArgs e)
+        public override void OnDrop(DragEventArgs e)
         {
             var tool = e.Data.GetData(typeof(ITool)) as StateFactory;
 
@@ -142,7 +140,7 @@ namespace EFSM.Designer.ViewModel
             e.Handled = true;
         }
 
-        private void OnMouseLeftButtonDown(MouseEventArgs e)
+        public override void OnMouseLeftButtonDown(MouseEventArgs e)
         {
             SelectionService.SelectNone();
             SelectionService.Select(this);
@@ -179,7 +177,7 @@ namespace EFSM.Designer.ViewModel
 
             if (_model.States != null)
             {
-                States.AddRange(_model.States.Select(st => new StateViewModel(st, this, _undoProvider)));
+                States.AddRange(_model.States.Select(st => new StateViewModel(st, this)));
             }
         }
 
@@ -190,8 +188,7 @@ namespace EFSM.Designer.ViewModel
             {
                 _model.Name = value;
                 RaisePropertyChanged();
-                _undoProvider.SaveUndoState();
-                _dirtyService.MarkDirty();
+                SaveUndoState();
             }
         }
 
@@ -208,8 +205,7 @@ namespace EFSM.Designer.ViewModel
                 {
                     _width = value;
                     RaisePropertyChanged();
-                    _undoProvider.SaveUndoState();
-                    _dirtyService.MarkDirty();
+                    SaveUndoState();
                 }
             }
         }
@@ -224,8 +220,7 @@ namespace EFSM.Designer.ViewModel
                 {
                     _height = value;
                     RaisePropertyChanged();
-                    _undoProvider.SaveUndoState();
-                    _dirtyService.MarkDirty();
+                    SaveUndoState();
                 }
             }
         }
@@ -237,7 +232,8 @@ namespace EFSM.Designer.ViewModel
             set { _isPointerMode = value; RaisePropertyChanged(); }
         }
 
-        public bool IsReadOnly => false;
+        private bool _isReadOnly = false;
+        public override bool IsReadOnly => _isReadOnly;
 
         private Point _newTransitionStart;
         public Point NewTransitionStart
@@ -324,8 +320,7 @@ namespace EFSM.Designer.ViewModel
             if (_transitions.Contains(transition))
             {
                 _transitions.Remove(transition);
-                _undoProvider.SaveUndoState();
-                _dirtyService.MarkDirty();
+                SaveUndoState();
             }
         }
 
@@ -342,7 +337,7 @@ namespace EFSM.Designer.ViewModel
 
             StateMachineTransition transition = new StateMachineTransition { Name = transitionName, SourceStateId = source.Id, TargetStateId = target.Id, Condition = condition };
 
-            var transitionViewModel = new TransitionViewModel(this, transition, _undoProvider)
+            var transitionViewModel = new TransitionViewModel(this, transition)
             {
                 Source = source,
                 Target = target,
@@ -352,6 +347,12 @@ namespace EFSM.Designer.ViewModel
             Transitions.Add(transitionViewModel);
 
             return transitionViewModel;
+        }
+
+        public void SaveUndoState()
+        {
+            _undoProvider?.SaveUndoState();
+            _dirtyService?.MarkDirty();
         }
     }
 }

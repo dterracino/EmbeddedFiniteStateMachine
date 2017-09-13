@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
+using EFSM.Designer.Interfaces;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 
@@ -28,7 +29,7 @@ namespace EFSM.Designer.ViewModel
             return _model.Clone();
         }
 
-        public bool Edit()
+        public bool Edit(IIsDirtyService dirty)
         {
             StateMachineDialogWindowViewModel viewModel = ApplicationContainer.Container
                 .Resolve<StateMachineDialogWindowViewModel>(
@@ -37,6 +38,12 @@ namespace EFSM.Designer.ViewModel
             if (_viewService.ShowDialog(viewModel) == true)
             {
                 _model = viewModel.GetModel();
+
+                if (viewModel.DirtyService.IsDirty)
+                {
+                    dirty.MarkDirty();
+                }
+
                 return true;
             }
 

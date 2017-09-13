@@ -6,6 +6,8 @@ using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using Microsoft.Win32;
+using System.ComponentModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace EFSM.Designer.ViewModel
@@ -17,6 +19,7 @@ namespace EFSM.Designer.ViewModel
         public ICommand OpenCommand { get; private set; }
         public ICommand NewCommand { get; private set; }
         public ICommand OpenDialogCommand { get; private set; }
+        public ICommand ClosingCommand { get; private set; }
 
         public IViewService _viewService;
         public IPersistor _persistor;
@@ -35,20 +38,38 @@ namespace EFSM.Designer.ViewModel
             _viewService = viewService;
             _persistor = persistor;
 
+            InitializeCommands();
+            New();
+        }
+
+        private void InitializeCommands()
+        {
+            ClosingCommand = new RelayCommand<CancelEventArgs>(OnClosing);
             SaveAsStateMachineCommand = new RelayCommand(SaveAs);
             OpenCommand = new RelayCommand(OpenStateMachine);
             NewCommand = new RelayCommand(New);
             OpenDialogCommand = new RelayCommand<StateMachineReferenceViewModel>(OpenDialog);
-            New();
+        }
+
+        private void OnClosing(CancelEventArgs e)
+        {
+            if (StateMachineProjectViewModel.DirtyService.IsDirty)
+            {
+                string msg = "Data is dirty. Close without saving?";
+                MessageBoxResult result = MessageBox.Show(msg, "Data App", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.No)
+                {
+                    e.Cancel = true;
+                }
+            }
         }
 
         private void OpenDialog(StateMachineReferenceViewModel stateMachineViewModel)
         {
-            if (stateMachineViewModel.Edit())
+            if (stateMachineViewModel.Edit(StateMachineProjectViewModel.DirtyService))
             {
                 // Save
             }
-                ;
         }
 
         private void New()
@@ -73,6 +94,7 @@ namespace EFSM.Designer.ViewModel
         {
             StateMachineProject stateMachineProject = _persistor.LoadProject(fileName);
             StateMachineProjectViewModel = ApplicationContainer.Container.Resolve<ProjectViewModel>(new TypedParameter(typeof(StateMachineProject), stateMachineProject));
+            StateMachineProjectViewModel.Filename = fileName ?? "new.csdsn";
         }
 
         private void SaveAs()
@@ -85,6 +107,7 @@ namespace EFSM.Designer.ViewModel
             if (dialog.ShowDialog() == true)
             {
                 StateMachineProjectViewModel.Save(_persistor, dialog.FileName);
+                StateMachineProjectViewModel.DirtyService.MarkClean();
             }
         }
     }

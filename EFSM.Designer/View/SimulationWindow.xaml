@@ -40,7 +40,7 @@
                 <ListBox ItemsSource="{Binding StateMachineViewModel.Inputs}" >
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <controls:InputUserControl Text="{Binding Path=Name}" IsOn="{Binding IsOn}"></controls:InputUserControl>
+                            <controls:InputUserControl Text="{Binding Path=Name}" IsOn="{Binding Path=IsOn, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></controls:InputUserControl>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
 

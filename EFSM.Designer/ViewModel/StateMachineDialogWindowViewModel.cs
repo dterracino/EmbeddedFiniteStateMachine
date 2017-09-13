@@ -1,15 +1,17 @@
 ﻿using Autofac;
+using Cas.Common.WPF.Behaviors;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
 using EFSM.Designer.Interfaces;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using System;
 using System.Windows.Input;
 
 namespace EFSM.Designer.ViewModel
 {
-    public class StateMachineDialogWindowViewModel : ViewModelBase, IUndoProvider
+    public class StateMachineDialogWindowViewModel : ViewModelBase, IUndoProvider, ICloseableViewModel
     {
         public string Title => "State Machine Editor";
 
@@ -22,9 +24,12 @@ namespace EFSM.Designer.ViewModel
         public ICommand OkCommand { get; private set; }
         public ICommand UndoCommand { get; private set; }
         public ICommand RedoCommand { get; private set; }
-        public ICommand EvaluationCommand { get; private set; }
+        public ICommand SimulationCommand { get; private set; }
 
         private StateMachineViewModel _stateMachineViewModel = null;
+
+        public event EventHandler<CloseEventArgs> Close;
+
         public StateMachineViewModel StateMachineViewModel
         {
             get { return _stateMachineViewModel; }
@@ -58,14 +63,13 @@ namespace EFSM.Designer.ViewModel
             OkCommand = new RelayCommand(OkButtonClick);
             UndoCommand = new RelayCommand(Undo, CanUndo);
             RedoCommand = new RelayCommand(Redo, CanRedo);
-            EvaluationCommand = new RelayCommand(Evaluate);
+            SimulationCommand = new RelayCommand(Simulate);
         }
 
-        private void Evaluate()
+        private void Simulate()
         {
             var viewModel = ApplicationContainer.Container.Resolve<SimulationViewModel>(
-                new TypedParameter(typeof(StateMachine), GetModel()),
-                new TypedParameter(typeof(StateMachineDialogWindowViewModel), this)
+                new TypedParameter(typeof(StateMachine), GetModel())
                 );
 
             _viewService.ShowDialog(viewModel);
@@ -88,7 +92,7 @@ namespace EFSM.Designer.ViewModel
 
         private void OkButtonClick()
         {
-            //throw new NotImplementedException();
+            Close?.Invoke(this, new CloseEventArgs(true));
         }
 
         private void Delete()
@@ -125,6 +129,15 @@ namespace EFSM.Designer.ViewModel
         public bool CanRedo()
         {
             return _undoService.CanRedo();
+        }
+
+        public bool CanClose()
+        {
+            return true;
+        }
+
+        public void Closed()
+        {
         }
     }
 }

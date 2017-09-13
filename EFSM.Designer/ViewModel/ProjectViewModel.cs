@@ -1,10 +1,10 @@
 ﻿using Autofac;
 using Cas.Common.WPF;
 using Cas.Common.WPF.Interfaces;
+using EFSM.Designer.Common;
 using EFSM.Designer.Interfaces;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -15,6 +15,7 @@ namespace EFSM.Designer.ViewModel
         private StateMachineProject _project;
         private string _filename = string.Empty;
         private IViewService _viewService;
+        private readonly IIsDirtyService _dirtyService = new IsDirtyService();
 
         private ObservableCollection<StateMachineReferenceViewModel> _stateMachineViewModels = new ObservableCollection<StateMachineReferenceViewModel>();
         public ObservableCollection<StateMachineReferenceViewModel> StateMachineViewModels
@@ -45,10 +46,15 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
+        public IIsDirtyService DirtyService
+        {
+            get { return _dirtyService; }
+        }
+
         public void Save(IPersistor persistor, string fileName)
         {
             Filename = fileName;
-            persistor.SaveProject(_project, fileName);
+            persistor.SaveProject(GetModel(), fileName);
         }
 
         public StateMachineProject GetModel()

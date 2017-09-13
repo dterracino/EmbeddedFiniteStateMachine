@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using Cas.Common.WPF.Interfaces;
-using EFSM.Designer.Interfaces;
 using EFSM.Designer.ViewModel;
 using EFSM.Domain;
 using NSubstitute;
@@ -19,7 +18,7 @@ namespace EFSM.Designer.Tests
             var viewModel = ApplicationContainer.Container.Resolve<StateMachineViewModel>(
                 new TypedParameter(typeof(StateMachine), stateMachine)
                 );
-            viewModel.States.Add(new StateViewModel(new State(), viewModel, Substitute.For<IUndoProvider>()));
+            viewModel.States.Add(new StateViewModel(new State(), viewModel));
             StateMachine stateMachineModel = viewModel.GetModel();
             Assert.Equal(1, stateMachineModel.States.Length);
         }
