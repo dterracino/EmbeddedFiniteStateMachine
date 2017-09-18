@@ -143,10 +143,16 @@ namespace EFSM.Designer.Common
             _items.Insert(index, CreateNewEntry());
         }
 
-        private bool CanInsertBelow() => SelectedEntries.Length == 1;
+        private bool CanInsertBelow() => (SelectedEntries.Length == 1 || Items.Count == 0);
 
         private void InsertBelow()
         {
+            if (Items.Count == 0)
+            {
+                _items.Add(CreateNewEntry());
+                return;
+            }
+
             var firstSelected = SelectedEntries.FirstOrDefault();
 
             if (firstSelected == null)

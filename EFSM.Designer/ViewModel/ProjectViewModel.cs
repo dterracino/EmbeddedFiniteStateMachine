@@ -1,16 +1,16 @@
 ﻿using Autofac;
 using Cas.Common.WPF;
+using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
+using EFSM.Designer.Extensions;
 using EFSM.Designer.Interfaces;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.CommandWpf;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using Cas.Common.WPF.Interfaces;
-using EFSM.Designer.Extensions;
-using GalaSoft.MvvmLight.CommandWpf;
 
 namespace EFSM.Designer.ViewModel
 {
@@ -29,7 +29,10 @@ namespace EFSM.Designer.ViewModel
             if (_project.StateMachines != null)
             {
                 StateMachines.AddRange(_project.StateMachines
-                    .Select(sm => ApplicationContainer.Container.Resolve<StateMachineReferenceViewModel>(new TypedParameter(typeof(StateMachine), sm))));
+                    .Select(sm => ApplicationContainer.Container.Resolve<StateMachineReferenceViewModel>(
+                        new TypedParameter(typeof(StateMachine), sm),
+                        new TypedParameter(typeof(IIsDirtyService), _dirtyService)
+                        )));
             }
 
             NewStateMachineCommand = new RelayCommand(NewStateMachine);
@@ -102,7 +105,7 @@ namespace EFSM.Designer.ViewModel
             get { return _selectedStateMachine; }
             set
             {
-                _selectedStateMachine = value; 
+                _selectedStateMachine = value;
                 RaisePropertyChanged();
             }
         }

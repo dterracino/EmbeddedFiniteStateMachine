@@ -34,6 +34,7 @@ namespace EFSM.Designer.ViewModel
 
         private StateViewModel _sourceForNewTransition;
         private readonly StateMachine _model;
+        private readonly IViewService _viewService;
 
         private readonly IUndoProvider _undoProvider;
         private readonly IIsDirtyService _dirtyService;
@@ -50,6 +51,7 @@ namespace EFSM.Designer.ViewModel
             _undoProvider = undoProvider;
             _dirtyService = dirtyService;
             _isReadOnly = isReadOnly;
+            _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
 
             InitiateModel();
         }
@@ -65,7 +67,7 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
-        
+
         public ObservableCollection<StateMachineOutputActionViewModel> Outputs
         {
             get { return _outputs; }
@@ -124,7 +126,7 @@ namespace EFSM.Designer.ViewModel
             string name = stateType == StateType.Initial ? "Initial State" : States.CreateUniqueName("State {0}");
 
             //Create the new view model.
-            var state = new StateViewModel(new State { Name = name, Id = Guid.NewGuid() }, this)
+            var state = new StateViewModel(new State { Name = name, Id = Guid.NewGuid() }, this, _viewService)
             {
                 Location = location.Value,
                 StateType = stateType
@@ -216,7 +218,7 @@ namespace EFSM.Designer.ViewModel
 
             if (_model.States != null)
             {
-                States.AddRange(_model.States.Select(st => new StateViewModel(st, this)));
+                States.AddRange(_model.States.Select(st => new StateViewModel(st, this, _viewService)));
             }
         }
 
@@ -230,7 +232,7 @@ namespace EFSM.Designer.ViewModel
                 SaveUndoState();
             }
         }
-        
+
         public double Width
         {
             get { return _width; }
@@ -244,7 +246,7 @@ namespace EFSM.Designer.ViewModel
                 }
             }
         }
-        
+
         public double Height
         {
             get { return _height; }
@@ -258,7 +260,7 @@ namespace EFSM.Designer.ViewModel
                 }
             }
         }
-        
+
         public bool IsPointerMode
         {
             get { return _isPointerMode; }
@@ -268,7 +270,7 @@ namespace EFSM.Designer.ViewModel
                 RaisePropertyChanged();
             }
         }
-        
+
         public Point NewTransitionStart
         {
             get { return _newTransitionStart; }
@@ -279,7 +281,7 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
-        
+
         public Point NewTransitionEnd
         {
             get { return _newTransitionEnd; }
@@ -290,7 +292,7 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
-        
+
         public bool IsCreatingTransition
         {
             get { return _isCreatingTransition; }
@@ -301,7 +303,7 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
-        
+
         public bool IsConnectorMode
         {
             get { return _isConnectorMode; }

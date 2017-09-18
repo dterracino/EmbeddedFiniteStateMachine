@@ -41,8 +41,8 @@
                             <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/Delete.gif" ></controls:AutoGreyableImage>
                         </Button>
                         <Separator/>
-                        <RadioButton IsChecked="{Binding Path=StateMachineViewModel.IsPointerMode}" GroupName="Mode" Content="Pointer"/>
-                        <RadioButton IsChecked="{Binding Path=StateMachineViewModel.IsConnectorMode}"  GroupName="Mode" Content="Connections"/>
+                        <RadioButton IsChecked="{Binding Path=StateMachine.IsPointerMode}" GroupName="Mode" Content="Pointer"/>
+                        <RadioButton IsChecked="{Binding Path=StateMachine.IsConnectorMode}"  GroupName="Mode" Content="Connections"/>
                         <Separator/>
                         <Button ToolTip="Undo (Ctrl+U)" Command="{Binding Path=UndoCommand}">
                             <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/Arrow_UndoRevertRestore_16xLG_color.png" Width="16"/>
@@ -77,10 +77,10 @@
                         
                         <GridSplitter Grid.Column="1" Style="{StaticResource ColumnGridSplitter}"/>
                         <ScrollViewer Grid.Column="2" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
-                            <local:StateMachineView DataContext="{Binding StateMachineViewModel}" Background="Gray"></local:StateMachineView>
+                            <local:StateMachineView DataContext="{Binding StateMachine}" Background="Gray"></local:StateMachineView>
                         </ScrollViewer>
                         <GridSplitter Grid.Column="3" Style="{StaticResource ColumnGridSplitter}"/>
-                        <local:PropertyGridView Grid.Column="4" SelectionService="{Binding Path=StateMachineViewModel.SelectionService}" />
+                        <local:PropertyGridView Grid.Column="4" SelectionService="{Binding Path=StateMachine.SelectionService}" />
                     </Grid>
                     
                 </Grid>

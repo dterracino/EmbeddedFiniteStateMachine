@@ -1,5 +1,5 @@
-﻿using System;
-using Autofac;
+﻿using Autofac;
+using Cas.Common.WPF.Behaviors;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Const;
 using EFSM.Designer.Interfaces;
@@ -7,9 +7,9 @@ using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using Microsoft.Win32;
+using System;
 using System.Windows;
 using System.Windows.Input;
-using Cas.Common.WPF.Behaviors;
 
 namespace EFSM.Designer.ViewModel
 {
@@ -38,7 +38,7 @@ namespace EFSM.Designer.ViewModel
             OpenCommand = new RelayCommand(Open);
             NewCommand = new RelayCommand(New);
             EditCommand = new RelayCommand<StateMachineReferenceViewModel>(Edit);
-         
+
             New();
         }
 
@@ -57,7 +57,7 @@ namespace EFSM.Designer.ViewModel
             get { return _filename; }
             private set
             {
-                _filename = value; 
+                _filename = value;
                 RaisePropertyChanged();
                 RaisePropertyChanged(() => Title);
             }
@@ -84,8 +84,6 @@ namespace EFSM.Designer.ViewModel
             {
                 MessageBox.Show(e.Message);
             }
-
-            
         }
 
         private void New()

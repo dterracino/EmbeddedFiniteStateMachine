@@ -58,9 +58,9 @@ namespace EFSM.Designer.ViewModel
             if (_viewService.ShowDialog(viewModel) == true)
             {
                 Parent.DirtyService.MarkDirty();
-                Name = viewModel.Name;
                 _state.EntryActions = viewModel.EntryActions.Items.Select(a => a.Id).ToArray();
                 _state.ExitActions = viewModel.ExitActions.Items.Select(a => a.Id).ToArray();
+                Name = viewModel.Name;
             }
         }
 
@@ -99,7 +99,12 @@ namespace EFSM.Designer.ViewModel
         public Guid Id
         {
             get { return _state.Id; }
-            set { _state.Id = value; RaisePropertyChanged(); Parent.SaveUndoState(); }
+            set
+            {
+                _state.Id = value;
+                RaisePropertyChanged();
+                Parent.SaveUndoState();
+            }
         }
 
         public string Name
@@ -107,10 +112,9 @@ namespace EFSM.Designer.ViewModel
             get { return _state.Name; }
             set
             {
-                if (_state.Name != value)
-                {
-                    _state.Name = value; RaisePropertyChanged(); Parent.SaveUndoState();
-                }
+                _state.Name = value;
+                RaisePropertyChanged();
+                Parent.SaveUndoState();
             }
         }
 

@@ -108,9 +108,9 @@ namespace EFSM.Designer.ViewModel
             if (_viewService.ShowDialog(viewModel) == true)
             {
                 Parent.DirtyService.MarkDirty();
-                this.Name = viewModel.Transition.Name;
                 Condition = viewModel.Transition.Condition;
                 Actions = viewModel.Actions.Items.Where(i => viewModel.Outputs.Select(o => o.Id).Contains(i.Id)).Select(i => i.Id).ToList();
+                this.Name = viewModel.Name;
             }
         }
 

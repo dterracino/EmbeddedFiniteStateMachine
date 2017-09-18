@@ -15,11 +15,11 @@ namespace EFSM.Designer.ViewModel
 {
     public class StateMachineDialogWindowViewModel : ViewModelBase, IUndoProvider, ICloseableViewModel
     {
-        
+
 
         private readonly IUndoService<StateMachine> _undoService;
         private readonly IViewService _viewService;
-        
+
         private readonly IIsDirtyService _parentDirtyService;
 
         public ICommand DeleteCommand { get; private set; }
@@ -39,9 +39,9 @@ namespace EFSM.Designer.ViewModel
         {
             _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
             _parentDirtyService = parentDirtyService ?? throw new ArgumentNullException(nameof(parentDirtyService));
-            
+
             InitiateStateMachineViewModel(stateMachine);
-            
+
             _undoService = new UndoService<StateMachine>();
             _undoService.Clear(SaveMomento());
 
@@ -51,9 +51,17 @@ namespace EFSM.Designer.ViewModel
 
         public string Title => $"State Machine - {StateMachine.Name}";
 
-        public OrderedListDesigner<StateMachineOutputActionViewModel> Outputs => _outputs;
+        public OrderedListDesigner<StateMachineOutputActionViewModel> Outputs
+        {
+            get { return _outputs; }
+            private set { _outputs = value; RaisePropertyChanged(); }
+        }
 
-        public OrderedListDesigner<StateMachineInputViewModel> Inputs => _inputs;
+        public OrderedListDesigner<StateMachineInputViewModel> Inputs
+        {
+            get { return _inputs; }
+            private set { _inputs = value; RaisePropertyChanged(); }
+        }
 
         public StateMachineViewModel StateMachine
         {
@@ -97,10 +105,10 @@ namespace EFSM.Designer.ViewModel
                 new TypedParameter(typeof(IIsDirtyService), DirtyService)
                );
 
-            _inputs = new OrderedListDesigner<StateMachineInputViewModel>(CreateInput, StateMachine.Inputs, addedAction: ConnectorAdded, deletedAction: InputDeleted);
+            Inputs = new OrderedListDesigner<StateMachineInputViewModel>(CreateInput, StateMachine.Inputs, addedAction: ConnectorAdded, deletedAction: InputDeleted);
             _inputs.ListChanged += ChildListChanged;
 
-            _outputs = new OrderedListDesigner<StateMachineOutputActionViewModel>(CreateOutput, StateMachine.Outputs, addedAction: OutputAdded, deletedAction: OutputDeleted);
+            Outputs = new OrderedListDesigner<StateMachineOutputActionViewModel>(CreateOutput, StateMachine.Outputs, addedAction: OutputAdded, deletedAction: OutputDeleted);
             _outputs.ListChanged += ChildListChanged;
         }
 
@@ -121,6 +129,7 @@ namespace EFSM.Designer.ViewModel
         private void ChildListChanged(object sender, EventArgs e)
         {
             DirtyService.MarkDirty();
+            SaveUndoState();
         }
 
         private void InputDeleted(StateMachineInputViewModel input)
@@ -133,19 +142,19 @@ namespace EFSM.Designer.ViewModel
 
         private void OutputDeleted(StateMachineOutputActionViewModel output)
         {
-            var actionForDelete = StateMachineViewModel.Outputs.FirstOrDefault(o => o.Id == output.Id);
+            var actionForDelete = StateMachine.Outputs.FirstOrDefault(o => o.Id == output.Id);
 
             if (actionForDelete != null)
             {
-                StateMachineViewModel.Outputs.Remove(actionForDelete);
+                StateMachine.Outputs.Remove(actionForDelete);
             }
 
-            foreach (var item in StateMachineViewModel.Transitions)
+            foreach (var item in StateMachine.Transitions)
             {
                 item.DeleteOutputId(output.Id);
             }
 
-            foreach (var item in StateMachineViewModel.States)
+            foreach (var item in StateMachine.States)
             {
                 item.DeleteAction(output.Id);
             }
