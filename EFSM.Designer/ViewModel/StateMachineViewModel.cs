@@ -94,12 +94,13 @@ namespace EFSM.Designer.ViewModel
             }
 
             //Come up with a name for this new state
-            string name = stateType == StateType.Initial ? "Initial State" : States.CreateUniqueName("State {0}"); ;
+            string name = stateType == StateType.Initial ? "Initial State" : States.CreateUniqueName("State {0}");
 
             //Create the new view model.
             var state = new StateViewModel(new State { Name = name, Id = Guid.NewGuid() }, this)
             {
-                Location = location.Value
+                Location = location.Value,
+                StateType = stateType
             };
 
             States.Add(state);
