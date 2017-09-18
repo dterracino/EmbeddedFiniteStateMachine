@@ -4,7 +4,7 @@ using EFSM.Designer.Const;
 using EFSM.Designer.Interfaces;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
 using Microsoft.Win32;
 using System.ComponentModel;
 using System.Windows;
@@ -14,13 +14,21 @@ namespace EFSM.Designer.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {
-        public ICommand SaveStateMachineCommand { get; private set; }
+        public ICommand SaveProjectCommand { get; private set; }
         public ICommand SaveAsStateMachineCommand { get; private set; }
         public ICommand OpenCommand { get; private set; }
         public ICommand NewCommand { get; private set; }
         public ICommand AddStateMachineCommand { get; private set; }
         public ICommand OpenDialogCommand { get; private set; }
         public ICommand ClosingCommand { get; private set; }
+        public ICommand DeleteStateMachineCommand { get; private set; }
+
+        private StateMachineReferenceViewModel _selectedStateMachine = null;
+        public StateMachineReferenceViewModel SelectedStateMachine
+        {
+            get { return _selectedStateMachine; }
+            set { _selectedStateMachine = value; RaisePropertyChanged(); }
+        }
 
         public IViewService _viewService;
         public IPersistor _persistor;
@@ -43,6 +51,11 @@ namespace EFSM.Designer.ViewModel
             New();
         }
 
+        private bool CanDelete()
+        {
+            return SelectedStateMachine != null;
+        }
+
         private void InitializeCommands()
         {
             ClosingCommand = new RelayCommand<CancelEventArgs>(OnClosing);
@@ -51,6 +64,21 @@ namespace EFSM.Designer.ViewModel
             NewCommand = new RelayCommand(New);
             OpenDialogCommand = new RelayCommand<StateMachineReferenceViewModel>(OpenDialog);
             AddStateMachineCommand = new RelayCommand(AddStateMachine);
+            SaveProjectCommand = new RelayCommand(Save);
+            DeleteStateMachineCommand = new RelayCommand(DeleteStateMachine, CanDelete);
+        }
+
+        private void DeleteStateMachine()
+        {
+            StateMachineProjectViewModel.StateMachineViewModels.Remove(SelectedStateMachine);
+            SelectedStateMachine = null;
+            StateMachineProjectViewModel.DirtyService.MarkDirty();
+        }
+
+        private void Save()
+        {
+            StateMachineProjectViewModel.Save(_persistor, StateMachineProjectViewModel.Filename);
+            StateMachineProjectViewModel.DirtyService.MarkClean();
         }
 
         private void AddStateMachine()

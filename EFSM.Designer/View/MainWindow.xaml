@@ -28,7 +28,7 @@
                 <MenuItem Header="New"/>
                 <MenuItem Header="Open..." Command="{Binding OpenCommand}"/>
                 <Separator/>
-                <MenuItem Header="_Save" InputGestureText="Ctrl+S"/>
+                <MenuItem Header="_Save" InputGestureText="Ctrl+S" Command="{Binding SaveProjectCommand}"/>
                 <MenuItem Header="Save _As" Command="{Binding SaveAsStateMachineCommand}"/>
                 <Separator/>
                 <MenuItem Header="E_xit" x:Name="ExitMenuItem" Click="ExitMenuItem_OnClick"/>
@@ -41,12 +41,13 @@
         
         <ToolBar Grid.Row="1">
             <Button ToolTip="Insert a new State Machine..." Command="{Binding AddStateMachineCommand}">Insert</Button>
-            <Button ToolTip="Delete the currently selected State Machine">Delete</Button>
+            <Button ToolTip="Delete the currently selected State Machine" Command="{Binding DeleteStateMachineCommand}">Delete</Button>
             <Separator/>
             <Button ToolTip="Generate C code...">Generate</Button>
         </ToolBar>
 
-        <ListBox Grid.Row="2" ToolTip="State Machines" ItemsSource="{Binding Path=StateMachineProjectViewModel.StateMachineViewModels}" Margin="0,0,354,0">
+        <ListBox Grid.Row="2" ToolTip="State Machines" ItemsSource="{Binding Path=StateMachineProjectViewModel.StateMachineViewModels}" Margin="0,0,354,0" 
+                 SelectedItem="{Binding SelectedStateMachine, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Path=Name}">
