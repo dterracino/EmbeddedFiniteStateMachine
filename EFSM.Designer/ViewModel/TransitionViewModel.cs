@@ -1,10 +1,13 @@
-﻿using EFSM.Designer.Common;
+﻿using Cas.Common.WPF.Interfaces;
+using EFSM.Designer.Common;
 using EFSM.Designer.Extensions;
 using EFSM.Designer.Interfaces;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -29,22 +32,50 @@ namespace EFSM.Designer.ViewModel
 
         private readonly Lazy<TransitionPropertyGridSource> _propertyGridSource;
         //private IList<StateMachineActionMetadata> _actions;
+
         private StateMachineConditionViewModel _condition;
-        public StateMachineConditionViewModel Condition => _condition;
+        public StateMachineConditionViewModel Condition
+        {
+            get { return _condition; }
+            set { _condition = value; RaisePropertyChanged(); }
+        }
 
         private Point _startLocation;
         private StateMachineTransition _model;
+        private IViewService _viewService;
 
-        public TransitionViewModel(StateMachineViewModel parent, StateMachineTransition model)
+        public TransitionViewModel(StateMachineViewModel parent, StateMachineTransition model, IViewService viewService)
         {
             _parent = parent ?? throw new ArgumentNullException(nameof(parent));
             _model = model ?? throw new ArgumentNullException(nameof(model));
+            _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
+
+
 
             _propertyGridSource = new Lazy<TransitionPropertyGridSource>(() => new TransitionPropertyGridSource(this));
 
+            CommandInitialize();
+            ModelInitialize();
+        }
+
+        private void CommandInitialize()
+        {
             DeleteCommand = new RelayCommand(Delete, CanDelete);
             EditCommand = new RelayCommand(Edit, CanEdit);
-            _condition = new StateMachineConditionViewModel(model.Condition);
+        }
+
+        private void ModelInitialize()
+        {
+            if (_model.TransitionActions == null)
+            {
+                Actions = new List<Guid>();
+            }
+            else
+            {
+                Actions = _model.TransitionActions.ToList();
+            }
+
+            _condition = new StateMachineConditionViewModel(_model.Condition);
         }
 
         public ICommand DeleteCommand { get; private set; }
@@ -57,24 +88,30 @@ namespace EFSM.Designer.ViewModel
 
         public StateMachineTransition GetModel()
         {
-            return _model.Clone();
+            _model.TransitionActions = Actions.ToArray();
+            _model.Condition = Condition.GetModel();
+            var model = _model.Clone();
+            return model;
+        }
+
+        private List<Guid> _actions;
+        public List<Guid> Actions
+        {
+            get { return _actions; }
+            set { _actions = value; RaisePropertyChanged(); }
         }
 
         private void Edit()
         {
-            //var viewModel = new TransitionEditorViewModel(this,
-            //    Parent.Outputs.Items.ToArray(),
-            //    Parent.Inputs.Items.ToArray());
+            var viewModel = new TransitionEditorViewModel(new TransitionViewModel(_parent, GetModel(), _viewService), Parent.Inputs, Parent.Outputs);
 
-            //var dialog = new TransitionEditorDialog()
-            //{
-            //    DataContext = viewModel
-            //};
-
-            //if (dialog.ShowDialog() == true)
-            //{
-            //    Parent.DirtyService.MarkDirty();
-            //}
+            if (_viewService.ShowDialog(viewModel) == true)
+            {
+                Parent.DirtyService.MarkDirty();
+                this.Name = viewModel.Transition.Name;
+                Condition = viewModel.Transition.Condition;
+                Actions = viewModel.Actions.Items.Where(i => viewModel.Outputs.Select(o => o.Id).Contains(i.Id)).Select(i => i.Id).ToList();
+            }
         }
 
         private bool CanDelete()
@@ -109,6 +146,20 @@ namespace EFSM.Designer.ViewModel
                 }
             }
         }
+
+        public void DeleteInput(StateMachineInputViewModel input)
+        {
+            if (Condition != null && Condition.SourceInputId.HasValue && Condition.SourceInputId.Value == input.Id)
+            {
+                Condition = null;
+            }
+
+            if (Condition != null && Condition.Conditions != null)
+            {
+                Condition.Conditions.DeleteInputFromConditions(input);
+            }
+        }
+
 
         public StateViewModel Target
         {
@@ -250,10 +301,7 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
-        public TransitionToolTipViewModel ToolTip
-        {
-            get { return this.CreateToolTip(); }
-        }
+        public TransitionToolTipViewModel ToolTip => this.CreateToolTip();
 
         public double PullLength
         {

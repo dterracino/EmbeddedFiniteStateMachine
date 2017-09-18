@@ -7,6 +7,7 @@ using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using System;
+using System.Windows;
 using System.Windows.Input;
 
 namespace EFSM.Designer.ViewModel
@@ -19,6 +20,7 @@ namespace EFSM.Designer.ViewModel
         private IViewService _viewService;
         private StateMachine _stateMachine;
         public IIsDirtyService DirtyService { get; private set; } = new IsDirtyService();
+        private IIsDirtyService _parentDirtyService;
 
         public ICommand DeleteCommand { get; private set; }
         public ICommand OkCommand { get; private set; }
@@ -27,6 +29,12 @@ namespace EFSM.Designer.ViewModel
         public ICommand SimulationCommand { get; private set; }
 
         private StateMachineViewModel _stateMachineViewModel = null;
+
+        private OrderedListDesigner<StateMachineInputViewModel> _inputs;
+        public OrderedListDesigner<StateMachineInputViewModel> Inputs => _inputs;
+
+        private OrderedListDesigner<StateMachineOutputActionViewModel> _outputs;
+        public OrderedListDesigner<StateMachineOutputActionViewModel> Outputs => _outputs;
 
         public event EventHandler<CloseEventArgs> Close;
 
@@ -43,10 +51,12 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
-        public StateMachineDialogWindowViewModel(StateMachine stateMachine, IViewService viewService)
+        public StateMachineDialogWindowViewModel(StateMachine stateMachine, IViewService viewService, IIsDirtyService parentDirtyService)
         {
-            _viewService = viewService;
-            _stateMachine = stateMachine;
+            _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
+            _parentDirtyService = parentDirtyService ?? throw new ArgumentNullException(nameof(parentDirtyService));
+            _stateMachine = stateMachine ?? throw new ArgumentNullException(nameof(stateMachine));
+
             InitiateStateMachineViewModel();
 
 
@@ -83,15 +93,68 @@ namespace EFSM.Designer.ViewModel
                 new TypedParameter(typeof(IUndoProvider), this),
                 new TypedParameter(typeof(IIsDirtyService), DirtyService)
                );
+            _inputs = new OrderedListDesigner<StateMachineInputViewModel>(CreateInput, StateMachineViewModel.Inputs, addedAction: ConnectorAdded, deletedAction: InputDeleted);
+            _inputs.ListChanged += ChildListChanged;
+
+            _outputs = new OrderedListDesigner<StateMachineOutputActionViewModel>(CreateOutput, StateMachineViewModel.Outputs, addedAction: OutputAdded, deletedAction: OutputDeleted);
+            _outputs.ListChanged += ChildListChanged;
         }
 
-        public StateMachine GetModel()
+        public StateMachine GetModel() => StateMachineViewModel.GetModel();
+
+        private StateMachineInputViewModel CreateInput()
         {
-            return StateMachineViewModel.GetModel();
+            DirtyService.MarkDirty();
+            return new StateMachineInputViewModel(new StateMachineInput { Id = Guid.NewGuid(), Name = "Input" }, StateMachineViewModel);
         }
+
+        private StateMachineOutputActionViewModel CreateOutput()
+        {
+            DirtyService.MarkDirty();
+            return new StateMachineOutputActionViewModel(new StateMachineOutputAction { Id = Guid.NewGuid(), Name = "Output" }, StateMachineViewModel);
+        }
+
+        private void ChildListChanged(object sender, EventArgs e)
+        {
+            DirtyService.MarkDirty();
+        }
+
+        private void InputDeleted(StateMachineInputViewModel input)
+        {
+            foreach (var item in StateMachineViewModel.Transitions)
+            {
+                item.DeleteInput(input);
+            }
+        }
+
+        private void OutputDeleted(StateMachineOutputActionViewModel output)
+        {
+            // Delete from transitions
+            // Delete from states - ENTRY and EXIT actions
+
+            //foreach (var item in StateMachineViewModel.Transitions)
+            //{
+            //    item.DeleteInput(output);
+            //}
+        }
+
+        private void ConnectorAdded(StateMachineInputViewModel connector)
+        {
+            StateMachineViewModel.Inputs.Add(connector);
+            DirtyService.MarkDirty();
+        }
+
+        private void OutputAdded(StateMachineOutputActionViewModel output)
+        {
+            StateMachineViewModel.Outputs.Add(output);
+            DirtyService.MarkDirty();
+        }
+
 
         private void OkButtonClick()
         {
+            DirtyService.MarkClean();
+            _parentDirtyService.MarkDirty();
             Close?.Invoke(this, new CloseEventArgs(true));
         }
 
@@ -99,10 +162,7 @@ namespace EFSM.Designer.ViewModel
         {
         }
 
-        private StateMachine SaveMomento()
-        {
-            return GetModel();
-        }
+        private StateMachine SaveMomento() => GetModel();
 
         private void Redo()
         {
@@ -121,18 +181,20 @@ namespace EFSM.Designer.ViewModel
             _undoService.Do(SaveMomento());
         }
 
-        public bool CanUndo()
-        {
-            return _undoService.CanUndo();
-        }
+        public bool CanUndo() => _undoService.CanUndo();
 
-        public bool CanRedo()
-        {
-            return _undoService.CanRedo();
-        }
+        public bool CanRedo() => _undoService.CanRedo();
 
         public bool CanClose()
         {
+            if (DirtyService.IsDirty)
+            {
+                if (MessageBox.Show("Realy close?", "State Machine has changed", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                {
+                    return false;
+                }
+            }
+
             return true;
         }
 

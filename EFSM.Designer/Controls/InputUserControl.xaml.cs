@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace EFSM.Designer.Controls
@@ -33,5 +34,7 @@ namespace EFSM.Designer.Controls
             get { return (bool)GetValue(IsOnProperty); }
             set { SetValue(IsOnProperty, value); }
         }
+
+        public Guid GroupNameGuid { get; } = Guid.NewGuid();
     }
 }

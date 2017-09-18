@@ -33,17 +33,13 @@ namespace EFSM.Designer.ViewModel
         {
             StateMachineDialogWindowViewModel viewModel = ApplicationContainer.Container
                 .Resolve<StateMachineDialogWindowViewModel>(
-                new TypedParameter(typeof(StateMachine), GetModel()));
+                    new TypedParameter(typeof(StateMachine), GetModel()),
+                    new TypedParameter(typeof(IIsDirtyService), dirty)
+                );
 
             if (_viewService.ShowDialog(viewModel) == true)
             {
                 _model = viewModel.GetModel();
-
-                if (viewModel.DirtyService.IsDirty)
-                {
-                    dirty.MarkDirty();
-                }
-
                 return true;
             }
 

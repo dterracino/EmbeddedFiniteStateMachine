@@ -1,4 +1,5 @@
-﻿using Cas.Common.WPF;
+﻿using Autofac;
+using Cas.Common.WPF;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
 using EFSM.Designer.Extensions;
@@ -7,6 +8,7 @@ using EFSM.Designer.Metadata;
 using EFSM.Designer.Model;
 using EFSM.Domain;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -15,7 +17,7 @@ using System.Windows.Input;
 
 namespace EFSM.Designer.ViewModel
 {
-    public class StateMachineViewModel : DesignerViewModelBase
+    public class StateMachineViewModel : DesignerViewModelBase, ITransitionCreator
     {
 
         private StateViewModel _sourceForNewTransition;
@@ -28,7 +30,14 @@ namespace EFSM.Designer.ViewModel
         public ObservableCollection<StateMachineInputViewModel> Inputs
         {
             get { return _inputs; }
-            set { _inputs = value; RaisePropertyChanged(); }
+            set { _inputs = value; RaisePropertyChanged(); SaveUndoState(); }
+        }
+
+        private ObservableCollection<StateMachineOutputActionViewModel> _outputs = new ObservableCollection<StateMachineOutputActionViewModel>();
+        public ObservableCollection<StateMachineOutputActionViewModel> Outputs
+        {
+            get { return _outputs; }
+            set { _outputs = value; RaisePropertyChanged(); SaveUndoState(); }
         }
 
         private ObservableCollection<StateViewModel> _states = new ObservableCollection<StateViewModel>();
@@ -46,21 +55,16 @@ namespace EFSM.Designer.ViewModel
             _isReadOnly = isReadOnly;
 
             InitiateModel();
-
-
-
         }
 
-        public StateMachineInputViewModel GetInputById(Guid id)
-        {
-            return Inputs.FirstOrDefault(i => i.Id == id);
-        }
+        public StateMachineInputViewModel GetInputById(Guid id) => Inputs.FirstOrDefault(i => i.Id == id);
 
         private void InitiateModel()
         {
             AddStateViewModels();
             AddTransitionViewModel();
-            AddInputViewModel();
+            InitializeInputViewModel();
+            InitializeOutputViewModel();
         }
 
         public void AddNewState(StateFactory factory, Point location)
@@ -114,10 +118,7 @@ namespace EFSM.Designer.ViewModel
             return point;
         }
 
-        private bool IsStatePositionInUse(Point point)
-        {
-            return States.Any(s => Math.Abs(point.X - s.Location.X) < 10 && Math.Abs(point.Y - s.Location.Y) < 10);
-        }
+        private bool IsStatePositionInUse(Point point) => States.Any(s => Math.Abs(point.X - s.Location.X) < 10 && Math.Abs(point.Y - s.Location.Y) < 10);
 
         public override void OnDrop(DragEventArgs e)
         {
@@ -161,13 +162,23 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
-        private void AddInputViewModel()
+        private void InitializeInputViewModel()
         {
             Inputs.Clear();
 
             if (_model.Inputs != null)
             {
-                Inputs.AddRange(_model.Inputs.Select(i => new StateMachineInputViewModel(i)));
+                Inputs.AddRange(_model.Inputs.Select(i => new StateMachineInputViewModel(i, this)));
+            }
+        }
+
+        private void InitializeOutputViewModel()
+        {
+            Outputs.Clear();
+
+            if (_model.Actions != null)
+            {
+                Outputs.AddRange(_model.Actions.Select(i => new StateMachineOutputActionViewModel(i, this)));
             }
         }
 
@@ -272,8 +283,8 @@ namespace EFSM.Designer.ViewModel
             if (source == null) throw new ArgumentNullException(nameof(source));
 
             IsCreatingTransition = true;
-            //NewTransitionStart = source.Location;
-            //NewTransitionEnd = source.Location;
+            NewTransitionStart = source.Location;
+            NewTransitionEnd = source.Location;
             _sourceForNewTransition = source;
         }
 
@@ -310,8 +321,18 @@ namespace EFSM.Designer.ViewModel
         public StateMachine GetModel()
         {
             _model.States = States.Select(s => s.GetModel()).ToArray();
-            _model.Transitions = Transitions.Select(t => t.GetModel()).ToArray();
+
+            //_model.Transitions = Transitions.Select(t => t.GetModel()).ToArray();
+            var transitions = new List<StateMachineTransition>();
+
+            foreach (var item in Transitions)
+            {
+                transitions.Add(item.GetModel());
+            }
+            _model.Transitions = transitions.ToArray();
+
             _model.Inputs = Inputs.Select(i => i.GetModel()).ToArray();
+            _model.Actions = Outputs.Select(o => o.GetModel()).ToArray();
             return _model.Clone();
         }
 
@@ -335,17 +356,28 @@ namespace EFSM.Designer.ViewModel
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (target == null) throw new ArgumentNullException(nameof(target));
 
-            StateMachineTransition transition = new StateMachineTransition { Name = transitionName, SourceStateId = source.Id, TargetStateId = target.Id, Condition = condition };
-
-            var transitionViewModel = new TransitionViewModel(this, transition)
+            StateMachineTransition transition = new StateMachineTransition
             {
-                Source = source,
-                Target = target,
-
+                Name = transitionName,
+                SourceStateId = source.Id,
+                TargetStateId = target.Id,
+                Condition = condition ?? new StateMachineCondition()
             };
 
-            Transitions.Add(transitionViewModel);
+            //var transitionViewModel = new TransitionViewModel(this, transition)
+            //{
+            //    Source = source,
+            //    Target = target
+            //};
 
+            var transitionViewModel = ApplicationContainer.Container.Resolve<TransitionViewModel>(
+                    new TypedParameter(typeof(StateMachineViewModel), this),
+                    new TypedParameter(typeof(StateMachineTransition), transition)
+                );
+            transitionViewModel.Source = source;
+            transitionViewModel.Target = target;
+
+            Transitions.Add(transitionViewModel);
             return transitionViewModel;
         }
 

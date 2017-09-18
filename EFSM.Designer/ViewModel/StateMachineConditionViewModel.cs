@@ -12,13 +12,26 @@ namespace EFSM.Designer.ViewModel
 
         public StateMachineConditionViewModel(StateMachineCondition model)
         {
-            _model = model;
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+            SetConditions(model);
         }
 
-        public StateMachineCondition GetModel()
+        private void SetConditions(StateMachineCondition model)
         {
-            return _model.Clone();
+            if (model.Conditions == null)
+            {
+                Conditions = new List<StateMachineConditionViewModel>();
+            }
+            else
+            {
+                foreach (var item in model.Conditions)
+                {
+                    Conditions.Add(new StateMachineConditionViewModel(item));
+                }
+            }
         }
+
+        public StateMachineCondition GetModel() => _model.Clone();
 
         public Guid? SourceInputId
         {
@@ -32,10 +45,11 @@ namespace EFSM.Designer.ViewModel
             set { _model.Value = value; RaisePropertyChanged(); }
         }
 
-        public List<StateMachineCondition> Conditions
+        public List<StateMachineConditionViewModel> _conditions = new List<StateMachineConditionViewModel>();
+        public List<StateMachineConditionViewModel> Conditions
         {
-            get { return _model.Conditions; }
-            set { _model.Conditions = value; RaisePropertyChanged(); }
+            get { return _conditions; }
+            set { _conditions = value; RaisePropertyChanged(); }
         }
 
         public CompoundConditionType? CompoundConditionType { get; set; }

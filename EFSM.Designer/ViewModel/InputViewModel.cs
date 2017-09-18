@@ -3,11 +3,11 @@ using GalaSoft.MvvmLight;
 
 namespace EFSM.Designer.ViewModel
 {
-    public class InputsViewModel : ViewModelBase
+    public class InputViewModel : ViewModelBase
     {
         private StateMachineInput _model;
 
-        public InputsViewModel(StateMachineInput model)
+        public InputViewModel(StateMachineInput model)
         {
             _model = model;
         }
@@ -17,11 +17,11 @@ namespace EFSM.Designer.ViewModel
             get { return _model.Name; }
         }
 
-        private bool _isOn = false;
-        public bool IsOn
+        private bool _value = false;
+        public bool Value
         {
-            get { return _isOn; }
-            set { _isOn = value; RaisePropertyChanged(); }
+            get { return _value; }
+            set { _value = value; RaisePropertyChanged(); }
         }
     }
 }

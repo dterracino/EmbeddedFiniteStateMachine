@@ -8,8 +8,7 @@
         xmlns:viewModel="clr-namespace:EFSM.Designer.ViewModel"
         xmlns:controls="clr-namespace:Cas.Common.WPF.Controls;assembly=Cas.Common.WPF"
         xmlns:behaviors="clr-namespace:Cas.Common.WPF.Behaviors;assembly=Cas.Common.WPF"
-        mc:Ignorable="d"
-        
+        mc:Ignorable="d"        
         Title="{Binding Path=Title}" Height="400" Width="600">
     <i:Interaction.Behaviors>
         <behaviors:CloseableBehavior/>
@@ -38,10 +37,12 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <ToolBar Grid.Row="0">
-                        <Button Content="Delete" Command="{Binding DeleteCommand}"/>
+                        <Button Command="{Binding Path=DeleteCommand}">
+                            <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/Delete.gif" ></controls:AutoGreyableImage>
+                        </Button>
                         <Separator/>
-                        <RadioButton Content="Pointer"/>
-                        <RadioButton Content="Connections"/>
+                        <RadioButton IsChecked="{Binding Path=StateMachineViewModel.IsPointerMode}" GroupName="Mode" Content="Pointer"/>
+                        <RadioButton IsChecked="{Binding Path=StateMachineViewModel.IsConnectorMode}"  GroupName="Mode" Content="Connections"/>
                         <Separator/>
                         <Button ToolTip="Undo (Ctrl+U)" Command="{Binding Path=UndoCommand}">
                             <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/Arrow_UndoRevertRestore_16xLG_color.png" Width="16"/>
@@ -85,12 +86,12 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Inputs">
-
+            <TabItem Header="Inputs" DataContext="{Binding Path=Inputs}">
+                <local:ConnectorsView/>
             </TabItem>
 
-            <TabItem Header="Output Actions">
-
+            <TabItem Header="Output Actions" DataContext="{Binding Path=Outputs}">
+                <local:ConnectorsView/>
             </TabItem>
         </TabControl>
 

@@ -121,6 +121,7 @@
     </ApplicationDefinition>
     <Compile Include="ApplicationContainer.cs" />
     <Compile Include="Behaviors\DesignerDragBehavior.cs" />
+    <Compile Include="Behaviors\DropDownButtonBehavior.cs" />
     <Compile Include="Behaviors\SelectableBehavior.cs" />
     <Compile Include="Behaviors\SimpleMoveableBehavior.cs" />
     <Compile Include="Behaviors\TransitionCreatorBehavior.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="Common\GraphicsUtil.cs" />
     <Compile Include="Common\IntersectionPoint.cs" />
     <Compile Include="Common\IsDirtyService.cs" />
+    <Compile Include="Common\OrderedListDesigner.cs" />
     <Compile Include="Common\SelectionService.cs" />
     <Compile Include="Common\ToolTipFactory.cs" />
     <Compile Include="Common\TransitionPropertyGridSource.cs" />
@@ -137,7 +139,9 @@
       <DependentUpon>InputUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\CenterConverter.cs" />
+    <Compile Include="Converters\SingletonConverter.cs" />
     <Compile Include="Engine\FilePersistor.cs" />
+    <Compile Include="Extensions\ConditionViewModelExtensions.cs" />
     <Compile Include="Extensions\INamedEntityExtensions.cs" />
     <Compile Include="Extensions\ISelectionServiceExtensions.cs" />
     <Compile Include="Extensions\StateExtensions.cs" />
@@ -165,24 +169,39 @@
     <Compile Include="Model\StatePropertyGridSource.cs" />
     <Compile Include="Model\StateTools.cs" />
     <Compile Include="ViewModel\DesignerViewModelBase.cs" />
-    <Compile Include="ViewModel\SimulationStateMachineViewModel.cs" />
-    <Compile Include="ViewModel\SimulationViewModel.cs" />
-    <Compile Include="ViewModel\InputsViewModel.cs" />
+    <Compile Include="ViewModel\Simulation\SimulationStateMachineViewModel.cs" />
+    <Compile Include="ViewModel\Simulation\SimulationViewModel.cs" />
+    <Compile Include="ViewModel\InputViewModel.cs" />
     <Compile Include="ViewModel\StateMachineConditionViewModel.cs" />
     <Compile Include="ViewModel\StateMachineInputViewModel.cs" />
+    <Compile Include="ViewModel\StateMachineOutputActionViewModel.cs" />
     <Compile Include="ViewModel\StateMachineReferenceViewModel.cs" />
-    <Compile Include="ViewModel\StateMachineSimulationViewModel.cs" />
     <Compile Include="ViewModel\StateMachineViewModel.cs" />
     <Compile Include="ViewModel\StateMachineDialogWindowViewModel.cs" />
     <Compile Include="ViewModel\ProjectViewModel.cs" />
-    <Compile Include="ViewModel\StateMachineViewModelBase.cs" />
     <Compile Include="ViewModel\StateToolTipViewModel.cs" />
     <Compile Include="ViewModel\StateViewModel.cs" />
     <Compile Include="ViewModel\ToolCategoryViewModel.cs" />
     <Compile Include="ViewModel\ToolsViewModel.cs" />
     <Compile Include="ViewModel\ToolViewModel.cs" />
+    <Compile Include="ViewModel\TransitionEditor\ActionsViewModel.cs" />
+    <Compile Include="ViewModel\TransitionEditor\CompoundConditionViewModel.cs" />
+    <Compile Include="ViewModel\TransitionEditor\ConditionsViewModel.cs" />
+    <Compile Include="ViewModel\TransitionEditor\ConditionViewModelBase.cs" />
+    <Compile Include="ViewModel\TransitionEditor\CriteriaTransitionViewModel.cs" />
+    <Compile Include="ViewModel\TransitionEditor\SimpleConditionViewModel.cs" />
+    <Compile Include="ViewModel\TransitionEditor\TransitionEditorViewModel.cs" />
     <Compile Include="ViewModel\TransitionToolTipViewModel.cs" />
     <Compile Include="ViewModel\TransitionViewModel.cs" />
+    <Compile Include="View\ActionsView.xaml.cs">
+      <DependentUpon>ActionsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ConnectorsView.xaml.cs">
+      <DependentUpon>ConnectorsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\CriteriaTransitionView.xaml.cs">
+      <DependentUpon>CriteriaTransitionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\SimulationWindow.xaml.cs">
       <DependentUpon>SimulationWindow.xaml</DependentUpon>
     </Compile>
@@ -201,10 +220,25 @@
     <Compile Include="View\ToolsView.xaml.cs">
       <DependentUpon>ToolsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\TransitionEditorDialog.xaml.cs">
+      <DependentUpon>TransitionEditorDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\TransitionView.xaml.cs">
       <DependentUpon>TransitionView.xaml</DependentUpon>
     </Compile>
     <Page Include="Controls\InputUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ActionsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ConnectorsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\CriteriaTransitionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -243,6 +277,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ToolsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\TransitionEditorDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -298,6 +336,25 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\StatusAnnotations_Play_32xLG_color.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\NewCompoundCondition.png" />
+    <Resource Include="Images\NewSimpleCondition.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\CompoundCondition.png" />
+    <Resource Include="Images\SimpleCondition.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Enums\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\InsertAbove.png" />
+    <Resource Include="Images\InsertBelow.png" />
+    <Resource Include="Images\MoveDown.png" />
+    <Resource Include="Images\MoveToBottom.png" />
+    <Resource Include="Images\MoveToTop.png" />
+    <Resource Include="Images\MoveUp.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

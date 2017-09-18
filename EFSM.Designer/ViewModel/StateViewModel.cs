@@ -148,18 +148,19 @@ namespace EFSM.Designer.ViewModel
 
         public void ContinueMove(Vector vector)
         {
-            //throw new NotImplementedException();
+            SoftMove(_startLocation + vector);
         }
 
         public void CancelMove()
         {
-            //
+            SoftMove(_startLocation);
         }
 
         public void CompleteMove(Vector vector)
         {
             _location = _startLocation + vector;
             RaisePropertyChanged();
+            Parent.SaveUndoState();
         }
 
         internal void RemoveTransition(TransitionViewModel transition)
