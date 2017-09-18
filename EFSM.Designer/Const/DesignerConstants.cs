@@ -2,7 +2,7 @@
 {
     public class DesignerConstants
     {
-        public const string FileFilter = "System Designer Files (*.csdsn)|*.csdsn|All Files (*.*)|*.*";
+        public const string FileFilter = "State Machine Files (*.efsm)|*.efsm|All Files (*.*)|*.*";
 
         /// <summary>
         /// The default design width of a system.

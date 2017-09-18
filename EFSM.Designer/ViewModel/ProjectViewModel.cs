@@ -1,49 +1,95 @@
 ﻿using Autofac;
 using Cas.Common.WPF;
-using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
 using EFSM.Designer.Interfaces;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
+using System.Windows.Input;
+using Cas.Common.WPF.Interfaces;
+using EFSM.Designer.Extensions;
+using GalaSoft.MvvmLight.CommandWpf;
 
 namespace EFSM.Designer.ViewModel
 {
     public class ProjectViewModel : ViewModelBase
     {
-        private StateMachineProject _project;
-        private string _filename = string.Empty;
-        private IViewService _viewService;
+        private readonly StateMachineProject _project;
         private readonly IIsDirtyService _dirtyService = new IsDirtyService();
 
-        private ObservableCollection<StateMachineReferenceViewModel> _stateMachineViewModels = new ObservableCollection<StateMachineReferenceViewModel>();
-        public ObservableCollection<StateMachineReferenceViewModel> StateMachineViewModels
-        {
-            get { return _stateMachineViewModels; }
-            set { _stateMachineViewModels = value; RaisePropertyChanged(); }
-        }
+        private readonly ObservableCollection<StateMachineReferenceViewModel> _stateMachines = new ObservableCollection<StateMachineReferenceViewModel>();
+        private StateMachineReferenceViewModel _selectedStateMachine;
 
-        public ProjectViewModel(StateMachineProject project, IViewService viewService)
+        public ProjectViewModel(StateMachineProject project)
         {
             _project = project;
-            _viewService = viewService;
-            InitializeStateMachines();
-        }
 
-        public string Filename
-        {
-            get { return _filename; }
-            set { _filename = value; RaisePropertyChanged(); }
-        }
-
-        private void InitializeStateMachines()
-        {
             if (_project.StateMachines != null)
             {
-                StateMachineViewModels.AddRange(_project.StateMachines
+                StateMachines.AddRange(_project.StateMachines
                     .Select(sm => ApplicationContainer.Container.Resolve<StateMachineReferenceViewModel>(new TypedParameter(typeof(StateMachine), sm))));
             }
+
+            NewStateMachineCommand = new RelayCommand(NewStateMachine);
+            DeleteStateMachineCommand = new RelayCommand(DeleteStateMachine, CanDeleteStateMachine);
+            GenerateCommand = new RelayCommand(Generate, CanGenerate);
+        }
+
+        public ICommand NewStateMachineCommand { get; }
+        public ICommand DeleteStateMachineCommand { get; }
+        public ICommand GenerateCommand { get; }
+
+        private void Generate()
+        {
+            MessageBox.Show("Not Implemented");
+        }
+
+        private bool CanGenerate()
+        {
+            return StateMachines.Any();
+        }
+
+        private void NewStateMachine()
+        {
+            var textEditService = new TextEditService();
+
+            string initialName = StateMachines
+                .Select(sm => sm.Name)
+                .CreateUniqueName("State Machine {0}");
+
+            textEditService.EditText(initialName, "State Machine Name", "Create State Machine", name =>
+            {
+                var model = new StateMachine()
+                {
+                    Name = name,
+                    Actions = new StateMachineOutputAction[] { },
+                    Inputs = new StateMachineInput[] { }
+                };
+
+                var viewService = ApplicationContainer.Container.Resolve<IViewService>();
+
+                var viewModel = new StateMachineReferenceViewModel(model, viewService, DirtyService);
+
+                StateMachines.Add(viewModel);
+            });
+        }
+
+        private void DeleteStateMachine()
+        {
+            _stateMachines.Remove(SelectedStateMachine);
+            _dirtyService.MarkDirty();
+        }
+
+        private bool CanDeleteStateMachine()
+        {
+            return SelectedStateMachine != null;
+        }
+
+        public ObservableCollection<StateMachineReferenceViewModel> StateMachines
+        {
+            get { return _stateMachines; }
         }
 
         public IIsDirtyService DirtyService
@@ -51,15 +97,19 @@ namespace EFSM.Designer.ViewModel
             get { return _dirtyService; }
         }
 
-        public void Save(IPersistor persistor, string fileName)
+        public StateMachineReferenceViewModel SelectedStateMachine
         {
-            Filename = fileName;
-            persistor.SaveProject(GetModel(), fileName);
+            get { return _selectedStateMachine; }
+            set
+            {
+                _selectedStateMachine = value; 
+                RaisePropertyChanged();
+            }
         }
 
         public StateMachineProject GetModel()
         {
-            _project.StateMachines = StateMachineViewModels.Select(vm => vm.GetModel()).ToArray();
+            _project.StateMachines = StateMachines.Select(vm => vm.GetModel()).ToArray();
             return _project;
         }
     }

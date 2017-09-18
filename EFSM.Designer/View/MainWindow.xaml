@@ -8,13 +8,18 @@
         mc:Ignorable="d"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:command="http://www.galasoft.ch/mvvmlight"
+        xmlns:controls="clr-namespace:Cas.Common.WPF.Controls;assembly=Cas.Common.WPF"
+        xmlns:behaviors="clr-namespace:Cas.Common.WPF.Behaviors;assembly=Cas.Common.WPF"
         DataContext="{x:Static viewModel:ViewModelLocator.Main}"
-        Title="{Binding Path=Title}" Height="350" Width="525" >
-    <i:Interaction.Triggers>
-        <i:EventTrigger EventName="Closing">
-            <command:EventToCommand Command="{Binding ClosingCommand}" PassEventArgsToCommand="True"/>
-        </i:EventTrigger>        
-    </i:Interaction.Triggers>
+        Title="{Binding Path=Title}" Height="600" Width="700" >
+    <i:Interaction.Behaviors>
+        <behaviors:CloseableBehavior/>
+    </i:Interaction.Behaviors>
+    
+    <Window.InputBindings>
+        <KeyBinding Key="S" Modifiers="Control" Command="{Binding Path=SaveCommand}"/>
+        <KeyBinding Key="Delete" Command="{Binding Path=Project.DeleteStateMachineCommand}"></KeyBinding>
+    </Window.InputBindings>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -25,13 +30,26 @@
         
         <Menu>
             <MenuItem Header="_File">
-                <MenuItem Header="New"/>
-                <MenuItem Header="Open..." Command="{Binding OpenCommand}"/>
+                <MenuItem Header="New" Command="{Binding Path=NewCommand}"/>
+                <MenuItem Header="Open..." Command="{Binding OpenCommand}">
+                    <MenuItem.Icon>
+                        <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/OpenFolder_16x.png"  />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator/>
-                <MenuItem Header="_Save" InputGestureText="Ctrl+S" Command="{Binding SaveProjectCommand}"/>
-                <MenuItem Header="Save _As" Command="{Binding SaveAsStateMachineCommand}"/>
+
+                <MenuItem Header="_Save" InputGestureText="Ctrl+S" Command="{Binding Path=SaveCommand}">
+                    <MenuItem.Icon>
+                        <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/Save_16x.png" ></controls:AutoGreyableImage>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Save _As..." Command="{Binding SaveAsCommand}"/>
                 <Separator/>
-                <MenuItem Header="E_xit" x:Name="ExitMenuItem" Click="ExitMenuItem_OnClick"/>
+                <MenuItem Header="E_xit" x:Name="ExitMenuItem" Click="ExitMenuItem_OnClick">
+                    <MenuItem.Icon>
+                        <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/Exit_16x.png"  />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
            
             <MenuItem Header="_Help">
@@ -40,26 +58,32 @@
         </Menu>
         
         <ToolBar Grid.Row="1">
-            <Button ToolTip="Insert a new State Machine..." Command="{Binding AddStateMachineCommand}">Insert</Button>
-            <Button ToolTip="Delete the currently selected State Machine" Command="{Binding DeleteStateMachineCommand}">Delete</Button>
+            <Button ToolTip="Insert a new State Machine..." Command="{Binding Path=Project.NewStateMachineCommand}">Insert</Button>
+            <Button ToolTip="Delete the currently selected State Machine" Command="{Binding Project.DeleteStateMachineCommand}">Delete</Button>
             <Separator/>
             <Button ToolTip="Generate C code...">Generate</Button>
         </ToolBar>
 
-        <ListBox Grid.Row="2" ToolTip="State Machines" ItemsSource="{Binding Path=StateMachineProjectViewModel.StateMachineViewModels}" Margin="0,0,354,0" 
-                 SelectedItem="{Binding SelectedStateMachine, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+
+        <ListBox Grid.Row="2" ToolTip="State Machines" ItemsSource="{Binding Path=Project.StateMachines}" 
+                 SelectedItem="{Binding Project.SelectedStateMachine, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Path=Name}">
+                    <StackPanel Orientation="Horizontal">
 
-                        <TextBlock.InputBindings>
-                            <MouseBinding MouseAction="LeftDoubleClick" 
-                                          Command="{Binding DataContext.OpenDialogCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-                                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=DataContext}"
-                                          />
-                        </TextBlock.InputBindings>
-                        
-                    </TextBlock>
+                        <Image Source="/EFSM.Designer;component/Images/StateMachine_16x.png" Width="16" Height="16" VerticalAlignment="Center" Margin="1"/>
+
+                        <TextBlock Text="{Binding Path=Name}" VerticalAlignment="Center" Margin="1">
+
+                            <TextBlock.InputBindings>
+                                <MouseBinding MouseAction="LeftDoubleClick" 
+                                              Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=DataContext}"
+                                />
+                            </TextBlock.InputBindings>
+
+                        </TextBlock>
+                    </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

@@ -8,6 +8,7 @@ using EFSM.Designer.Metadata;
 using EFSM.Designer.Model;
 using EFSM.Domain;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -18,34 +19,30 @@ namespace EFSM.Designer.ViewModel
 {
     public class StateMachineViewModel : DesignerViewModelBase, ITransitionCreator
     {
+        private const double DefaultWidth = 800;
+        private const double DefaultHeight = 800;
+
+        private double _width = DefaultWidth;
+        private double _height = DefaultHeight;
+
+        private Point _newTransitionEnd;
+
+        private readonly ObservableCollection<TransitionViewModel> _transitions = new ObservableCollection<TransitionViewModel>();
+        private readonly bool _isReadOnly;
+        private bool _isCreatingTransition;
+        private bool _isConnectorMode;
 
         private StateViewModel _sourceForNewTransition;
-        private StateMachine _model;
-        private IViewService _viewService;
+        private readonly StateMachine _model;
 
-        private IUndoProvider _undoProvider;
-        private IIsDirtyService _dirtyService;
+        private readonly IUndoProvider _undoProvider;
+        private readonly IIsDirtyService _dirtyService;
+        private bool _isPointerMode = true;
+        public override bool IsReadOnly => _isReadOnly;
+        private Point _newTransitionStart;
 
         private ObservableCollection<StateMachineInputViewModel> _inputs = new ObservableCollection<StateMachineInputViewModel>();
-        public ObservableCollection<StateMachineInputViewModel> Inputs
-        {
-            get { return _inputs; }
-            set { _inputs = value; RaisePropertyChanged(); SaveUndoState(); }
-        }
-
         private ObservableCollection<StateMachineOutputActionViewModel> _outputs = new ObservableCollection<StateMachineOutputActionViewModel>();
-        public ObservableCollection<StateMachineOutputActionViewModel> Outputs
-        {
-            get { return _outputs; }
-            set { _outputs = value; RaisePropertyChanged(); SaveUndoState(); }
-        }
-
-        private ObservableCollection<StateViewModel> _states = new ObservableCollection<StateViewModel>();
-        public ObservableCollection<StateViewModel> States
-        {
-            get { return _states; }
-            set { _states = value; RaisePropertyChanged(); }
-        }
 
         public StateMachineViewModel(StateMachine model, IViewService viewService, IUndoProvider undoProvider, IIsDirtyService dirtyService, bool isReadOnly = false)
         {
@@ -53,8 +50,38 @@ namespace EFSM.Designer.ViewModel
             _undoProvider = undoProvider;
             _dirtyService = dirtyService;
             _isReadOnly = isReadOnly;
-            _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
+
             InitiateModel();
+        }
+
+        public ObservableCollection<StateMachineInputViewModel> Inputs
+        {
+            get { return _inputs; }
+            set
+            {
+                _inputs = value;
+                RaisePropertyChanged();
+                SaveUndoState();
+            }
+        }
+
+        
+        public ObservableCollection<StateMachineOutputActionViewModel> Outputs
+        {
+            get { return _outputs; }
+            set
+            {
+                _outputs = value;
+                RaisePropertyChanged();
+                SaveUndoState();
+            }
+        }
+
+        private ObservableCollection<StateViewModel> _states = new ObservableCollection<StateViewModel>();
+        public ObservableCollection<StateViewModel> States
+        {
+            get { return _states; }
+            set { _states = value; RaisePropertyChanged(); }
         }
 
         public StateMachineInputViewModel GetInputById(Guid id) => Inputs.FirstOrDefault(i => i.Id == id);
@@ -97,7 +124,7 @@ namespace EFSM.Designer.ViewModel
             string name = stateType == StateType.Initial ? "Initial State" : States.CreateUniqueName("State {0}");
 
             //Create the new view model.
-            var state = new StateViewModel(new State { Name = name, Id = Guid.NewGuid() }, this, _viewService)
+            var state = new StateViewModel(new State { Name = name, Id = Guid.NewGuid() }, this)
             {
                 Location = location.Value,
                 StateType = stateType
@@ -189,7 +216,7 @@ namespace EFSM.Designer.ViewModel
 
             if (_model.States != null)
             {
-                States.AddRange(_model.States.Select(st => new StateViewModel(st, this, _viewService)));
+                States.AddRange(_model.States.Select(st => new StateViewModel(st, this)));
             }
         }
 
@@ -203,11 +230,7 @@ namespace EFSM.Designer.ViewModel
                 SaveUndoState();
             }
         }
-
-        private const double DefaultWidth = 800;
-        private const double DefaultHeight = 800;
-
-        private double _width = DefaultWidth;
+        
         public double Width
         {
             get { return _width; }
@@ -221,8 +244,7 @@ namespace EFSM.Designer.ViewModel
                 }
             }
         }
-
-        private double _height = DefaultHeight;
+        
         public double Height
         {
             get { return _height; }
@@ -236,39 +258,50 @@ namespace EFSM.Designer.ViewModel
                 }
             }
         }
-
-        private bool _isPointerMode = true;
+        
         public bool IsPointerMode
         {
             get { return _isPointerMode; }
-            set { _isPointerMode = value; RaisePropertyChanged(); }
+            set
+            {
+                _isPointerMode = value;
+                RaisePropertyChanged();
+            }
         }
-
-        private bool _isReadOnly = false;
-        public override bool IsReadOnly => _isReadOnly;
-
-        private Point _newTransitionStart;
+        
         public Point NewTransitionStart
         {
             get { return _newTransitionStart; }
-            private set { _newTransitionStart = value; RaisePropertyChanged(); }
+            private set
+            {
+                _newTransitionStart = value;
+                RaisePropertyChanged();
+            }
         }
 
-        private Point _newTransitionEnd;
+        
         public Point NewTransitionEnd
         {
             get { return _newTransitionEnd; }
-            private set { _newTransitionEnd = value; RaisePropertyChanged(); }
+            private set
+            {
+                _newTransitionEnd = value;
+                RaisePropertyChanged();
+            }
         }
 
-        private bool _isCreatingTransition;
+        
         public bool IsCreatingTransition
         {
             get { return _isCreatingTransition; }
-            private set { _isCreatingTransition = value; RaisePropertyChanged(); }
+            private set
+            {
+                _isCreatingTransition = value;
+                RaisePropertyChanged();
+            }
         }
 
-        private bool _isConnectorMode;
+        
         public bool IsConnectorMode
         {
             get { return _isConnectorMode; }
@@ -294,7 +327,7 @@ namespace EFSM.Designer.ViewModel
             NewTransitionEnd = point;
         }
 
-        private readonly ObservableCollection<TransitionViewModel> _transitions = new ObservableCollection<TransitionViewModel>();
+
         public ObservableCollection<TransitionViewModel> Transitions => _transitions;
 
         public void FinishCreatingTransition(Point point)
@@ -322,7 +355,16 @@ namespace EFSM.Designer.ViewModel
         public StateMachine GetModel()
         {
             _model.States = States.Select(s => s.GetModel()).ToArray();
-            _model.Transitions = Transitions.Select(t => t.GetModel()).ToArray();
+
+            //_model.Transitions = Transitions.Select(t => t.GetModel()).ToArray();
+            var transitions = new List<StateMachineTransition>();
+
+            foreach (var item in Transitions)
+            {
+                transitions.Add(item.GetModel());
+            }
+            _model.Transitions = transitions.ToArray();
+
             _model.Inputs = Inputs.Select(i => i.GetModel()).ToArray();
             _model.Actions = Outputs.Select(o => o.GetModel()).ToArray();
             return _model.Clone();
@@ -356,6 +398,12 @@ namespace EFSM.Designer.ViewModel
                 Condition = condition ?? new StateMachineCondition(),
                 TransitionActions = actionGuids
             };
+
+            //var transitionViewModel = new TransitionViewModel(this, transition)
+            //{
+            //    Source = source,
+            //    Target = target
+            //};
 
             var transitionViewModel = ApplicationContainer.Container.Resolve<TransitionViewModel>(
                     new TypedParameter(typeof(StateMachineViewModel), this),

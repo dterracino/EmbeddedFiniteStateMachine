@@ -24,24 +24,24 @@ EFSM_STATE efsm_s_0_1 = {
 	NULL
 };
 
-EFSM_STATES efsm_states_blalb = {
-	.statesLen = 2,
-	.states = 
-	{
-		{
-			.enterActions = {
-				.len = 0,
-				.actions = NULL
-			}
-		},
-		{
-			.enterActions = {
-				.len = 0,
-				.actions = NULL
-}
-		}
-	}
-};
+//EFSM_STATES efsm_states_blalb = {
+//	.statesLen = 2,
+//	.states = 
+//	{
+//		{
+//			.enterActions = {
+//				.len = 0,
+//				.actions = NULL
+//			}
+//		},
+//		{
+//			.enterActions = {
+//				.len = 0,
+//				.actions = NULL
+//}
+//		}
+//	}
+//};
 
 //EFSM_STATES efsm_sms_0 = {
 //	2,
