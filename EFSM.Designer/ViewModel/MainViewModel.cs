@@ -116,7 +116,7 @@ namespace EFSM.Designer.ViewModel
 
         private bool Save()
         {
-            if (!Project.DirtyService.IsDirty)
+            if (Project == null || !Project.DirtyService.IsDirty)
                 return true;
 
             if (string.IsNullOrWhiteSpace(Filename))

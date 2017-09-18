@@ -5,25 +5,19 @@ namespace EFSM.Designer.ViewModel
 {
     public static class ViewModelLocator
     {
-        public static StateMachineViewModel StateMachineDialogViewModel
-        {
-            get { return ApplicationContainer.Container.Resolve<StateMachineViewModel>(); }
-        }
+        //public static StateMachineViewModel StateMachineDialogViewModel
+        //{
+        //    get { return ApplicationContainer.Container.Resolve<StateMachineViewModel>(); }
+        //}
 
         public static MainViewModel Main
         {
-            get
-            {
-                return ApplicationContainer.Container.Resolve<MainViewModel>();
-            }
+            get { return ApplicationContainer.Container.Resolve<MainViewModel>(); }
         }
 
         public static ToolsViewModel<StateFactory> StateTools
         {
-            get
-            {
-                return new ToolsViewModel<StateFactory>(new StateTools().Tools);
-            }
+            get { return new ToolsViewModel<StateFactory>(new StateTools().Tools); }
         }
     }
 }

@@ -17,10 +17,10 @@ namespace EFSM.Designer.ViewModel
         public string Title => "State Machine Editor";
 
         private readonly IUndoService<StateMachine> _undoService;
-        private IViewService _viewService;
+        private readonly IViewService _viewService;
         private StateMachine _stateMachine;
-        public IIsDirtyService DirtyService { get; private set; } = new IsDirtyService();
-        private IIsDirtyService _parentDirtyService;
+        
+        private readonly IIsDirtyService _parentDirtyService;
 
         public ICommand DeleteCommand { get; private set; }
         public ICommand OkCommand { get; private set; }
@@ -50,6 +50,8 @@ namespace EFSM.Designer.ViewModel
                 }
             }
         }
+
+        public IIsDirtyService DirtyService { get; } = new IsDirtyService();
 
         public StateMachineDialogWindowViewModel(StateMachine stateMachine, IViewService viewService, IIsDirtyService parentDirtyService)
         {
