@@ -7,6 +7,7 @@ using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 
@@ -129,13 +130,22 @@ namespace EFSM.Designer.ViewModel
 
         private void OutputDeleted(StateMachineOutputActionViewModel output)
         {
-            // Delete from transitions
-            // Delete from states - ENTRY and EXIT actions
+            var actionForDelete = StateMachineViewModel.Outputs.FirstOrDefault(o => o.Id == output.Id);
 
-            //foreach (var item in StateMachineViewModel.Transitions)
-            //{
-            //    item.DeleteInput(output);
-            //}
+            if (actionForDelete != null)
+            {
+                StateMachineViewModel.Outputs.Remove(actionForDelete);
+            }
+
+            foreach (var item in StateMachineViewModel.Transitions)
+            {
+                item.DeleteOutputId(output.Id);
+            }
+
+            foreach (var item in StateMachineViewModel.States)
+            {
+                item.DeleteAction(output.Id);
+            }
         }
 
         private void ConnectorAdded(StateMachineInputViewModel connector)
@@ -189,7 +199,7 @@ namespace EFSM.Designer.ViewModel
         {
             if (DirtyService.IsDirty)
             {
-                if (MessageBox.Show("Realy close?", "State Machine has changed", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                if (MessageBox.Show("Really close?", "State Machine has changed", MessageBoxButton.YesNo) == MessageBoxResult.No)
                 {
                     return false;
                 }

@@ -8,7 +8,6 @@ using EFSM.Designer.Metadata;
 using EFSM.Designer.Model;
 using EFSM.Domain;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -22,6 +21,7 @@ namespace EFSM.Designer.ViewModel
 
         private StateViewModel _sourceForNewTransition;
         private StateMachine _model;
+        private IViewService _viewService;
 
         private IUndoProvider _undoProvider;
         private IIsDirtyService _dirtyService;
@@ -53,7 +53,7 @@ namespace EFSM.Designer.ViewModel
             _undoProvider = undoProvider;
             _dirtyService = dirtyService;
             _isReadOnly = isReadOnly;
-
+            _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
             InitiateModel();
         }
 
@@ -97,7 +97,7 @@ namespace EFSM.Designer.ViewModel
             string name = stateType == StateType.Initial ? "Initial State" : States.CreateUniqueName("State {0}");
 
             //Create the new view model.
-            var state = new StateViewModel(new State { Name = name, Id = Guid.NewGuid() }, this)
+            var state = new StateViewModel(new State { Name = name, Id = Guid.NewGuid() }, this, _viewService)
             {
                 Location = location.Value,
                 StateType = stateType
@@ -189,7 +189,7 @@ namespace EFSM.Designer.ViewModel
 
             if (_model.States != null)
             {
-                States.AddRange(_model.States.Select(st => new StateViewModel(st, this)));
+                States.AddRange(_model.States.Select(st => new StateViewModel(st, this, _viewService)));
             }
         }
 
@@ -322,16 +322,7 @@ namespace EFSM.Designer.ViewModel
         public StateMachine GetModel()
         {
             _model.States = States.Select(s => s.GetModel()).ToArray();
-
-            //_model.Transitions = Transitions.Select(t => t.GetModel()).ToArray();
-            var transitions = new List<StateMachineTransition>();
-
-            foreach (var item in Transitions)
-            {
-                transitions.Add(item.GetModel());
-            }
-            _model.Transitions = transitions.ToArray();
-
+            _model.Transitions = Transitions.Select(t => t.GetModel()).ToArray();
             _model.Inputs = Inputs.Select(i => i.GetModel()).ToArray();
             _model.Actions = Outputs.Select(o => o.GetModel()).ToArray();
             return _model.Clone();
@@ -365,12 +356,6 @@ namespace EFSM.Designer.ViewModel
                 Condition = condition ?? new StateMachineCondition(),
                 TransitionActions = actionGuids
             };
-
-            //var transitionViewModel = new TransitionViewModel(this, transition)
-            //{
-            //    Source = source,
-            //    Target = target
-            //};
 
             var transitionViewModel = ApplicationContainer.Container.Resolve<TransitionViewModel>(
                     new TypedParameter(typeof(StateMachineViewModel), this),

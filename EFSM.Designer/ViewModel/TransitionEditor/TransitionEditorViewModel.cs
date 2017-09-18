@@ -90,10 +90,6 @@ namespace EFSM.Designer.ViewModel
         {
             if (_dirtyService.IsDirty)
             {
-                //_transition.Name = Name;
-                //_transition.Actions = Actions.Items.Where(i => Outputs.Select(o => o.Id).Contains(i.Id)).Select(i => i.Id).ToList();
-                //_transition.Condition = new StateMachineConditionViewModel(CriteriaViewModel.RootCondition.ToMetadata());
-
                 Close?.Invoke(this, new CloseEventArgs(true));
             }
             else
@@ -103,10 +99,7 @@ namespace EFSM.Designer.ViewModel
 
         }
 
-        public bool CanClose()
-        {
-            return true;
-        }
+        public bool CanClose() => true;
 
         public void Closed()
         {

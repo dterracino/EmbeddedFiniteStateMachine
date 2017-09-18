@@ -172,6 +172,7 @@
     <Compile Include="ViewModel\Simulation\SimulationStateMachineViewModel.cs" />
     <Compile Include="ViewModel\Simulation\SimulationViewModel.cs" />
     <Compile Include="ViewModel\InputViewModel.cs" />
+    <Compile Include="ViewModel\StateEditor\StateEditorViewModel.cs" />
     <Compile Include="ViewModel\StateMachineConditionViewModel.cs" />
     <Compile Include="ViewModel\StateMachineInputViewModel.cs" />
     <Compile Include="ViewModel\StateMachineOutputActionViewModel.cs" />
@@ -184,7 +185,6 @@
     <Compile Include="ViewModel\ToolCategoryViewModel.cs" />
     <Compile Include="ViewModel\ToolsViewModel.cs" />
     <Compile Include="ViewModel\ToolViewModel.cs" />
-    <Compile Include="ViewModel\TransitionEditor\ActionsViewModel.cs" />
     <Compile Include="ViewModel\TransitionEditor\CompoundConditionViewModel.cs" />
     <Compile Include="ViewModel\TransitionEditor\ConditionsViewModel.cs" />
     <Compile Include="ViewModel\TransitionEditor\ConditionViewModelBase.cs" />
@@ -207,6 +207,9 @@
     </Compile>
     <Compile Include="View\PropertyGridView.xaml.cs">
       <DependentUpon>PropertyGridView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\StateEditorDialog.xaml.cs">
+      <DependentUpon>StateEditorDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\StateView.xaml.cs">
       <DependentUpon>StateView.xaml</DependentUpon>
@@ -261,6 +264,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="View\PropertyGridView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\StateEditorDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

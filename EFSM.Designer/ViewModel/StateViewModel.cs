@@ -1,12 +1,15 @@
-﻿using EFSM.Designer.Common;
+﻿using Cas.Common.WPF.Interfaces;
+using EFSM.Designer.Common;
 using EFSM.Designer.Interfaces;
 using EFSM.Designer.Metadata;
 using EFSM.Designer.Model;
+using EFSM.Designer.ViewModel.StateEditor;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 
@@ -20,17 +23,18 @@ namespace EFSM.Designer.ViewModel
         private State _state;
         public StateMachineViewModel Parent { get; private set; }
         private Point _startLocation;
-
+        private IViewService _viewService;
         private readonly List<TransitionViewModel> _transitions = new List<TransitionViewModel>();
 
         public ICommand EditCommand { get; private set; }
         public ICommand DeleteCommand { get; private set; }
 
-        public StateViewModel(State state, StateMachineViewModel parent)
+        public StateViewModel(State state, StateMachineViewModel parent, IViewService viewService)
         {
-            _state = state;
+            _state = state ?? throw new ArgumentNullException(nameof(state));
+            _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
+            Parent = parent ?? throw new ArgumentNullException(nameof(parent));
 
-            Parent = parent;
             Location = new Point(_state.X, _state.Y);
             EditCommand = new RelayCommand(Edit, CanEdit);
             DeleteCommand = new RelayCommand(Delete, CanDelete);
@@ -49,7 +53,15 @@ namespace EFSM.Designer.ViewModel
 
         private void Edit()
         {
-            //throw new NotImplementedException();
+            var viewModel = new StateEditorViewModel(Parent, GetModel(), Parent.Outputs);
+
+            if (_viewService.ShowDialog(viewModel) == true)
+            {
+                Parent.DirtyService.MarkDirty();
+                Name = viewModel.Name;
+                _state.EntryActions = viewModel.EntryActions.Items.Select(a => a.Id).ToArray();
+                _state.ExitActions = viewModel.ExitActions.Items.Select(a => a.Id).ToArray();
+            }
         }
 
         private Point _location;
@@ -93,7 +105,13 @@ namespace EFSM.Designer.ViewModel
         public string Name
         {
             get { return _state.Name; }
-            set { _state.Name = value; RaisePropertyChanged(); Parent.SaveUndoState(); }
+            set
+            {
+                if (_state.Name != value)
+                {
+                    _state.Name = value; RaisePropertyChanged(); Parent.SaveUndoState();
+                }
+            }
         }
 
         public Guid[] EntryActions
@@ -139,6 +157,21 @@ namespace EFSM.Designer.ViewModel
         public State GetModel()
         {
             return _state.Clone();
+        }
+
+        public void DeleteAction(Guid outputId)
+        {
+            if (EntryActions != null && EntryActions.Contains(outputId))
+            {
+                var actions = new List<Guid>(EntryActions.Where(x => x != outputId));
+                EntryActions = actions.ToArray();
+            }
+
+            if (ExitActions != null && ExitActions.Contains(outputId))
+            {
+                var actions = new List<Guid>(ExitActions.Where(x => x != outputId));
+                ExitActions = actions.ToArray();
+            }
         }
 
         public void StartMove()

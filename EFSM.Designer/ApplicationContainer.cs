@@ -6,6 +6,7 @@ using EFSM.Designer.Engine;
 using EFSM.Designer.Interfaces;
 using EFSM.Designer.View;
 using EFSM.Designer.ViewModel;
+using EFSM.Designer.ViewModel.StateEditor;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 
@@ -26,6 +27,7 @@ namespace EFSM.Designer
             viewService.Register<StateMachineDialogWindowViewModel, StateMachineDialogWindow>();
             viewService.Register<SimulationViewModel, SimulationWindow>();
             viewService.Register<TransitionEditorViewModel, TransitionEditorDialog>();
+            viewService.Register<StateEditorViewModel, StateEditorDialog>();
 
             builder.RegisterInstance(viewService).As<IViewService>();
 

@@ -424,6 +424,14 @@ namespace EFSM.Designer.ViewModel
             //Call undo provider
         }
 
+        public void DeleteOutputId(Guid outputId)
+        {
+            if (Actions.Contains(outputId))
+            {
+                Actions.Remove(outputId);
+            }
+        }
+
         public bool IsSelected
         {
             get { return _isSelected; }

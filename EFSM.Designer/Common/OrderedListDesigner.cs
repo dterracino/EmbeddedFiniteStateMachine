@@ -18,6 +18,7 @@ namespace EFSM.Designer.Common
         private readonly Action<TItemType> _deletedAction;
         private readonly ObservableCollection<TItemType> _items;
         private IList _selectedItems;
+        internal Guid[] select;
 
         /// <summary>
         /// Raised when the list is changed.
