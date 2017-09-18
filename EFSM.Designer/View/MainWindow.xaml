@@ -40,7 +40,7 @@
         </Menu>
         
         <ToolBar Grid.Row="1">
-            <Button ToolTip="Insert a new State Machine...">Insert</Button>
+            <Button ToolTip="Insert a new State Machine..." Command="{Binding AddStateMachineCommand}">Insert</Button>
             <Button ToolTip="Delete the currently selected State Machine">Delete</Button>
             <Separator/>
             <Button ToolTip="Generate C code...">Generate</Button>

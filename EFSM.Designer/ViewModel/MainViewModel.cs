@@ -18,6 +18,7 @@ namespace EFSM.Designer.ViewModel
         public ICommand SaveAsStateMachineCommand { get; private set; }
         public ICommand OpenCommand { get; private set; }
         public ICommand NewCommand { get; private set; }
+        public ICommand AddStateMachineCommand { get; private set; }
         public ICommand OpenDialogCommand { get; private set; }
         public ICommand ClosingCommand { get; private set; }
 
@@ -49,6 +50,12 @@ namespace EFSM.Designer.ViewModel
             OpenCommand = new RelayCommand(OpenStateMachine);
             NewCommand = new RelayCommand(New);
             OpenDialogCommand = new RelayCommand<StateMachineReferenceViewModel>(OpenDialog);
+            AddStateMachineCommand = new RelayCommand(AddStateMachine);
+        }
+
+        private void AddStateMachine()
+        {
+            StateMachineProjectViewModel.StateMachineViewModels.Add(new StateMachineReferenceViewModel(new StateMachine { Name = "New name" }, ApplicationContainer.Container.Resolve<IViewService>()));
         }
 
         private void OnClosing(CancelEventArgs e)
