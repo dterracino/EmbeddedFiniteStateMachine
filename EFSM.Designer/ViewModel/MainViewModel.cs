@@ -7,7 +7,6 @@ using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using Microsoft.Win32;
-using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using Cas.Common.WPF.Behaviors;
@@ -35,7 +34,7 @@ namespace EFSM.Designer.ViewModel
             _persistor = persistor;
 
             SaveCommand = new RelayCommand(() => Save(), CanSave);
-            SaveAsCommand = new RelayCommand(() => SaveAs(), CanSave);
+            SaveAsCommand = new RelayCommand(() => SaveAs());
             OpenCommand = new RelayCommand(Open);
             NewCommand = new RelayCommand(New);
             EditCommand = new RelayCommand<StateMachineReferenceViewModel>(Edit);
@@ -60,6 +59,7 @@ namespace EFSM.Designer.ViewModel
             {
                 _filename = value; 
                 RaisePropertyChanged();
+                RaisePropertyChanged(() => Title);
             }
         }
 
@@ -76,10 +76,16 @@ namespace EFSM.Designer.ViewModel
 
         private void Edit(StateMachineReferenceViewModel stateMachineViewModel)
         {
-            if (stateMachineViewModel.Edit(Project.DirtyService))
+            try
             {
-                
+                stateMachineViewModel.Edit();
             }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+
+            
         }
 
         private void New()

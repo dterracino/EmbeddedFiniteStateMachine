@@ -6,6 +6,7 @@ using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Extensions;
@@ -33,10 +34,22 @@ namespace EFSM.Designer.ViewModel
 
             NewStateMachineCommand = new RelayCommand(NewStateMachine);
             DeleteStateMachineCommand = new RelayCommand(DeleteStateMachine, CanDeleteStateMachine);
+            GenerateCommand = new RelayCommand(Generate, CanGenerate);
         }
 
         public ICommand NewStateMachineCommand { get; }
         public ICommand DeleteStateMachineCommand { get; }
+        public ICommand GenerateCommand { get; }
+
+        private void Generate()
+        {
+            MessageBox.Show("Not Implemented");
+        }
+
+        private bool CanGenerate()
+        {
+            return StateMachines.Any();
+        }
 
         private void NewStateMachine()
         {
@@ -57,7 +70,7 @@ namespace EFSM.Designer.ViewModel
 
                 var viewService = ApplicationContainer.Container.Resolve<IViewService>();
 
-                var viewModel = new StateMachineReferenceViewModel(model, viewService);
+                var viewModel = new StateMachineReferenceViewModel(model, viewService, DirtyService);
 
                 StateMachines.Add(viewModel);
             });
