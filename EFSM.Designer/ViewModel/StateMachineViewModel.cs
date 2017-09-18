@@ -158,7 +158,7 @@ namespace EFSM.Designer.ViewModel
                 {
                     var source = States.First(s => s.Id == item.SourceStateId);
                     var target = States.First(s => s.Id == item.TargetStateId);
-                    var transition = AddTransition(source, target, item.Name, item.Condition);
+                    var transition = AddTransition(source, target, item.Name, item.Condition, item.TransitionActions);
                 }
             }
         }
@@ -352,7 +352,7 @@ namespace EFSM.Designer.ViewModel
             IsCreatingTransition = false;
         }
 
-        public TransitionViewModel AddTransition(StateViewModel source, StateViewModel target, string transitionName, StateMachineCondition condition = null)
+        public TransitionViewModel AddTransition(StateViewModel source, StateViewModel target, string transitionName, StateMachineCondition condition = null, Guid[] actionGuids = null)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (target == null) throw new ArgumentNullException(nameof(target));
@@ -362,7 +362,8 @@ namespace EFSM.Designer.ViewModel
                 Name = transitionName,
                 SourceStateId = source.Id,
                 TargetStateId = target.Id,
-                Condition = condition ?? new StateMachineCondition()
+                Condition = condition ?? new StateMachineCondition(),
+                TransitionActions = actionGuids
             };
 
             //var transitionViewModel = new TransitionViewModel(this, transition)
