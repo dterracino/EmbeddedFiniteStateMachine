@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using Cas.Common.WPF.Interfaces;
+using EFSM.Designer.Extensions;
 using GalaSoft.MvvmLight.CommandWpf;
 
 namespace EFSM.Designer.ViewModel
@@ -41,7 +42,11 @@ namespace EFSM.Designer.ViewModel
         {
             var textEditService = new TextEditService();
 
-            textEditService.EditText("State Machine", "State Machine Name", "Create State Machine", name =>
+            string initialName = StateMachines
+                .Select(sm => sm.Name)
+                .CreateUniqueName("State Machine {0}");
+
+            textEditService.EditText(initialName, "State Machine Name", "Create State Machine", name =>
             {
                 var model = new StateMachine()
                 {
