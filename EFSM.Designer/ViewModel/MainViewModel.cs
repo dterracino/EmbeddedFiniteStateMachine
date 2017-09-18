@@ -16,6 +16,7 @@ namespace EFSM.Designer.ViewModel
 {
     public class MainViewModel : ViewModelBase, ICloseableViewModel
     {
+
         public ICommand SaveCommand { get; }
         public ICommand SaveAsCommand { get; }
         public ICommand OpenCommand { get; }
@@ -38,7 +39,7 @@ namespace EFSM.Designer.ViewModel
             OpenCommand = new RelayCommand(Open);
             NewCommand = new RelayCommand(New);
             EditCommand = new RelayCommand<StateMachineReferenceViewModel>(Edit);
-
+         
             New();
         }
 
@@ -48,7 +49,7 @@ namespace EFSM.Designer.ViewModel
             private set
             {
                 _project = value;
-                RaisePropertyChanged(); 
+                RaisePropertyChanged();
             }
         }
 

@@ -37,6 +37,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
+
                 <MenuItem Header="_Save" InputGestureText="Ctrl+S" Command="{Binding Path=SaveCommand}">
                     <MenuItem.Icon>
                         <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/Save_16x.png" ></controls:AutoGreyableImage>
@@ -57,13 +58,15 @@
         </Menu>
         
         <ToolBar Grid.Row="1">
-            <Button ToolTip="Insert a new State Machine...">Insert</Button>
-            <Button ToolTip="Delete the currently selected State Machine">Delete</Button>
+            <Button ToolTip="Insert a new State Machine..." Command="{Binding AddStateMachineCommand}">Insert</Button>
+            <Button ToolTip="Delete the currently selected State Machine" Command="{Binding DeleteStateMachineCommand}">Delete</Button>
             <Separator/>
             <Button ToolTip="Generate C code...">Generate</Button>
         </ToolBar>
 
-        <ListBox Grid.Row="2" ToolTip="State Machines" ItemsSource="{Binding Path=Project.StateMachineViewModels}" >
+
+        <ListBox Grid.Row="2" ToolTip="State Machines" ItemsSource="{Binding Path=Project.StateMachineViewModels}" Margin="0,0,354,0" 
+                 SelectedItem="{Binding Project.SelectedStateMachine, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
