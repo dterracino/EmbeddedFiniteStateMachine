@@ -7,27 +7,27 @@ namespace EFSM.Designer.ViewModel
 {
     public static class ViewModelLocator
     {
-        private static readonly Lazy<MainViewModel> _main = new Lazy<MainViewModel>(CreateMain);
+        //private static readonly Lazy<MainViewModel> _main = new Lazy<MainViewModel>(CreateMain);
 
-        private static MainViewModel CreateMain()
-        {
-            MainViewModel main = ApplicationContainer.Container.Resolve<MainViewModel>();
+        //private static MainViewModel CreateMain()
+        //{
+        //    MainViewModel main = ApplicationContainer.Container.Resolve<MainViewModel>();
 
-            if (ViewModelBase.IsInDesignModeStatic)
-            {
-                //main.StateMachineProjectViewModel = new StateMachineProjectViewModel(new StateMachineProject(null)
-                //{
-                //    StateMachines = new[]
-                //                   {
-                //        new StateMachine() { Name = "State Machine 1"},
-                //        new StateMachine() { Name = "State Machine 2"},
-                //        new StateMachine() { Name = "State Machine 3"}
-                //    }
-                //});
-            }
+        //    if (ViewModelBase.IsInDesignModeStatic)
+        //    {
+        //        //main.Project = new Project(new StateMachineProject(null)
+        //        //{
+        //        //    StateMachines = new[]
+        //        //                   {
+        //        //        new StateMachine() { Name = "State Machine 1"},
+        //        //        new StateMachine() { Name = "State Machine 2"},
+        //        //        new StateMachine() { Name = "State Machine 3"}
+        //        //    }
+        //        //});
+        //    }
 
-            return main;
-        }
+        //    return main;
+        //}
 
         public static StateMachineViewModel StateMachineDialogViewModel
         {

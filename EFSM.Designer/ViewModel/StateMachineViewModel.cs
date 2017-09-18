@@ -19,33 +19,30 @@ namespace EFSM.Designer.ViewModel
 {
     public class StateMachineViewModel : DesignerViewModelBase, ITransitionCreator
     {
+        private const double DefaultWidth = 800;
+        private const double DefaultHeight = 800;
+
+        private double _width = DefaultWidth;
+        private double _height = DefaultHeight;
+
+        private Point _newTransitionEnd;
+
+        private readonly ObservableCollection<TransitionViewModel> _transitions = new ObservableCollection<TransitionViewModel>();
+        private readonly bool _isReadOnly;
+        private bool _isCreatingTransition;
+        private bool _isConnectorMode;
 
         private StateViewModel _sourceForNewTransition;
-        private StateMachine _model;
+        private readonly StateMachine _model;
 
-        private IUndoProvider _undoProvider;
-        private IIsDirtyService _dirtyService;
+        private readonly IUndoProvider _undoProvider;
+        private readonly IIsDirtyService _dirtyService;
+        private bool _isPointerMode = true;
+        public override bool IsReadOnly => _isReadOnly;
+        private Point _newTransitionStart;
 
         private ObservableCollection<StateMachineInputViewModel> _inputs = new ObservableCollection<StateMachineInputViewModel>();
-        public ObservableCollection<StateMachineInputViewModel> Inputs
-        {
-            get { return _inputs; }
-            set { _inputs = value; RaisePropertyChanged(); SaveUndoState(); }
-        }
-
         private ObservableCollection<StateMachineOutputActionViewModel> _outputs = new ObservableCollection<StateMachineOutputActionViewModel>();
-        public ObservableCollection<StateMachineOutputActionViewModel> Outputs
-        {
-            get { return _outputs; }
-            set { _outputs = value; RaisePropertyChanged(); SaveUndoState(); }
-        }
-
-        private ObservableCollection<StateViewModel> _states = new ObservableCollection<StateViewModel>();
-        public ObservableCollection<StateViewModel> States
-        {
-            get { return _states; }
-            set { _states = value; RaisePropertyChanged(); }
-        }
 
         public StateMachineViewModel(StateMachine model, IViewService viewService, IUndoProvider undoProvider, IIsDirtyService dirtyService, bool isReadOnly = false)
         {
@@ -55,6 +52,36 @@ namespace EFSM.Designer.ViewModel
             _isReadOnly = isReadOnly;
 
             InitiateModel();
+        }
+
+        public ObservableCollection<StateMachineInputViewModel> Inputs
+        {
+            get { return _inputs; }
+            set
+            {
+                _inputs = value;
+                RaisePropertyChanged();
+                SaveUndoState();
+            }
+        }
+
+        
+        public ObservableCollection<StateMachineOutputActionViewModel> Outputs
+        {
+            get { return _outputs; }
+            set
+            {
+                _outputs = value;
+                RaisePropertyChanged();
+                SaveUndoState();
+            }
+        }
+
+        private ObservableCollection<StateViewModel> _states = new ObservableCollection<StateViewModel>();
+        public ObservableCollection<StateViewModel> States
+        {
+            get { return _states; }
+            set { _states = value; RaisePropertyChanged(); }
         }
 
         public StateMachineInputViewModel GetInputById(Guid id) => Inputs.FirstOrDefault(i => i.Id == id);
@@ -202,11 +229,7 @@ namespace EFSM.Designer.ViewModel
                 SaveUndoState();
             }
         }
-
-        private const double DefaultWidth = 800;
-        private const double DefaultHeight = 800;
-
-        private double _width = DefaultWidth;
+        
         public double Width
         {
             get { return _width; }
@@ -220,8 +243,7 @@ namespace EFSM.Designer.ViewModel
                 }
             }
         }
-
-        private double _height = DefaultHeight;
+        
         public double Height
         {
             get { return _height; }
@@ -235,39 +257,50 @@ namespace EFSM.Designer.ViewModel
                 }
             }
         }
-
-        private bool _isPointerMode = true;
+        
         public bool IsPointerMode
         {
             get { return _isPointerMode; }
-            set { _isPointerMode = value; RaisePropertyChanged(); }
+            set
+            {
+                _isPointerMode = value;
+                RaisePropertyChanged();
+            }
         }
-
-        private bool _isReadOnly = false;
-        public override bool IsReadOnly => _isReadOnly;
-
-        private Point _newTransitionStart;
+        
         public Point NewTransitionStart
         {
             get { return _newTransitionStart; }
-            private set { _newTransitionStart = value; RaisePropertyChanged(); }
+            private set
+            {
+                _newTransitionStart = value;
+                RaisePropertyChanged();
+            }
         }
 
-        private Point _newTransitionEnd;
+        
         public Point NewTransitionEnd
         {
             get { return _newTransitionEnd; }
-            private set { _newTransitionEnd = value; RaisePropertyChanged(); }
+            private set
+            {
+                _newTransitionEnd = value;
+                RaisePropertyChanged();
+            }
         }
 
-        private bool _isCreatingTransition;
+        
         public bool IsCreatingTransition
         {
             get { return _isCreatingTransition; }
-            private set { _isCreatingTransition = value; RaisePropertyChanged(); }
+            private set
+            {
+                _isCreatingTransition = value;
+                RaisePropertyChanged();
+            }
         }
 
-        private bool _isConnectorMode;
+        
         public bool IsConnectorMode
         {
             get { return _isConnectorMode; }
@@ -293,7 +326,7 @@ namespace EFSM.Designer.ViewModel
             NewTransitionEnd = point;
         }
 
-        private readonly ObservableCollection<TransitionViewModel> _transitions = new ObservableCollection<TransitionViewModel>();
+
         public ObservableCollection<TransitionViewModel> Transitions => _transitions;
 
         public void FinishCreatingTransition(Point point)

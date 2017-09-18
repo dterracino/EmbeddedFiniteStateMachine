@@ -7,15 +7,22 @@ namespace EFSM.Designer.Engine
 {
     public class FilePersistor : IPersistor
     {
+        public StateMachineProject Create()
+        {
+            return new StateMachineProject()
+            {
+                StateMachines = new StateMachine[] {}
+            };
+        }
+
         public StateMachineProject LoadProject(string path)
         {
-            if (string.IsNullOrEmpty(path))
-            {
-                return new StateMachineProject();
-            }
+            
 
             return JsonConvert.DeserializeObject<StateMachineProject>(File.ReadAllText(path));
         }
+
+
 
         public void SaveProject(StateMachineProject project, string path)
         {
