@@ -18,13 +18,13 @@ namespace EFSM.Designer.ViewModel
     public class ProjectViewModel : ViewModelBase
     {
         private readonly StateMachineProject _project;
-        private readonly IDirtyService _dirtyService;
+        private readonly IMarkDirty _dirtyService;
 
         private readonly ObservableCollection<StateMachineReferenceViewModel> _stateMachines = new ObservableCollection<StateMachineReferenceViewModel>();
         private StateMachineReferenceViewModel _selectedStateMachine;
         private readonly GenerationOptionsViewModel _generationOptions;
 
-        public ProjectViewModel(StateMachineProject project, IDirtyService dirtyService)
+        public ProjectViewModel(StateMachineProject project, IMarkDirty dirtyService)
         {
             _project = project;
             _dirtyService = dirtyService;
@@ -62,11 +62,8 @@ namespace EFSM.Designer.ViewModel
                 //Massage it real nice like
                 project.Massage();
 
-                //Get the options
-                var options = GenerationOptions.GetModel();
-
                 //Generate. Do it now.
-                generator.Generate(project, options);
+                generator.Generate(project);
             }
             catch (Exception ex)
             {
@@ -113,7 +110,7 @@ namespace EFSM.Designer.ViewModel
 
         public ObservableCollection<StateMachineReferenceViewModel> StateMachines => _stateMachines;
 
-        public IDirtyService DirtyService => _dirtyService;
+        public IMarkDirty DirtyService => _dirtyService;
 
         public StateMachineReferenceViewModel SelectedStateMachine
         {

@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EmbeddedCodeGenerator.cs" />
+    <Compile Include="GeneratedProject.cs" />
     <Compile Include="GenerationExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

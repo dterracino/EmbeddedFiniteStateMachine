@@ -22,12 +22,13 @@ namespace EFSM.Designer.ViewModel
         private ProjectViewModel _project;
         private string _filename;
 
-        private readonly DirtyService _dirtyService = new DirtyService();
+        private readonly IDirtyService _dirtyService;
 
-        public MainViewModel(IViewService viewService, IPersistor persistor)
+        public MainViewModel(IViewService viewService, IPersistor persistor, IDirtyService dirtyService)
         {
             _viewService = viewService;
             _persistor = persistor;
+            _dirtyService = dirtyService;
 
             SaveCommand = new RelayCommand(() => Save(), CanSave);
             SaveAsCommand = new RelayCommand(() => SaveAs());
@@ -76,12 +77,11 @@ namespace EFSM.Designer.ViewModel
         {
             get
             {
-                string suffix = _dirtyService.IsDirty ? "*" : "";
+                string prefix = _dirtyService.IsDirty ? "*" : "";
 
-                if (string.IsNullOrWhiteSpace(Filename))
-                    return $"Embedded State Machine Designer{suffix}";
+                string fileDisplayName = string.IsNullOrWhiteSpace(Filename) ? "Untiteld" : Filename;
 
-                return $"Embedded State Machine Designer - {Filename}{suffix}";
+                return $"{prefix}{fileDisplayName} - State Machine Designer";
             }
         }
 
@@ -104,6 +104,8 @@ namespace EFSM.Designer.ViewModel
                 Filename = null;
 
                 Project = new ProjectViewModel(_persistor.Create(), _dirtyService);
+
+                _dirtyService.MarkClean();
             }
         }
 
@@ -132,7 +134,7 @@ namespace EFSM.Designer.ViewModel
 
         private bool Save()
         {
-            if (Project == null || !Project.DirtyService.IsDirty)
+            if (Project == null || !_dirtyService.IsDirty)
                 return true;
 
             if (string.IsNullOrWhiteSpace(Filename))
@@ -141,12 +143,12 @@ namespace EFSM.Designer.ViewModel
             }
 
             _persistor.SaveProject(Project.GetModel(), Filename);
-            _project.DirtyService.MarkClean();
+            _dirtyService.MarkClean();
 
             return false;
         }
 
-        private bool CanSave() => Project.DirtyService.IsDirty;
+        private bool CanSave() => _dirtyService.IsDirty;
 
         private bool SaveAs()
         {
@@ -159,7 +161,7 @@ namespace EFSM.Designer.ViewModel
             {
                 Filename = dialog.FileName;
                 _persistor.SaveProject(Project.GetModel(), dialog.FileName);
-                Project.DirtyService.MarkClean();
+                _dirtyService.MarkClean();
 
                 return true;
             }
@@ -169,7 +171,7 @@ namespace EFSM.Designer.ViewModel
 
         public bool CanClose()
         {
-            if (Project.DirtyService.IsDirty)
+            if (_dirtyService.IsDirty)
             {
                 var result = MessageBox.Show("Save changes?", "Project has changed", MessageBoxButton.YesNoCancel);
 

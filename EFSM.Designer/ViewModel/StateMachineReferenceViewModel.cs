@@ -14,9 +14,9 @@ namespace EFSM.Designer.ViewModel
     {
         private StateMachine _model;
         private readonly IViewService _viewService;
-        private readonly IDirtyService _parentDirtyService;
+        private readonly IMarkDirty _parentDirtyService;
 
-        public StateMachineReferenceViewModel(StateMachine model, IViewService viewService, IDirtyService parentDirtyService)
+        public StateMachineReferenceViewModel(StateMachine model, IViewService viewService, IMarkDirty parentDirtyService)
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));

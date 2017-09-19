@@ -10,9 +10,9 @@ namespace EFSM.Designer.ViewModel
     public class GenerationOptionsViewModel : ViewModelBase
     {
         private readonly GenerationOptions _model;
-        private readonly IDirtyService _dirtyService;
+        private readonly IMarkDirty _dirtyService;
 
-        public GenerationOptionsViewModel(GenerationOptions model, IDirtyService dirtyService)
+        public GenerationOptionsViewModel(GenerationOptions model, IMarkDirty dirtyService)
         {
             if (model == null) throw new ArgumentNullException(nameof(model));
             if (dirtyService == null) throw new ArgumentNullException(nameof(dirtyService));

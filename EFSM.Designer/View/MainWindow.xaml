@@ -123,10 +123,10 @@
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Grid.Row="0" Grid.Column="0" Margin="4" VerticalAlignment="Center">Header File Path</TextBlock>
-                            <TextBox Grid.Row="0" Grid.Column="1" Margin="4" VerticalAlignment="Center" Text="{Binding Path=HeaderFilePath}" />
+                            <TextBox Grid.Row="0" Grid.Column="1" Margin="4" VerticalAlignment="Center" Text="{Binding Path=HeaderFilePath, UpdateSourceTrigger=PropertyChanged}" />
 
                             <TextBlock Grid.Row="1" Grid.Column="0" Margin="4" VerticalAlignment="Center">Header File Path</TextBlock>
-                            <TextBox Grid.Row="1" Grid.Column="1" Margin="4" VerticalAlignment="Center" Text="{Binding Path=CodeFilePath}" />
+                            <TextBox Grid.Row="1" Grid.Column="1" Margin="4" VerticalAlignment="Center" Text="{Binding Path=CodeFilePath, UpdateSourceTrigger=PropertyChanged}" />
 
                         </Grid>
                         
@@ -153,13 +153,13 @@
                         </Grid.ColumnDefinitions>
 
                         <GroupBox Header="Header">
-                            <TextBox Text="{Binding Path=HeaderFileHeader}"/>
+                            <TextBox Text="{Binding Path=HeaderFileHeader, UpdateSourceTrigger=PropertyChanged}"/>
                         </GroupBox>
 
                         <GridSplitter Grid.Column="1" ResizeBehavior="PreviousAndNext" Width="4" VerticalAlignment="Stretch" Background="LightGray"></GridSplitter>
 
                         <GroupBox Grid.Column="2" Header="Footer">
-                            <TextBox Text="{Binding Path=HeaderFileFooter}"/>
+                            <TextBox Text="{Binding Path=HeaderFileFooter, UpdateSourceTrigger=PropertyChanged}"/>
                         </GroupBox>
 
                     </Grid>
