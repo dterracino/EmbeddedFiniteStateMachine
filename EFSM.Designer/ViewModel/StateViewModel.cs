@@ -53,7 +53,7 @@ namespace EFSM.Designer.ViewModel
 
         private void Edit()
         {
-            var viewModel = new StateEditorViewModel(Parent, GetModel(), Parent.Outputs);
+            var viewModel = new StateDialogViewModel(Parent, GetModel(), Parent.Outputs);
 
             if (_viewService.ShowDialog(viewModel) == true)
             {

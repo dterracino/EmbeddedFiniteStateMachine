@@ -11,6 +11,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using EFSM.Designer.ViewModel.TransitionEditor;
 
 namespace EFSM.Designer.ViewModel
 {

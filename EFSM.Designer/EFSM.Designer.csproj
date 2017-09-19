@@ -173,7 +173,7 @@
     <Compile Include="ViewModel\Simulation\SimulationStateMachineViewModel.cs" />
     <Compile Include="ViewModel\Simulation\SimulationViewModel.cs" />
     <Compile Include="ViewModel\InputViewModel.cs" />
-    <Compile Include="ViewModel\StateEditor\StateEditorViewModel.cs" />
+    <Compile Include="ViewModel\StateEditor\StateDialogViewModel.cs" />
     <Compile Include="ViewModel\StateMachineConditionViewModel.cs" />
     <Compile Include="ViewModel\StateMachineInputViewModel.cs" />
     <Compile Include="ViewModel\StateMachineOutputActionViewModel.cs" />
@@ -320,7 +320,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="test.csdsn" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

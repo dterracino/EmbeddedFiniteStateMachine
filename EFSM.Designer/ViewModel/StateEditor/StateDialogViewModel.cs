@@ -1,6 +1,5 @@
 ﻿using Cas.Common.WPF.Behaviors;
 using EFSM.Designer.Common;
-using EFSM.Designer.Interfaces;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -14,7 +13,7 @@ using Cas.Common.WPF.Interfaces;
 
 namespace EFSM.Designer.ViewModel.StateEditor
 {
-    public class StateEditorViewModel : ViewModelBase, ICloseableViewModel
+    public class StateDialogViewModel : ViewModelBase, ICloseableViewModel
     {
         public event EventHandler<CloseEventArgs> Close;
         private readonly IDirtyService _dirtyService = new DirtyService();
@@ -63,7 +62,7 @@ namespace EFSM.Designer.ViewModel.StateEditor
             get { return Name; }
         }
 
-        public StateEditorViewModel(StateMachineViewModel parent, State model, ObservableCollection<StateMachineOutputActionViewModel> actions)
+        public StateDialogViewModel(StateMachineViewModel parent, State model, ObservableCollection<StateMachineOutputActionViewModel> actions)
         {
             _parent = parent ?? throw new ArgumentNullException(nameof(parent));
             _model = model ?? throw new ArgumentNullException(nameof(model));

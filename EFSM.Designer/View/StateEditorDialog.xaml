@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:EFSM.Designer.View"
         mc:Ignorable="d"
         x:Name="Root"
-        d:DataContext="{d:DesignInstance stateEditor:StateEditorViewModel}"
+        d:DataContext="{d:DesignInstance stateEditor:StateDialogViewModel}"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:behaviors="clr-namespace:Cas.Common.WPF.Behaviors;assembly=Cas.Common.WPF"
         xmlns:stateEditor="clr-namespace:EFSM.Designer.ViewModel.StateEditor"
