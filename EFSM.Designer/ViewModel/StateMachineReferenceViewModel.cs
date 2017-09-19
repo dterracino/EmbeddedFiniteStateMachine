@@ -15,9 +15,9 @@ namespace EFSM.Designer.ViewModel
     {
         private StateMachine _model;
         private readonly IViewService _viewService;
-        private readonly IIsDirtyService _parentDirtyService;
+        private readonly IDirtyService _parentDirtyService;
 
-        public StateMachineReferenceViewModel(StateMachine model, IViewService viewService, IIsDirtyService parentDirtyService)
+        public StateMachineReferenceViewModel(StateMachine model, IViewService viewService, IDirtyService parentDirtyService)
         {
             if (model == null) throw new ArgumentNullException(nameof(model));
             if (viewService == null) throw new ArgumentNullException(nameof(viewService));
@@ -28,9 +28,11 @@ namespace EFSM.Designer.ViewModel
             _parentDirtyService = parentDirtyService;
 
             RenameCommand = new RelayCommand(Rename);
+            EditCommand = new RelayCommand(() => Edit());
         }
 
         public ICommand RenameCommand { get; }
+        public ICommand EditCommand { get; }
 
         private void Rename()
         {
@@ -60,12 +62,14 @@ namespace EFSM.Designer.ViewModel
             StateMachineDialogWindowViewModel viewModel = ApplicationContainer.Container
                 .Resolve<StateMachineDialogWindowViewModel>(
                     new TypedParameter(typeof(StateMachine), GetModel()),
-                    new TypedParameter(typeof(IIsDirtyService), _parentDirtyService)
+                    new TypedParameter(typeof(IDirtyService), _parentDirtyService)
                 );
 
             if (_viewService.ShowDialog(viewModel) == true)
             {
                 _model = viewModel.GetModel();
+                RaisePropertyChanged();
+                _parentDirtyService.MarkDirty();
                 return true;
             }
 

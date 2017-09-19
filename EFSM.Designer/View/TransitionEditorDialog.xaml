@@ -11,7 +11,7 @@
         xmlns:behavior="clr-namespace:EFSM.Designer.Behaviors"
         x:Name="Root"
         mc:Ignorable="d"
-        Title="TransitionEditorDialog" Height="300" Width="300">
+        Title="Transition" Height="400" Width="600">
     <i:Interaction.Behaviors>
         <behaviors:CloseableBehavior/>
     </i:Interaction.Behaviors>

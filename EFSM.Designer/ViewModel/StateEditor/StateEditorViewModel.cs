@@ -9,31 +9,41 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+using Cas.Common.WPF;
+using Cas.Common.WPF.Interfaces;
 
 namespace EFSM.Designer.ViewModel.StateEditor
 {
     public class StateEditorViewModel : ViewModelBase, ICloseableViewModel
     {
         public event EventHandler<CloseEventArgs> Close;
-        private readonly IIsDirtyService _dirtyService = new IsDirtyService();
-        public IIsDirtyService DirtyService => _dirtyService;
+        private readonly IDirtyService _dirtyService = new DirtyService();
+        public IDirtyService DirtyService => _dirtyService;
 
-        private State _model;
-        private StateMachineViewModel _parent;
-        public ObservableCollection<StateMachineOutputActionViewModel> Outputs { get; private set; }
-        public ICommand OkCommand { get; private set; }
+        private readonly State _model;
+        private readonly StateMachineViewModel _parent;
+        public ObservableCollection<StateMachineOutputActionViewModel> Outputs { get; }
+        public ICommand OkCommand { get; }
 
         private OrderedListDesigner<StateMachineOutputActionViewModel> _entryActions;
         private OrderedListDesigner<StateMachineOutputActionViewModel> _exitActions;
         public OrderedListDesigner<StateMachineOutputActionViewModel> EntryActions
         {
             get { return _entryActions; }
-            set { _entryActions = value; RaisePropertyChanged(); }
+            set
+            {
+                _entryActions = value;
+                RaisePropertyChanged();
+            }
         }
         public OrderedListDesigner<StateMachineOutputActionViewModel> ExitActions
         {
             get { return _exitActions; }
-            set { _exitActions = value; RaisePropertyChanged(); }
+            set
+            {
+                _exitActions = value;
+                RaisePropertyChanged();
+            }
         }
 
         public string Name
@@ -44,7 +54,13 @@ namespace EFSM.Designer.ViewModel.StateEditor
                 _model.Name = value;
                 RaisePropertyChanged();
                 DirtyService.MarkDirty();
+                RaisePropertyChanged(() => Title);
             }
+        }
+
+        public string Title
+        {
+            get { return Name; }
         }
 
         public StateEditorViewModel(StateMachineViewModel parent, State model, ObservableCollection<StateMachineOutputActionViewModel> actions)

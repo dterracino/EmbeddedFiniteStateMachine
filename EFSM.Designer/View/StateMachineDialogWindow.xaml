@@ -9,7 +9,7 @@
         xmlns:controls="clr-namespace:Cas.Common.WPF.Controls;assembly=Cas.Common.WPF"
         xmlns:behaviors="clr-namespace:Cas.Common.WPF.Behaviors;assembly=Cas.Common.WPF"
         mc:Ignorable="d"        
-        Title="{Binding Path=Title}" Height="400" Width="600">
+        Title="{Binding Path=Title}" Height="600" Width="800">
     <i:Interaction.Behaviors>
         <behaviors:CloseableBehavior/>
     </i:Interaction.Behaviors>
@@ -60,27 +60,28 @@
                             <ColumnDefinition Width="200"/>
                             <ColumnDefinition Width="5"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="5"/>
-                            <ColumnDefinition Width="200"/>
+                           
                         </Grid.ColumnDefinitions>
 
                         <Grid Grid.Column="0">
                             <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <local:ToolsView DataContext="{x:Static viewModel:ViewModelLocator.StateTools}" Grid.Column="0"></local:ToolsView>
-
+                            <GridSplitter Grid.Row="1" ResizeBehavior="PreviousAndNext" HorizontalAlignment="Stretch" Height="4"></GridSplitter>
+                            <local:PropertyGridView Grid.Row="2" SelectionService="{Binding Path=StateMachine.SelectionService}" />
                         </Grid>
                         
                        
                         
-                        <GridSplitter Grid.Column="1" Style="{StaticResource ColumnGridSplitter}"/>
-                        <ScrollViewer Grid.Column="2" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
+                        <GridSplitter Grid.Column="1" Style="{StaticResource ColumnGridSplitter}" ResizeBehavior="PreviousAndCurrent"/>
+                        <ScrollViewer Grid.Column="2" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" >
                             <local:StateMachineView DataContext="{Binding StateMachine}" Background="Gray"></local:StateMachineView>
                         </ScrollViewer>
-                        <GridSplitter Grid.Column="3" Style="{StaticResource ColumnGridSplitter}"/>
-                        <local:PropertyGridView Grid.Column="4" SelectionService="{Binding Path=StateMachine.SelectionService}" />
+                        
+                        
                     </Grid>
                     
                 </Grid>

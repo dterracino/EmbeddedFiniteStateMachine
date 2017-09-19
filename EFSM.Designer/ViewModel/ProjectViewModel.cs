@@ -17,21 +17,22 @@ namespace EFSM.Designer.ViewModel
     public class ProjectViewModel : ViewModelBase
     {
         private readonly StateMachineProject _project;
-        private readonly IIsDirtyService _dirtyService = new IsDirtyService();
+        private readonly IDirtyService _dirtyService;
 
         private readonly ObservableCollection<StateMachineReferenceViewModel> _stateMachines = new ObservableCollection<StateMachineReferenceViewModel>();
         private StateMachineReferenceViewModel _selectedStateMachine;
 
-        public ProjectViewModel(StateMachineProject project)
+        public ProjectViewModel(StateMachineProject project, IDirtyService dirtyService)
         {
             _project = project;
+            _dirtyService = dirtyService;
 
             if (_project.StateMachines != null)
             {
                 StateMachines.AddRange(_project.StateMachines
                     .Select(sm => ApplicationContainer.Container.Resolve<StateMachineReferenceViewModel>(
                         new TypedParameter(typeof(StateMachine), sm),
-                        new TypedParameter(typeof(IIsDirtyService), _dirtyService)
+                        new TypedParameter(typeof(IDirtyService), _dirtyService)
                         )));
             }
 
@@ -76,6 +77,8 @@ namespace EFSM.Designer.ViewModel
                 var viewModel = new StateMachineReferenceViewModel(model, viewService, DirtyService);
 
                 StateMachines.Add(viewModel);
+
+                _dirtyService.MarkDirty();
             });
         }
 
@@ -95,7 +98,7 @@ namespace EFSM.Designer.ViewModel
             get { return _stateMachines; }
         }
 
-        public IIsDirtyService DirtyService
+        public IDirtyService DirtyService
         {
             get { return _dirtyService; }
         }

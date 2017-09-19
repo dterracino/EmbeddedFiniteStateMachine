@@ -6,9 +6,11 @@
         xmlns:local="clr-namespace:EFSM.Designer.View"
         mc:Ignorable="d"
         x:Name="Root"
+        d:DataContext="{d:DesignInstance stateEditor:StateEditorViewModel}"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:behaviors="clr-namespace:Cas.Common.WPF.Behaviors;assembly=Cas.Common.WPF"
-        Title="StateEditorDialog" Height="300" Width="300">
+        xmlns:stateEditor="clr-namespace:EFSM.Designer.ViewModel.StateEditor"
+        Title="{Binding Path=Title}" Height="500" Width="600">
     <i:Interaction.Behaviors>
         <behaviors:CloseableBehavior/>
     </i:Interaction.Behaviors>

@@ -131,7 +131,6 @@
     <Compile Include="Common\Cloner.cs" />
     <Compile Include="Common\GraphicsUtil.cs" />
     <Compile Include="Common\IntersectionPoint.cs" />
-    <Compile Include="Common\IsDirtyService.cs" />
     <Compile Include="Common\OrderedListDesigner.cs" />
     <Compile Include="Common\SelectionService.cs" />
     <Compile Include="Common\ToolTipFactory.cs" />
@@ -152,7 +151,6 @@
     <Compile Include="Interfaces\IDeleteable.cs" />
     <Compile Include="Interfaces\IHasCategory.cs" />
     <Compile Include="Interfaces\IHasDescription.cs" />
-    <Compile Include="Interfaces\IIsDirtyService.cs" />
     <Compile Include="Interfaces\ILocation.cs" />
     <Compile Include="Interfaces\IMoveable.cs" />
     <Compile Include="Interfaces\INamedItem.cs" />

@@ -10,6 +10,7 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using Cas.Common.WPF;
 
 namespace EFSM.Designer.ViewModel
 {
@@ -20,7 +21,7 @@ namespace EFSM.Designer.ViewModel
         private readonly IUndoService<StateMachine> _undoService;
         private readonly IViewService _viewService;
 
-        private readonly IIsDirtyService _parentDirtyService;
+        private readonly IDirtyService _parentDirtyService;
 
         public ICommand DeleteCommand { get; private set; }
         public ICommand OkCommand { get; private set; }
@@ -35,7 +36,7 @@ namespace EFSM.Designer.ViewModel
 
         public event EventHandler<CloseEventArgs> Close;
 
-        public StateMachineDialogWindowViewModel(StateMachine stateMachine, IViewService viewService, IIsDirtyService parentDirtyService)
+        public StateMachineDialogWindowViewModel(StateMachine stateMachine, IViewService viewService, IDirtyService parentDirtyService)
         {
             _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
             _parentDirtyService = parentDirtyService ?? throw new ArgumentNullException(nameof(parentDirtyService));
@@ -76,7 +77,7 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
-        public IIsDirtyService DirtyService { get; } = new IsDirtyService();
+        public IDirtyService DirtyService { get; } = new DirtyService();
 
         private void InitializeCommands()
         {
@@ -102,7 +103,7 @@ namespace EFSM.Designer.ViewModel
                (
                 new TypedParameter(typeof(StateMachine), stateMachineModel),
                 new TypedParameter(typeof(IUndoProvider), this),
-                new TypedParameter(typeof(IIsDirtyService), DirtyService)
+                new TypedParameter(typeof(IDirtyService), DirtyService)
                );
 
             Inputs = new OrderedListDesigner<StateMachineInputViewModel>(CreateInput, StateMachine.Inputs, addedAction: ConnectorAdded, deletedAction: InputDeleted);

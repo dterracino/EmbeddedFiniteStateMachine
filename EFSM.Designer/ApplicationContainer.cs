@@ -14,7 +14,6 @@ namespace EFSM.Designer
 {
     public static class ApplicationContainer
     {
-
         public static IContainer Container { get; }
 
         static ApplicationContainer()
@@ -35,7 +34,6 @@ namespace EFSM.Designer
             builder.RegisterAssemblyTypes(typeof(MainViewModel).Assembly)
                 .Where(t => t.IsSubclassOf(typeof(ViewModelBase)))
                 .AsSelf();
-
 
             builder.RegisterType<FilePersistor>().As<IPersistor>();
             builder.RegisterType<SelectionService>().As<ISelectionService>();

@@ -10,23 +10,20 @@ using Microsoft.Win32;
 using System;
 using System.Windows;
 using System.Windows.Input;
+using Cas.Common.WPF;
+using EFSM.Designer.Common;
 
 namespace EFSM.Designer.ViewModel
 {
     public class MainViewModel : ViewModelBase, ICloseableViewModel
     {
-
-        public ICommand SaveCommand { get; }
-        public ICommand SaveAsCommand { get; }
-        public ICommand OpenCommand { get; }
-        public ICommand NewCommand { get; }
-        public ICommand EditCommand { get; }
-
         public IViewService _viewService;
         public IPersistor _persistor;
 
         private ProjectViewModel _project;
         private string _filename;
+
+        private readonly DirtyService _dirtyService = new DirtyService();
 
         public MainViewModel(IViewService viewService, IPersistor persistor)
         {
@@ -39,8 +36,21 @@ namespace EFSM.Designer.ViewModel
             NewCommand = new RelayCommand(New);
             EditCommand = new RelayCommand<StateMachineReferenceViewModel>(Edit);
 
+            _dirtyService.PropertyChanged += DirtyService_PropertyChanged;
+
             New();
         }
+
+        private void DirtyService_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            RaisePropertyChanged(() => Title);
+        }
+
+        public ICommand SaveCommand { get; }
+        public ICommand SaveAsCommand { get; }
+        public ICommand OpenCommand { get; }
+        public ICommand NewCommand { get; }
+        public ICommand EditCommand { get; }
 
         public ProjectViewModel Project
         {
@@ -67,10 +77,12 @@ namespace EFSM.Designer.ViewModel
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(Filename))
-                    return "Embedded State Machine Designer";
+                string suffix = _dirtyService.IsDirty ? "*" : "";
 
-                return $"Embedded State Machine Designer - {Filename}";
+                if (string.IsNullOrWhiteSpace(Filename))
+                    return $"Embedded State Machine Designer{suffix}";
+
+                return $"Embedded State Machine Designer - {Filename}{suffix}";
             }
         }
 
@@ -92,7 +104,7 @@ namespace EFSM.Designer.ViewModel
             {
                 Filename = null;
 
-                Project = new ProjectViewModel(_persistor.Create());
+                Project = new ProjectViewModel(_persistor.Create(), _dirtyService);
             }
         }
 
@@ -108,6 +120,7 @@ namespace EFSM.Designer.ViewModel
                 if (dialog.ShowDialog() == true)
                 {
                     AddStateMachineProject(dialog.FileName);
+                    Filename = dialog.FileName;
                 }
             }
         }
@@ -129,6 +142,7 @@ namespace EFSM.Designer.ViewModel
             }
 
             _persistor.SaveProject(Project.GetModel(), Filename);
+            _project.DirtyService.MarkClean();
 
             return false;
         }
@@ -149,6 +163,7 @@ namespace EFSM.Designer.ViewModel
             {
                 Filename = dialog.FileName;
                 _persistor.SaveProject(Project.GetModel(), dialog.FileName);
+                Project.DirtyService.MarkClean();
 
                 return true;
             }
@@ -160,14 +175,21 @@ namespace EFSM.Designer.ViewModel
         {
             if (Project.DirtyService.IsDirty)
             {
-                string msg = "Data is dirty. Close without saving?";
+                var result = MessageBox.Show("Save changes?", "Project has changed", MessageBoxButton.YesNoCancel);
 
-                MessageBoxResult result = MessageBox.Show(msg, "Data App", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-
-                if (result == MessageBoxResult.No)
+                switch (result)
                 {
-                    return false;
+                    case MessageBoxResult.Yes:
+
+                        Save();
+
+                        break;
+
+                    case MessageBoxResult.Cancel:
+
+                        return false;
                 }
+
             }
 
             return true;

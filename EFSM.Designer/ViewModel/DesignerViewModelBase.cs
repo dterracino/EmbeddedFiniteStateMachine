@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using Cas.Common.WPF;
+using Cas.Common.WPF.Interfaces;
 
 namespace EFSM.Designer.ViewModel
 {
@@ -20,12 +22,12 @@ namespace EFSM.Designer.ViewModel
         private readonly ISelectionService _selectionService;
         private bool _isSelectionBoxVisible;
         private Rect _selectionBox;
-        private readonly IIsDirtyService _dirtyService;
+        private readonly IDirtyService _dirtyService;
 
-        protected DesignerViewModelBase(IIsDirtyService dirtyService = null, ISelectionService selectionService = null)
+        protected DesignerViewModelBase(IDirtyService dirtyService = null, ISelectionService selectionService = null)
         {
             _selectionService = selectionService ?? ApplicationContainer.Container.Resolve<ISelectionService>();
-            _dirtyService = dirtyService ?? new IsDirtyService();
+            _dirtyService = dirtyService ?? new DirtyService();
 
             InitiateCommands();
         }
@@ -82,7 +84,7 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
-        public IIsDirtyService DirtyService
+        public IDirtyService DirtyService
         {
             get { return _dirtyService; }
         }

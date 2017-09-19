@@ -37,7 +37,7 @@ namespace EFSM.Designer.ViewModel
         private readonly IViewService _viewService;
 
         private readonly IUndoProvider _undoProvider;
-        private readonly IIsDirtyService _dirtyService;
+        private readonly IDirtyService _dirtyService;
         private bool _isPointerMode = true;
         public override bool IsReadOnly => _isReadOnly;
         private Point _newTransitionStart;
@@ -45,7 +45,7 @@ namespace EFSM.Designer.ViewModel
         private ObservableCollection<StateMachineInputViewModel> _inputs = new ObservableCollection<StateMachineInputViewModel>();
         private ObservableCollection<StateMachineOutputActionViewModel> _outputs = new ObservableCollection<StateMachineOutputActionViewModel>();
 
-        public StateMachineViewModel(StateMachine model, IViewService viewService, IUndoProvider undoProvider, IIsDirtyService dirtyService, bool isReadOnly = false)
+        public StateMachineViewModel(StateMachine model, IViewService viewService, IUndoProvider undoProvider, IDirtyService dirtyService, bool isReadOnly = false)
         {
             _model = model;
             _undoProvider = undoProvider;

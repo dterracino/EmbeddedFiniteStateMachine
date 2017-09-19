@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+using Cas.Common.WPF;
+using Cas.Common.WPF.Interfaces;
 
 namespace EFSM.Designer.ViewModel
 {
@@ -35,8 +37,8 @@ namespace EFSM.Designer.ViewModel
 
         public ICommand OkCommand { get; private set; }
 
-        private readonly IIsDirtyService _dirtyService = new IsDirtyService();
-        public IIsDirtyService DirtyService => _dirtyService;
+        private readonly IDirtyService _dirtyService = new DirtyService();
+        public IDirtyService DirtyService => _dirtyService;
 
         private string _name;
         public string Name
