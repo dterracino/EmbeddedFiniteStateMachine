@@ -1,5 +1,6 @@
 ﻿using Autofac;
-using EFSM.Designer.Common;
+using Cas.Common.WPF;
+using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -7,8 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using Cas.Common.WPF;
-using Cas.Common.WPF.Interfaces;
 
 namespace EFSM.Designer.ViewModel
 {
@@ -39,15 +38,9 @@ namespace EFSM.Designer.ViewModel
             OnDropCommand = new RelayCommand<DragEventArgs>(OnDrop);
         }
 
-        protected IEnumerable<IDeleteable> GetSelectedDeleteables()
-        {
-            return _selectionService.GetSelected().OfType<IDeleteable>();
-        }
+        protected IEnumerable<IDeleteable> GetSelectedDeleteables() => _selectionService.GetSelected().OfType<IDeleteable>();
 
-        public virtual bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public virtual bool IsReadOnly => false;
 
         protected virtual void Delete()
         {
@@ -84,23 +77,14 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
-        public IDirtyService DirtyService
-        {
-            get { return _dirtyService; }
-        }
+        public IDirtyService DirtyService => _dirtyService;
 
-        public ISelectionService SelectionService
-        {
-            get { return _selectionService; }
-        }
+        public ISelectionService SelectionService => _selectionService;
 
         /// <summary>
         /// Override this to provide undo / redo capabilities.
         /// </summary>
-        public virtual IUndoProvider UndoProvider
-        {
-            get { return null; }
-        }
+        public virtual IUndoProvider UndoProvider => null;
 
         public bool IsSelectionBoxVisible
         {
@@ -149,15 +133,14 @@ namespace EFSM.Designer.ViewModel
 
         public virtual void SelectBox(Rect rec)
         {
-
         }
 
         public virtual void OnDrop(DragEventArgs e)
-        {           
+        {
         }
 
         public virtual void OnMouseLeftButtonDown(MouseEventArgs e)
-        {            
+        {
         }
     }
 }

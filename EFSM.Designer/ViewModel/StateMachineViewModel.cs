@@ -47,11 +47,11 @@ namespace EFSM.Designer.ViewModel
 
         public StateMachineViewModel(StateMachine model, IViewService viewService, IUndoProvider undoProvider, IDirtyService dirtyService, bool isReadOnly = false)
         {
-            _model = model;
-            _undoProvider = undoProvider;
-            _dirtyService = dirtyService;
-            _isReadOnly = isReadOnly;
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+            _undoProvider = undoProvider ?? throw new ArgumentNullException(nameof(undoProvider));
+            _dirtyService = dirtyService ?? throw new ArgumentNullException(nameof(dirtyService));
             _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
+            _isReadOnly = isReadOnly;
 
             InitiateModel();
         }
@@ -329,7 +329,6 @@ namespace EFSM.Designer.ViewModel
             NewTransitionEnd = point;
         }
 
-
         public ObservableCollection<TransitionViewModel> Transitions => _transitions;
 
         public void FinishCreatingTransition(Point point)
@@ -381,7 +380,6 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
-
         public void CancelCreatingTransition()
         {
             IsCreatingTransition = false;
@@ -400,12 +398,6 @@ namespace EFSM.Designer.ViewModel
                 Condition = condition ?? new StateMachineCondition(),
                 TransitionActions = actionGuids
             };
-
-            //var transitionViewModel = new TransitionViewModel(this, transition)
-            //{
-            //    Source = source,
-            //    Target = target
-            //};
 
             var transitionViewModel = ApplicationContainer.Container.Resolve<TransitionViewModel>(
                     new TypedParameter(typeof(StateMachineViewModel), this),

@@ -10,9 +10,10 @@
              xmlns:converters1="clr-namespace:EFSM.Designer.Converters"
              xmlns:behavior="clr-namespace:EFSM.Designer.Behaviors"
              xmlns:controls="clr-namespace:Cas.Common.WPF.Controls;assembly=Cas.Common.WPF"
+             xmlns:behaviors="clr-namespace:Cas.Common.WPF.Behaviors;assembly=Cas.Common.WPF"
              mc:Ignorable="d"              
              d:DesignHeight="300" d:DesignWidth="300">
-    
+  
     <UserControl.InputBindings>
         <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding Path=EditCommand}"></MouseBinding>
     </UserControl.InputBindings>

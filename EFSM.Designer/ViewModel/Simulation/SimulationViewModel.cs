@@ -3,6 +3,7 @@ using Cas.Common.WPF.Interfaces;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using System;
 using System.Linq;
 using System.Windows.Input;
 
@@ -11,23 +12,31 @@ namespace EFSM.Designer.ViewModel
     public class SimulationViewModel : ViewModelBase
     {
         private StateMachine _model;
-
         private StateViewModel _currentState = null;
+        private StateMachineViewModel _stateMachineViewModel = null;
+
+        public SimulationViewModel(StateMachine model)
+        {
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+            InitializeModel();
+            InitializeCommands();
+            SelectInitialState();
+        }
+
+        public ICommand SimulationCommand { get; private set; }
+
         public StateViewModel CurrentState
         {
             get { return _currentState; }
             set
             {
-                _currentState = value; if (value != null)
+                if (value != null)
                 {
-
+                    _currentState = value;
                 }
             }
         }
 
-        public ICommand SimulationCommand { get; private set; }
-
-        private StateMachineViewModel _stateMachineViewModel = null;
         public StateMachineViewModel StateMachineViewModel
         {
             get { return _stateMachineViewModel; }
@@ -39,14 +48,6 @@ namespace EFSM.Designer.ViewModel
                     RaisePropertyChanged();
                 }
             }
-        }
-
-        public SimulationViewModel(StateMachine model)
-        {
-            _model = model;
-            InitializeModel();
-            InitializeCommands();
-            SelectInitialState();
         }
 
         private void InitializeCommands()

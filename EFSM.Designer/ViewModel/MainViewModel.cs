@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Cas.Common.WPF;
 using Cas.Common.WPF.Behaviors;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Const;
@@ -10,8 +11,6 @@ using Microsoft.Win32;
 using System;
 using System.Windows;
 using System.Windows.Input;
-using Cas.Common.WPF;
-using EFSM.Designer.Common;
 
 namespace EFSM.Designer.ViewModel
 {
@@ -147,10 +146,7 @@ namespace EFSM.Designer.ViewModel
             return false;
         }
 
-        private bool CanSave()
-        {
-            return Project.DirtyService.IsDirty;
-        }
+        private bool CanSave() => Project.DirtyService.IsDirty;
 
         private bool SaveAs()
         {

@@ -9,9 +9,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
         public ConditionsViewModel(ConditionViewModelBase parent)
         {
-            if (parent == null) throw new ArgumentNullException(nameof(parent));
-
-            _parent = parent;
+            _parent = parent ?? throw new ArgumentNullException(nameof(parent));
         }
 
         protected override void InsertItem(int index, ConditionViewModelBase item)
@@ -50,9 +48,6 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             Parent.DirtyService.MarkDirty();
         }
 
-        internal ConditionViewModelBase Parent
-        {
-            get { return _parent; }
-        }
+        internal ConditionViewModelBase Parent => _parent;
     }
 }

@@ -21,14 +21,8 @@ namespace EFSM.Designer.ViewModel
             _tools = tools.Select(t => new ToolViewModel<TTool>(t)).ToArray();
         }
 
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name => _name;
 
-        public IEnumerable<ToolViewModel<TTool>> Tools
-        {
-            get { return _tools; }
-        }
+        public IEnumerable<ToolViewModel<TTool>> Tools => _tools;
     }
 }

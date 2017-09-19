@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Windows.Input;
+﻿using Autofac;
 using Cas.Common.WPF;
 using Cas.Common.WPF.Behaviors;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
+using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows.Input;
 
 namespace EFSM.Designer.ViewModel.TransitionEditor
 {
@@ -19,14 +20,24 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         private readonly IDirtyService _dirtyService = new DirtyService();
         private string _name;
         private readonly TransitionViewModel _transition;
+        private StateMachineTransition _model;
+        private Action<StateMachineTransition> _updateParentModel;
+        private StateMachineViewModel _parent;
 
-        public TransitionEditorViewModel(TransitionViewModel transition, IEnumerable<StateMachineInputViewModel> inputs, IEnumerable<StateMachineOutputActionViewModel> outputs)
+        public TransitionEditorViewModel(StateMachineTransition model, StateMachineViewModel parent, Action<StateMachineTransition> updateParentModel)
         {
-            Inputs = new ObservableCollection<StateMachineInputViewModel>(inputs);
-            Outputs = new ObservableCollection<StateMachineOutputActionViewModel>(outputs);
-            _transition = transition;
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+            _updateParentModel = updateParentModel;
+            _parent = parent ?? throw new ArgumentNullException(nameof(parent));
 
-            Actions = new OrderedListDesigner<StateMachineOutputActionViewModel>(NewFactory, outputs.Where(o => transition.Actions.Contains(o.Id)));
+            Inputs = new ObservableCollection<StateMachineInputViewModel>(parent.Inputs);
+            Outputs = new ObservableCollection<StateMachineOutputActionViewModel>(parent.Outputs);
+            _transition = ApplicationContainer.Container.Resolve<TransitionViewModel>(
+                new TypedParameter(typeof(StateMachineViewModel), parent),
+                new TypedParameter(typeof(StateMachineTransition), model)
+                );
+
+            Actions = new OrderedListDesigner<StateMachineOutputActionViewModel>(NewFactory, parent.Outputs.Where(o => _transition.Actions.Contains(o.Id)));
             _actions.ListChanged += ActionsOnListChanged;
 
             Name = Transition.Name;
@@ -52,15 +63,21 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         public ObservableCollection<StateMachineInputViewModel> Inputs { get; }
         public ObservableCollection<StateMachineOutputActionViewModel> Outputs { get; }
 
-        public TransitionViewModel Transition
-        {
-            get { return _transition; }
-        }
+        public TransitionViewModel Transition => _transition;
 
         public ICommand OkCommand { get; }
 
         public IDirtyService DirtyService => _dirtyService;
-        
+
+        public StateMachineTransition GetModel()
+        {
+            var model = _model.Clone();
+            model.Name = Name;
+            model.Condition = Transition.Condition.GetModel();
+            model.TransitionActions = Actions.Items.Where(i => Outputs.Select(o => o.Id).Contains(i.Id)).Select(i => i.Id).ToArray();
+            return model;
+        }
+
         public string Name
         {
             get { return _name; }
@@ -82,27 +99,27 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             }
         }
 
-       
         private void ActionsOnListChanged(object sender, EventArgs e)
         {
             _dirtyService.MarkDirty();
         }
 
-        private StateMachineOutputActionViewModel NewFactory()
-        {
-            return new StateMachineOutputActionViewModel();
-        }
+        private StateMachineOutputActionViewModel NewFactory() => new StateMachineOutputActionViewModel();
 
         private void Ok()
         {
             if (_dirtyService.IsDirty)
             {
-                Close?.Invoke(this, new CloseEventArgs(true));
+                Save();
             }
-            else
-            {
-                Close?.Invoke(this, new CloseEventArgs(false));
-            }
+            Close?.Invoke(this, new CloseEventArgs(_dirtyService.IsDirty));
+        }
+
+        private void Save()
+        {
+            _dirtyService.MarkClean();
+            _parent.DirtyService.MarkDirty();
+            _updateParentModel(GetModel());
         }
 
         public bool CanClose() => true;

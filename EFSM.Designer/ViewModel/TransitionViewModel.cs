@@ -2,6 +2,7 @@
 using EFSM.Designer.Common;
 using EFSM.Designer.Extensions;
 using EFSM.Designer.Interfaces;
+using EFSM.Designer.ViewModel.TransitionEditor;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -11,7 +12,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using EFSM.Designer.ViewModel.TransitionEditor;
 
 namespace EFSM.Designer.ViewModel
 {
@@ -32,7 +32,6 @@ namespace EFSM.Designer.ViewModel
         private bool _isSelected;
 
         private readonly Lazy<TransitionPropertyGridSource> _propertyGridSource;
-        //private IList<StateMachineActionMetadata> _actions;
 
         private StateMachineConditionViewModel _condition;
         public StateMachineConditionViewModel Condition
@@ -51,8 +50,6 @@ namespace EFSM.Designer.ViewModel
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
 
-
-
             _propertyGridSource = new Lazy<TransitionPropertyGridSource>(() => new TransitionPropertyGridSource(this));
 
             CommandInitialize();
@@ -67,25 +64,14 @@ namespace EFSM.Designer.ViewModel
 
         private void ModelInitialize()
         {
-            if (_model.TransitionActions == null)
-            {
-                Actions = new List<Guid>();
-            }
-            else
-            {
-                Actions = _model.TransitionActions.ToList();
-            }
-
+            Actions = _model.TransitionActions == null ? new List<Guid>() : _model.TransitionActions.ToList();
             _condition = new StateMachineConditionViewModel(_model.Condition);
         }
 
         public ICommand DeleteCommand { get; private set; }
         public ICommand EditCommand { get; private set; }
 
-        private bool CanEdit()
-        {
-            return !Parent.IsReadOnly;
-        }
+        private bool CanEdit() => !Parent.IsReadOnly;
 
         public StateMachineTransition GetModel()
         {
@@ -104,21 +90,20 @@ namespace EFSM.Designer.ViewModel
 
         private void Edit()
         {
-            var viewModel = new TransitionEditorViewModel(new TransitionViewModel(_parent, GetModel(), _viewService), Parent.Inputs, Parent.Outputs);
+            var viewModel = new TransitionEditorViewModel(_model, _parent, Reload);
 
-            if (_viewService.ShowDialog(viewModel) == true)
-            {
-                Parent.DirtyService.MarkDirty();
-                Condition = viewModel.Transition.Condition;
-                Actions = viewModel.Actions.Items.Where(i => viewModel.Outputs.Select(o => o.Id).Contains(i.Id)).Select(i => i.Id).ToList();
-                this.Name = viewModel.Name;
-            }
+            _viewService.ShowDialog(viewModel);
         }
 
-        private bool CanDelete()
+        private void Reload(StateMachineTransition model)
         {
-            return !Parent.IsReadOnly;
+            Parent.DirtyService.MarkDirty();
+            _model = model;
+            RaisePropertyChanged(nameof(Name));
+            _parent.SaveUndoState();
         }
+
+        private bool CanDelete() => !Parent.IsReadOnly;
 
         public StateViewModel Source
         {
@@ -346,28 +331,6 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
-        //public IList<StateMachineActionMetadata> Actions
-        //{
-        //    get { return _actions; }
-        //    set
-        //    {
-        //        _actions = value;
-        //        RaisePropertyChanged();
-        //        Parent.DirtyService.MarkDirty();
-        //    }
-        //}
-
-        //public ConditionMetadata Condition
-        //{
-        //    get { return _condition; }
-        //    set
-        //    {
-        //        _condition = value;
-        //        RaisePropertyChanged();
-        //        Parent.DirtyService.MarkDirty();
-        //    }
-        //}
-
         //Use this to find the closest point on a line
         //http://stackoverflow.com/questions/4438244/how-to-calculate-shortest-2d-distance-between-a-point-and-a-line-segment-in-all
 
@@ -443,15 +406,9 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
-        public StateMachineViewModel Parent
-        {
-            get { return _parent; }
-        }
+        public StateMachineViewModel Parent => _parent;
 
-        public object PropertyGridData
-        {
-            get { return _propertyGridSource.Value; }
-        }
+        public object PropertyGridData => _propertyGridSource.Value;
 
         void IMoveable.StartMove()
         {

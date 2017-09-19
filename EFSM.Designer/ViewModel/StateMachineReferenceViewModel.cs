@@ -1,13 +1,12 @@
-﻿using System;
-using System.Windows.Input;
-using Autofac;
+﻿using Autofac;
 using Cas.Common.WPF;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
-using EFSM.Designer.Interfaces;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using System;
+using System.Windows.Input;
 
 namespace EFSM.Designer.ViewModel
 {
@@ -19,13 +18,9 @@ namespace EFSM.Designer.ViewModel
 
         public StateMachineReferenceViewModel(StateMachine model, IViewService viewService, IDirtyService parentDirtyService)
         {
-            if (model == null) throw new ArgumentNullException(nameof(model));
-            if (viewService == null) throw new ArgumentNullException(nameof(viewService));
-            if (parentDirtyService == null) throw new ArgumentNullException(nameof(parentDirtyService));
-
-            _model = model;
-            _viewService = viewService;
-            _parentDirtyService = parentDirtyService;
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+            _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
+            _parentDirtyService = parentDirtyService ?? throw new ArgumentNullException(nameof(parentDirtyService));
 
             RenameCommand = new RelayCommand(Rename);
             EditCommand = new RelayCommand(() => Edit());
@@ -52,28 +47,25 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
-        public StateMachine GetModel()
-        {
-            return _model.Clone();
-        }
+        public StateMachine GetModel() => _model.Clone();
 
-        public bool Edit()
+        public void Edit()
         {
+            Action<StateMachine> reloadModel = ReloadModel;
             StateMachineDialogWindowViewModel viewModel = ApplicationContainer.Container
                 .Resolve<StateMachineDialogWindowViewModel>(
                     new TypedParameter(typeof(StateMachine), GetModel()),
-                    new TypedParameter(typeof(IDirtyService), _parentDirtyService)
+                    new TypedParameter(typeof(IDirtyService), _parentDirtyService),
+                    new TypedParameter(typeof(Action<StateMachine>), reloadModel)
                 );
 
-            if (_viewService.ShowDialog(viewModel) == true)
-            {
-                _model = viewModel.GetModel();
-                RaisePropertyChanged();
-                _parentDirtyService.MarkDirty();
-                return true;
-            }
+            _viewService.ShowDialog(viewModel);
+        }
 
-            return false;
+        private void ReloadModel(StateMachine stateMachine)
+        {
+            _model = stateMachine;
+            RaisePropertyChanged(nameof(Name));
         }
     }
 }

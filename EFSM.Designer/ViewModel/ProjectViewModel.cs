@@ -1,9 +1,7 @@
 ﻿using Autofac;
 using Cas.Common.WPF;
 using Cas.Common.WPF.Interfaces;
-using EFSM.Designer.Common;
 using EFSM.Designer.Extensions;
-using EFSM.Designer.Interfaces;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -50,10 +48,7 @@ namespace EFSM.Designer.ViewModel
             MessageBox.Show("Not Implemented");
         }
 
-        private bool CanGenerate()
-        {
-            return StateMachines.Any();
-        }
+        private bool CanGenerate() => StateMachines.Any();
 
         private void NewStateMachine()
         {
@@ -88,20 +83,11 @@ namespace EFSM.Designer.ViewModel
             _dirtyService.MarkDirty();
         }
 
-        private bool CanDeleteStateMachine()
-        {
-            return SelectedStateMachine != null;
-        }
+        private bool CanDeleteStateMachine() => SelectedStateMachine != null;
 
-        public ObservableCollection<StateMachineReferenceViewModel> StateMachines
-        {
-            get { return _stateMachines; }
-        }
+        public ObservableCollection<StateMachineReferenceViewModel> StateMachines => _stateMachines;
 
-        public IDirtyService DirtyService
-        {
-            get { return _dirtyService; }
-        }
+        public IDirtyService DirtyService => _dirtyService;
 
         public StateMachineReferenceViewModel SelectedStateMachine
         {

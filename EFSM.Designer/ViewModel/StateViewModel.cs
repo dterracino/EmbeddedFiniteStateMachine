@@ -20,7 +20,7 @@ namespace EFSM.Designer.ViewModel
         private const double DefaultHeightWidth = 100;
         private double _width = DefaultHeightWidth;
         private double _height = DefaultHeightWidth;
-        private State _state;
+        private State _model;
         public StateMachineViewModel Parent { get; private set; }
         private Point _startLocation;
         private IViewService _viewService;
@@ -31,37 +31,32 @@ namespace EFSM.Designer.ViewModel
 
         public StateViewModel(State state, StateMachineViewModel parent, IViewService viewService)
         {
-            _state = state ?? throw new ArgumentNullException(nameof(state));
+            _model = state ?? throw new ArgumentNullException(nameof(state));
             _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
             Parent = parent ?? throw new ArgumentNullException(nameof(parent));
 
-            Location = new Point(_state.X, _state.Y);
+            Location = new Point(_model.X, _model.Y);
             EditCommand = new RelayCommand(Edit, CanEdit);
             DeleteCommand = new RelayCommand(Delete, CanDelete);
             _propertyGridSource = new StatePropertyGridSource(this);
         }
 
-        private bool CanEdit()
-        {
-            return !Parent.IsReadOnly;
-        }
+        private bool CanEdit() => !Parent.IsReadOnly;
 
-        private bool CanDelete()
-        {
-            return !Parent.IsReadOnly;
-        }
+        private bool CanDelete() => !Parent.IsReadOnly;
 
         private void Edit()
         {
-            var viewModel = new StateDialogViewModel(Parent, GetModel(), Parent.Outputs);
+            var viewModel = new StateDialogViewModel(Parent, GetModel(), Reload);
 
-            if (_viewService.ShowDialog(viewModel) == true)
-            {
-                Parent.DirtyService.MarkDirty();
-                _state.EntryActions = viewModel.EntryActions.Items.Select(a => a.Id).ToArray();
-                _state.ExitActions = viewModel.ExitActions.Items.Select(a => a.Id).ToArray();
-                Name = viewModel.Name;
-            }
+            _viewService.ShowDialog(viewModel);
+        }
+
+        private void Reload(State newModel)
+        {
+            _model = newModel;
+            RaisePropertyChanged(nameof(Name));
+            Parent.SaveUndoState();
         }
 
         private Point _location;
@@ -71,8 +66,8 @@ namespace EFSM.Designer.ViewModel
             set
             {
                 _location = value;
-                _state.X = value.X;
-                _state.Y = value.Y;
+                _model.X = value.X;
+                _model.Y = value.Y;
                 RaisePropertyChanged();
                 //_undoProvider.SaveUndoState();
             }
@@ -98,10 +93,10 @@ namespace EFSM.Designer.ViewModel
 
         public Guid Id
         {
-            get { return _state.Id; }
+            get { return _model.Id; }
             set
             {
-                _state.Id = value;
+                _model.Id = value;
                 RaisePropertyChanged();
                 Parent.SaveUndoState();
             }
@@ -109,10 +104,10 @@ namespace EFSM.Designer.ViewModel
 
         public string Name
         {
-            get { return _state.Name; }
+            get { return _model.Name; }
             set
             {
-                _state.Name = value;
+                _model.Name = value;
                 RaisePropertyChanged();
                 Parent.SaveUndoState();
             }
@@ -120,32 +115,32 @@ namespace EFSM.Designer.ViewModel
 
         public Guid[] EntryActions
         {
-            get { return _state.EntryActions; }
-            set { _state.EntryActions = value; RaisePropertyChanged(); }
+            get { return _model.EntryActions; }
+            set { _model.EntryActions = value; RaisePropertyChanged(); }
         }
 
         public Guid[] ExitActions
         {
-            get { return _state.EntryActions; }
-            set { _state.EntryActions = value; RaisePropertyChanged(); }
+            get { return _model.EntryActions; }
+            set { _model.EntryActions = value; RaisePropertyChanged(); }
         }
 
         public double X
         {
-            get { return _state.X; }
-            set { _state.X = value; RaisePropertyChanged(); Parent.SaveUndoState(); }
+            get { return _model.X; }
+            set { _model.X = value; RaisePropertyChanged(); Parent.SaveUndoState(); }
         }
 
         public double Y
         {
-            get { return _state.Y; }
-            set { _state.Y = value; RaisePropertyChanged(); Parent.SaveUndoState(); }
+            get { return _model.Y; }
+            set { _model.Y = value; RaisePropertyChanged(); Parent.SaveUndoState(); }
         }
 
         public StateType StateType
         {
-            get { return (StateType)_state.StateType; }
-            set { _state.StateType = (int)value; RaisePropertyChanged(); }
+            get { return (StateType)_model.StateType; }
+            set { _model.StateType = (int)value; RaisePropertyChanged(); }
         }
 
         private bool _isSelected;
@@ -160,7 +155,7 @@ namespace EFSM.Designer.ViewModel
 
         public State GetModel()
         {
-            return _state.Clone();
+            return _model.Clone();
         }
 
         public void DeleteAction(Guid outputId)

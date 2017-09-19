@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Cas.Common.WPF;
 using Cas.Common.WPF.Behaviors;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
@@ -10,14 +11,11 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using Cas.Common.WPF;
 
 namespace EFSM.Designer.ViewModel
 {
     public class StateMachineDialogWindowViewModel : ViewModelBase, IUndoProvider, ICloseableViewModel
     {
-
-
         private readonly IUndoService<StateMachine> _undoService;
         private readonly IViewService _viewService;
 
@@ -34,12 +32,15 @@ namespace EFSM.Designer.ViewModel
         private OrderedListDesigner<StateMachineInputViewModel> _inputs;
         private OrderedListDesigner<StateMachineOutputActionViewModel> _outputs;
 
+        private Action<StateMachine> _updateParentModel;
+
         public event EventHandler<CloseEventArgs> Close;
 
-        public StateMachineDialogWindowViewModel(StateMachine stateMachine, IViewService viewService, IDirtyService parentDirtyService)
+        public StateMachineDialogWindowViewModel(StateMachine stateMachine, IViewService viewService, IDirtyService parentDirtyService, Action<StateMachine> updateParentModel)
         {
             _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
             _parentDirtyService = parentDirtyService ?? throw new ArgumentNullException(nameof(parentDirtyService));
+            _updateParentModel = updateParentModel;
 
             InitiateStateMachineViewModel(stateMachine);
 
@@ -176,8 +177,7 @@ namespace EFSM.Designer.ViewModel
 
         private void OkButtonClick()
         {
-            DirtyService.MarkClean();
-            _parentDirtyService.MarkDirty();
+            Save();
             Close?.Invoke(this, new CloseEventArgs(true));
         }
 
@@ -210,13 +210,28 @@ namespace EFSM.Designer.ViewModel
         {
             if (DirtyService.IsDirty)
             {
-                if (MessageBox.Show("Really close?", "State Machine has changed", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                var result = MessageBox.Show("Save changes?", "State Machine has changed", MessageBoxButton.YesNoCancel);
+
+                switch (result)
                 {
-                    return false;
+                    case MessageBoxResult.Yes:
+                        Save();
+                        break;
+                    case MessageBoxResult.No:
+                        return true;
+                    case MessageBoxResult.Cancel:
+                        return false;
                 }
             }
 
             return true;
+        }
+
+        private void Save()
+        {
+            DirtyService.MarkClean();
+            _parentDirtyService.MarkDirty();
+            _updateParentModel(GetModel());
         }
 
         public void Closed()

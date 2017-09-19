@@ -1,4 +1,6 @@
-﻿using Cas.Common.WPF.Behaviors;
+﻿using Cas.Common.WPF;
+using Cas.Common.WPF.Behaviors;
+using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
@@ -7,25 +9,38 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
-using Cas.Common.WPF;
-using Cas.Common.WPF.Interfaces;
 
 namespace EFSM.Designer.ViewModel.StateEditor
 {
     public class StateDialogViewModel : ViewModelBase, ICloseableViewModel
     {
         public event EventHandler<CloseEventArgs> Close;
-        private readonly IDirtyService _dirtyService = new DirtyService();
-        public IDirtyService DirtyService => _dirtyService;
-
-        private readonly State _model;
-        private readonly StateMachineViewModel _parent;
         public ObservableCollection<StateMachineOutputActionViewModel> Outputs { get; }
         public ICommand OkCommand { get; }
+        public IDirtyService DirtyService => _dirtyService;
 
+        private readonly IDirtyService _dirtyService = new DirtyService();
+        private readonly State _model;
+        private readonly StateMachineViewModel _parent;
         private OrderedListDesigner<StateMachineOutputActionViewModel> _entryActions;
         private OrderedListDesigner<StateMachineOutputActionViewModel> _exitActions;
+        private Action<State> _updateParent;
+
+        public StateDialogViewModel(StateMachineViewModel parent, State model, Action<State> updateParent)
+        {
+            _parent = parent ?? throw new ArgumentNullException(nameof(parent));
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+            Outputs = _parent.Outputs ?? throw new ArgumentNullException(nameof(_parent.Outputs));
+            _updateParent = updateParent;
+
+            InitializeActions();
+            OkCommand = new RelayCommand(Ok);
+
+            DirtyService.MarkClean();
+        }
+
         public OrderedListDesigner<StateMachineOutputActionViewModel> EntryActions
         {
             get { return _entryActions; }
@@ -57,22 +72,7 @@ namespace EFSM.Designer.ViewModel.StateEditor
             }
         }
 
-        public string Title
-        {
-            get { return Name; }
-        }
-
-        public StateDialogViewModel(StateMachineViewModel parent, State model, ObservableCollection<StateMachineOutputActionViewModel> actions)
-        {
-            _parent = parent ?? throw new ArgumentNullException(nameof(parent));
-            _model = model ?? throw new ArgumentNullException(nameof(model));
-            Outputs = actions ?? throw new ArgumentNullException(nameof(actions));
-
-            InitializeActions();
-            OkCommand = new RelayCommand(Ok);
-
-            DirtyService.MarkClean();
-        }
+        public string Title => Name;
 
         private void InitializeActions()
         {
@@ -116,16 +116,44 @@ namespace EFSM.Designer.ViewModel.StateEditor
             DirtyService.MarkDirty();
         }
 
-        public bool CanClose() => true;
+        public bool CanClose()
+        {
+            if (DirtyService.IsDirty)
+            {
+                var result = MessageBox.Show("Save changes?", "State Machine has changed", MessageBoxButton.YesNoCancel);
+
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        Save();
+                        break;
+                    case MessageBoxResult.No:
+                        return true;
+                    case MessageBoxResult.Cancel:
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
 
         public void Closed()
         {
+        }
+
+        private void Save()
+        {
+            _parent.DirtyService.MarkDirty();
+            _dirtyService.MarkClean();
+            _updateParent(GetModel());
         }
 
         private void Ok()
         {
             if (_dirtyService.IsDirty)
             {
+                Save();
                 Close?.Invoke(this, new CloseEventArgs(true));
             }
             else

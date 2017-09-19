@@ -25,25 +25,13 @@ namespace EFSM.Designer.ViewModel
             OnMouseLeftButtonDownCommand = new RelayCommand<MouseEventArgs>(MouseLeftButtonDown);
         }
 
-        public string Name
-        {
-            get { return _tool.Name; }
-        }
+        public string Name => _tool.Name;
 
-        public string Description
-        {
-            get { return _tool.Description; }
-        }
+        public string Description => _tool.Description;
 
-        public TTool Tool
-        {
-            get { return _tool; }
-        }
+        public TTool Tool => _tool;
 
-        public override ITool GetTool()
-        {
-            return Tool;
-        }
+        public override ITool GetTool() => Tool;
 
         public ICommand OnMouseLeftButtonDownCommand { get; private set; }
 

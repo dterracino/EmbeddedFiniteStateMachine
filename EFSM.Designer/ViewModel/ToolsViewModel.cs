@@ -24,10 +24,7 @@ namespace EFSM.Designer.ViewModel
 
 
 
-        public IEnumerable<ToolCategoryViewModel<TTool>> Categories
-        {
-            get { return _categories; }
-        }
+        public IEnumerable<ToolCategoryViewModel<TTool>> Categories => _categories;
     }
 }
 

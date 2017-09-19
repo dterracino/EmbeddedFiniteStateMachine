@@ -39,6 +39,7 @@ namespace EFSM.Designer
             builder.RegisterType<FilePersistor>().As<IPersistor>();
             builder.RegisterType<SelectionService>().As<ISelectionService>();
             builder.RegisterType<UndoService<StateMachine>>().As<IUndoService<StateMachine>>();
+            builder.RegisterType<DirtyService>().As<IDirtyService>();
 
             Container = builder.Build();
         }

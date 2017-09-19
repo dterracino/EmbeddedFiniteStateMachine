@@ -59,20 +59,14 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             RootCondition = new CompoundConditionViewModel(_owner);
         }
 
-        private bool CanSetCompoundRootCondition()
-        {
-            return RootCondition == null;
-        }
+        private bool CanSetCompoundRootCondition() => RootCondition == null;
 
         private void SetSimpleRootCondition()
         {
             RootCondition = new SimpleConditionViewModel(_owner) { SourceInputId = _owner.Inputs[0].Id };
         }
 
-        private bool CanSetSimpleRootCondition()
-        {
-            return _owner.Inputs.Count > 0 && RootCondition == null;
-        }
+        private bool CanSetSimpleRootCondition() => _owner.Inputs.Count > 0 && RootCondition == null;
 
         private void DeleteCondition()
         {
@@ -95,9 +89,6 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             _owner.DirtyService.MarkDirty();
         }
 
-        private bool CanDeleteCondition()
-        {
-            return SelectedCondition != null;
-        }
+        private bool CanDeleteCondition() => SelectedCondition != null;
     }
 }

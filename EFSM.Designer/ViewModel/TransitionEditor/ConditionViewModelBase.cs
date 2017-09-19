@@ -1,7 +1,6 @@
-﻿using EFSM.Designer.Interfaces;
+﻿using Cas.Common.WPF.Interfaces;
 using GalaSoft.MvvmLight;
 using System;
-using Cas.Common.WPF.Interfaces;
 
 namespace EFSM.Designer.ViewModel.TransitionEditor
 {
@@ -16,14 +15,8 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
         public ConditionsViewModel ParentCollection { get; internal set; }
 
-        public IDirtyService DirtyService
-        {
-            get { return _owner.DirtyService; }
-        }
+        public IDirtyService DirtyService => _owner.DirtyService;
 
-        public TransitionEditorViewModel Owner
-        {
-            get { return _owner; }
-        }
+        public TransitionEditorViewModel Owner => _owner;
     }
 }
