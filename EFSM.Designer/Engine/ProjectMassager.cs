@@ -10,6 +10,13 @@ namespace EFSM.Designer.Engine
             if (project == null)
                 project = new StateMachineProject();
 
+            //options
+            if (project.GenerationOptions == null)
+            {
+                project.GenerationOptions = new GenerationOptions();
+            }
+
+            //State machines
             if (project.StateMachines == null)
                 project.StateMachines = new StateMachine[] { };
 

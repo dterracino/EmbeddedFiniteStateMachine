@@ -24,7 +24,6 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
@@ -57,40 +56,119 @@
             </MenuItem>
         </Menu>
         
-        <ToolBar Grid.Row="1">
-            <Button ToolTip="Insert a new State Machine..." Command="{Binding Path=Project.NewStateMachineCommand}">Insert</Button>
-            <Button ToolTip="Delete the currently selected State Machine" Command="{Binding Project.DeleteStateMachineCommand}">Delete</Button>
-            <Separator/>
-            <Button ToolTip="Generate C code..." Command="{Binding Path=Project.GenerateCommand}" >Generate</Button>
-        </ToolBar>
+        <TabControl Grid.Row="1">
+            <TabItem Header="State Machines">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
 
-        <ListBox Grid.Row="2" ToolTip="State Machines" ItemsSource="{Binding Path=Project.StateMachines}" 
-                 SelectedItem="{Binding Project.SelectedStateMachine, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <StackPanel.ContextMenu>
-                            <ContextMenu d:DataContext="{d:DesignInstance viewModel:StateMachineReferenceViewModel}">
-                                <MenuItem Command="{Binding Path=EditCommand}" Header="Edit..."></MenuItem>
-                            </ContextMenu>
-                        </StackPanel.ContextMenu>
+                    <ToolBar Grid.Row="0">
+                        <Button ToolTip="Insert a new State Machine..." Command="{Binding Path=Project.NewStateMachineCommand}">Insert</Button>
+                        <Button ToolTip="Delete the currently selected State Machine" Command="{Binding Project.DeleteStateMachineCommand}">Delete</Button>
+                        <Separator/>
+                        <Button ToolTip="Generate C code..." Command="{Binding Path=Project.GenerateCommand}" >Generate</Button>
+                    </ToolBar>
 
-                        <Image Source="/EFSM.Designer;component/Images/StateMachine_16x.png" Width="16" Height="16" VerticalAlignment="Center" Margin="1"/>
 
-                        <TextBlock Text="{Binding Path=Name}" VerticalAlignment="Center" Margin="1">
+                    <ListBox Grid.Row="1" ToolTip="State Machines" ItemsSource="{Binding Path=Project.StateMachines}" 
+                             SelectedItem="{Binding Project.SelectedStateMachine, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <StackPanel.ContextMenu>
+                                        <ContextMenu d:DataContext="{d:DesignInstance viewModel:StateMachineReferenceViewModel}">
+                                            <MenuItem Command="{Binding Path=EditCommand}" Header="Edit..."></MenuItem>
+                                        </ContextMenu>
+                                    </StackPanel.ContextMenu>
 
-                            <TextBlock.InputBindings>
-                                <MouseBinding MouseAction="LeftDoubleClick" 
-                                              Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-                                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=DataContext}"
-                                />
-                            </TextBlock.InputBindings>
+                                    <Image Source="/EFSM.Designer;component/Images/StateMachine_16x.png" Width="16" Height="16" VerticalAlignment="Center" Margin="1"/>
 
-                        </TextBlock>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+                                    <TextBlock Text="{Binding Path=Name}" VerticalAlignment="Center" Margin="1">
+
+                                        <TextBlock.InputBindings>
+                                            <MouseBinding MouseAction="LeftDoubleClick" 
+                                                          Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=DataContext}"
+                                            />
+                                        </TextBlock.InputBindings>
+
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Generation Options" DataContext="{Binding Path=Project.GenerationOptions}">
+                
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <GroupBox Header="Files">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Margin="4" VerticalAlignment="Center">Header File Path</TextBlock>
+                            <TextBox Grid.Row="0" Grid.Column="1" Margin="4" VerticalAlignment="Center" Text="{Binding Path=HeaderFilePath}" />
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="4" VerticalAlignment="Center">Header File Path</TextBlock>
+                            <TextBox Grid.Row="1" Grid.Column="1" Margin="4" VerticalAlignment="Center" Text="{Binding Path=CodeFilePath}" />
+
+                        </Grid>
+                        
+                    </GroupBox>
+
+
+                    <Grid Grid.Row="1">
+                        <Grid.Resources>
+                            <Style TargetType="TextBox">
+                                <Setter Property="FontFamily" Value="Courier New"/>
+                                <Setter Property="FontSize" Value="12"/>
+                                <Setter Property="Margin" Value="1"/>
+                                <Setter Property="AcceptsReturn" Value="True"/>
+                                <Setter Property="AcceptsTab" Value="True"/>
+                                <Setter Property="VerticalScrollBarVisibility" Value="Visible"/>
+                                <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
+                            </Style>
+                        </Grid.Resources>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <GroupBox Header="Header">
+                            <TextBox Text="{Binding Path=HeaderFileHeader}"/>
+                        </GroupBox>
+
+                        <GridSplitter Grid.Column="1" ResizeBehavior="PreviousAndNext" Width="4" VerticalAlignment="Stretch" Background="LightGray"></GridSplitter>
+
+                        <GroupBox Grid.Column="2" Header="Footer">
+                            <TextBox Text="{Binding Path=HeaderFileFooter}"/>
+                        </GroupBox>
+
+                    </Grid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        
+     
     </Grid>
 </Window>
+
+    

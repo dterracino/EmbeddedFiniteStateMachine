@@ -9,10 +9,11 @@ namespace EFSM.Designer.Engine
     {
         public StateMachineProject Create()
         {
-            return new StateMachineProject()
-            {
-                StateMachines = new StateMachine[] {}
-            };
+            var project = new StateMachineProject();
+
+            project.Massage();
+
+            return project;
         }
 
         public StateMachineProject LoadProject(string path)

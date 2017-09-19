@@ -15,7 +15,7 @@ namespace EFSM.Generator
             headerFile.Append(options.HeaderFileHeader);
 
             headerFile.AppendLine($"/* Number of state machines */");
-            headerFile.AppendLine($"#define EFSM_NUMBER_OF_STATE_MACHINES {project.StateMachines.Length}");
+            headerFile.AppendLine($"#define EFSM_NUM_STATE_MACHINES {project.StateMachines.Length}");
             headerFile.AppendLine();
 
             headerFile.AppendLine("/* State Machines */");
@@ -26,6 +26,7 @@ namespace EFSM.Generator
 
                 headerFile.AppendLine($"/* State Machine: {stateMachine.Name} */");
                 headerFile.AppendLine($"#define EFSM_{stateMachine.Name.FixDefineName()}_INDEX {stateMachineIndex}");
+                headerFile.AppendLine($"#define EFSM_{stateMachine.Name.FixDefineName()}_NUM_STATES {stateMachine.States.Length}");
                 headerFile.AppendLine();
 
                 // ----------- Input Functions --------------------
@@ -42,10 +43,10 @@ namespace EFSM.Generator
                 {
                     headerFile.AppendLine($"void EFSM_{stateMachine.Name.FixFunctionName()}_Output_{output.Name.FixFunctionName()}();");
                 }
-
                 headerFile.AppendLine();
 
                 //---- States ---------------
+                headerFile.AppendLine($"/* States */");
                 for (int stateIndex = 0; stateIndex < stateMachine.States.Length; stateIndex++)
                 {
                     //Get the state
@@ -62,18 +63,5 @@ namespace EFSM.Generator
             File.WriteAllText(options.HeaderFilePath, headerFile.ToString());
             File.WriteAllText(options.CodeFilePath, codeFile.ToString());
         }
-    }
-
-
-    public class GenerationOptions
-    {
-        public string HeaderFilePath { get; set; }
-
-        public string HeaderFileHeader { get; set; }
-
-        public string HeaderFileFooter { get; set; }
-
-        public string CodeFilePath { get; set; }
-
     }
 }

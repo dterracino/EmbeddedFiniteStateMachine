@@ -171,6 +171,7 @@
     <Compile Include="Model\StatePropertyGridSource.cs" />
     <Compile Include="Model\StateTools.cs" />
     <Compile Include="ViewModel\DesignerViewModelBase.cs" />
+    <Compile Include="ViewModel\GenerationOptionsViewModel.cs" />
     <Compile Include="ViewModel\Simulation\SimulationStateMachineViewModel.cs" />
     <Compile Include="ViewModel\Simulation\SimulationViewModel.cs" />
     <Compile Include="ViewModel\InputViewModel.cs" />

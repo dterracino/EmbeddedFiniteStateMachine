@@ -22,6 +22,7 @@ namespace EFSM.Designer.ViewModel
 
         private readonly ObservableCollection<StateMachineReferenceViewModel> _stateMachines = new ObservableCollection<StateMachineReferenceViewModel>();
         private StateMachineReferenceViewModel _selectedStateMachine;
+        private readonly GenerationOptionsViewModel _generationOptions;
 
         public ProjectViewModel(StateMachineProject project, IDirtyService dirtyService)
         {
@@ -37,6 +38,8 @@ namespace EFSM.Designer.ViewModel
                         )));
             }
 
+            _generationOptions = new GenerationOptionsViewModel(project.GenerationOptions, dirtyService);
+
             NewStateMachineCommand = new RelayCommand(NewStateMachine);
             DeleteStateMachineCommand = new RelayCommand(DeleteStateMachine, CanDeleteStateMachine);
             GenerateCommand = new RelayCommand(Generate, CanGenerate);
@@ -50,18 +53,19 @@ namespace EFSM.Designer.ViewModel
         {
             try
             {
-                var options = new GenerationOptions()
-                {
-                    CodeFilePath = @"c:\code.c",
-                    HeaderFilePath = @"c:\code.h"
-                };
-
+                //Create the generator
                 var generator = new EmbeddedCodeGenerator();
 
+                //Get the project model
                 var project = GetModel();
 
+                //Massage it real nice like
                 project.Massage();
 
+                //Get the options
+                var options = GenerationOptions.GetModel();
+
+                //Generate. Do it now.
                 generator.Generate(project, options);
             }
             catch (Exception ex)
@@ -119,6 +123,11 @@ namespace EFSM.Designer.ViewModel
                 _selectedStateMachine = value;
                 RaisePropertyChanged();
             }
+        }
+
+        public GenerationOptionsViewModel GenerationOptions
+        {
+            get { return _generationOptions; }
         }
 
         public StateMachineProject GetModel()

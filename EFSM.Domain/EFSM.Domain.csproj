@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompoundConditionType.cs" />
+    <Compile Include="GenerationOptions.cs" />
     <Compile Include="StateMachineCondition.cs" />
     <Compile Include="StateMachineInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -4,9 +4,7 @@ namespace EFSM.Domain
     {
         public StateMachine[] StateMachines { get; set; }
 
-
-        public StateMachineProject()
-        {
-        }
+        public GenerationOptions GenerationOptions { get; set; }
+        
     }
 }
