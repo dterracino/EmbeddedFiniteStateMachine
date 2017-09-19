@@ -44,12 +44,7 @@ namespace EFSM.Generator
             var orderedStates = stateMachine.States
                 .OrderByDescending(s => s.StateType)
                 .ToArray();
-
-            //Generate the states
-            var generatedStates = orderedStates
-                .Select((m, index) => GenerateState(m, index, stateMachine))
-                .ToArray();
-
+            
             //Inputs
             var generatedInputs = stateMachine.Inputs
                 .Select((m, index) => GenerateInput(m, index, stateMachine))
@@ -59,6 +54,12 @@ namespace EFSM.Generator
             var generatedOutputs = stateMachine.Actions
                 .Select((m, index) => GenerateOutput(m, index, stateMachine))
                 .ToArray();
+
+            //Generate the states
+            var generatedStates = orderedStates
+                .Select((m, index) => GenerateState(m, index, stateMachine, generatedOutputs))
+                .ToArray();
+
 
             int transitionIndex = 0;
 
@@ -77,25 +78,11 @@ namespace EFSM.Generator
                 if (targetState == null)
                     throw new ApplicationException($"Unablet to find target state {transition.TargetStateId} in transition '{transition.Name}'.");
 
-                var outputActions = new List<GeneratedActionReference>(transition.TransitionActions.Length);
-
-                int actionIndex = 0;
-
-                foreach (var outputActionId in transition.TransitionActions)
-                {
-                    var outputAction = generatedOutputs.FirstOrDefault(o => o.Model.Id == outputActionId);
-
-                    if (outputAction == null)
-                        throw new ApplicationException($"Unable to find output action {outputActionId} in transition '{transition.Name}'.");
-
-                    outputActions.Add(new GeneratedActionReference(outputAction, actionIndex));
-
-                    actionIndex++;
-                }
+                var actions = GetActions(generatedOutputs, transition.TransitionActions, $"Transition '{transition.Name}'");
 
                 //TODO: Deal with the input conditions
 
-                var generatedTransition = new GeneratedTransition(transition, transitionIndex, stateMachine, targetState, outputActions.ToArray());
+                var generatedTransition = new GeneratedTransition(transition, transitionIndex, stateMachine, targetState, actions.ToArray());
 
                 sourceState.Transitions.Add(generatedTransition);
 
@@ -110,9 +97,34 @@ namespace EFSM.Generator
                 stateMachineIndex);
         }
 
-        private GeneratedState GenerateState(State state, int index, StateMachine parent)
+        private GeneratedActionReference[] GetActions(GeneratedOutput[] allOutputs, Guid[] actionIds, string objectName)
         {
-            return new GeneratedState(state, index, parent);
+            GeneratedActionReference[] actions = new GeneratedActionReference[actionIds.Length];
+
+            int actionIndex = 0;
+
+            foreach (var outputActionId in actionIds)
+            {
+                var outputAction = allOutputs.FirstOrDefault(o => o.Model.Id == outputActionId);
+
+                if (outputAction == null)
+                    throw new ApplicationException($"Unable to find action {outputActionId} in {objectName}.");
+
+                actions[actionIndex] = new GeneratedActionReference(outputAction, actionIndex);
+
+                actionIndex++;
+            }
+
+            return actions;
+        }
+
+        private GeneratedState GenerateState(State state, int index, StateMachine parent, GeneratedOutput[] allOutputs)
+        {
+            var entryActions = GetActions(allOutputs, state.EntryActions, $"state {state.Name} entry actions");
+
+            var exitActions = GetActions(allOutputs, state.EntryActions, $"state {state.Name} exit actions");
+
+            return new GeneratedState(state, index, parent, entryActions, exitActions);
         }
 
         private GeneratedInput GenerateInput (StateMachineInput input, int index, StateMachine parent)
@@ -252,6 +264,16 @@ namespace EFSM.Generator
                                                     code.AppendLine($"/* [{action.Index}]{action.Model.Model.Name}  */");
                                                 }
                                             }
+
+                                            code.AppendLine("/* Condition */");
+
+                                            if (transition.Model.Condition != null)
+                                            {
+                                                using (new Indenter(code))
+                                                {
+                                                    AppendCondition(transition.Model.Condition, code, stateMachine.Inputs);
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -260,9 +282,9 @@ namespace EFSM.Generator
 
                                 using (new Indenter(code))
                                 {
-                                    foreach (var action in state.Model.EntryActions)
+                                    foreach (var action in state.EntryActions)
                                     {
-                                        code.AppendLine($"/* {action} */");
+                                        code.AppendLine($"/* [{action.Index}]{action.Model.Model.Name} */");
                                     }
                                 }
 
@@ -270,9 +292,9 @@ namespace EFSM.Generator
 
                                 using (new Indenter(code))
                                 {
-                                    foreach (var action in state.Model.ExitActions)
+                                    foreach (var action in state.ExitActions)
                                     {
-                                        code.AppendLine($"/* {action} */");
+                                        code.AppendLine($"/* [{action.Index}]{action.Model.Model.Name} */");
                                     }
                                 }
                             }
@@ -282,6 +304,62 @@ namespace EFSM.Generator
             }
 
             return code.ToString();
+        }
+
+        private static void AppendCondition(StateMachineCondition condition, TextGenerator code, GeneratedInput[] inputs)
+        {
+
+            if (condition.CompoundConditionType == null && condition.Conditions == null &&
+                condition.SourceInputId == null)
+            {
+                code.AppendLine("/* None */");
+
+                return;
+            }
+
+            if (condition.CompoundConditionType == null)
+            {
+                if (condition.SourceInputId == null)
+                    throw new ApplicationException($"No source input was specified in a non-compound condition.");
+
+                var input = inputs.FirstOrDefault(i => i.Model.Id == condition.SourceInputId.Value);
+
+                if (input == null)
+                    throw new ApplicationException($"Unabe to find input {condition.SourceInputId}.");
+
+                string prefix = (condition.Value == true) ? "" : "!";
+
+                code.AppendLine($"/* {prefix}{input.Model.Name} */");
+            }
+            else
+            {
+                switch (condition.CompoundConditionType.Value)
+                {
+                    case CompoundConditionType.And:
+
+                        code.AppendLine("/* And */");
+
+                        break;
+
+                    case CompoundConditionType.Or:
+                        code.AppendLine("/* Or */");
+                        break;
+
+                    default:
+                        throw new InvalidOperationException($"Unexpected enum value '{condition.CompoundConditionType.Value}'");
+                }
+
+                using (new Indenter(code))
+                {
+                    if (condition.Conditions == null || condition.Conditions.Count == 0)
+                        throw new ApplicationException($"A condition was marked as compound, but had no child conditions.");
+
+                    foreach (var childCondition in condition.Conditions)
+                    {
+                        AppendCondition(childCondition, code, inputs);
+                    }
+                }
+            }
         }
     }
 }

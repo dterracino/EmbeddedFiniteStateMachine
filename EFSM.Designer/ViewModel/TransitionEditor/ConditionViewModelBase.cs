@@ -1,6 +1,7 @@
 ﻿using Cas.Common.WPF.Interfaces;
 using GalaSoft.MvvmLight;
 using System;
+using EFSM.Domain;
 
 namespace EFSM.Designer.ViewModel.TransitionEditor
 {
@@ -18,5 +19,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         public IDirtyService DirtyService => _owner.DirtyService;
 
         public TransitionEditorViewModel Owner => _owner;
+
+        internal abstract StateMachineCondition GetModel();
     }
 }

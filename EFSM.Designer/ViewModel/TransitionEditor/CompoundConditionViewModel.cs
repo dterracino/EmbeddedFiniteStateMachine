@@ -1,6 +1,7 @@
 ﻿using EFSM.Domain;
 using GalaSoft.MvvmLight.CommandWpf;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 
 namespace EFSM.Designer.ViewModel.TransitionEditor
@@ -86,5 +87,13 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         }
 
 
+        internal override StateMachineCondition GetModel()
+        {
+            return new StateMachineCondition()
+            {
+                CompoundConditionType = ConditionType,
+                Conditions = Children.Select(c => c.GetModel()).ToList()
+            };
+        }
     }
 }

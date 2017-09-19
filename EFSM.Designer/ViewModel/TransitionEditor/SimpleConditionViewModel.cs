@@ -1,4 +1,5 @@
 ﻿using System;
+using EFSM.Domain;
 
 namespace EFSM.Designer.ViewModel.TransitionEditor
 {
@@ -32,6 +33,15 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
                 RaisePropertyChanged();
                 DirtyService.MarkDirty();
             }
+        }
+
+        internal override StateMachineCondition GetModel()
+        {
+            return new StateMachineCondition()
+            {
+                SourceInputId = SourceInputId,
+                Value = Value
+            };
         }
     }
 }

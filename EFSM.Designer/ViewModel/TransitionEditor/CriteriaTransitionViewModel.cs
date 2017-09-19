@@ -4,6 +4,7 @@ using GalaSoft.MvvmLight.CommandWpf;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using EFSM.Domain;
 
 namespace EFSM.Designer.ViewModel.TransitionEditor
 {
@@ -90,5 +91,10 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         }
 
         private bool CanDeleteCondition() => SelectedCondition != null;
+
+        internal StateMachineCondition GetModel()
+        {
+            return RootCondition?.GetModel();
+        }
     }
 }

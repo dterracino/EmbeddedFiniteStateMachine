@@ -18,11 +18,10 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         private CriteriaTransitionViewModel _criteriaViewModel;
         private OrderedListDesigner<StateMachineOutputActionViewModel> _actions;
         private readonly IDirtyService _dirtyService = new DirtyService();
-        private string _name;
         private readonly TransitionViewModel _transition;
-        private StateMachineTransition _model;
-        private Action<StateMachineTransition> _updateParentModel;
-        private StateMachineViewModel _parent;
+        private readonly StateMachineTransition _model;
+        private readonly Action<StateMachineTransition> _updateParentModel;
+        private readonly StateMachineViewModel _parent;
 
         public TransitionEditorViewModel(StateMachineTransition model, StateMachineViewModel parent, Action<StateMachineTransition> updateParentModel)
         {
@@ -72,18 +71,18 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         public StateMachineTransition GetModel()
         {
             var model = _model.Clone();
-            model.Name = Name;
-            model.Condition = Transition.Condition.GetModel();
+            //model.Condition = Transition.Condition.GetModel();
+            model.Condition = CriteriaViewModel.GetModel();
             model.TransitionActions = Actions.Items.Where(i => Outputs.Select(o => o.Id).Contains(i.Id)).Select(i => i.Id).ToArray();
             return model;
         }
 
         public string Name
         {
-            get { return _name; }
+            get { return _model.Name; }
             set
             {
-                _name = value;
+                _model.Name = value;
                 RaisePropertyChanged();
                 _dirtyService.MarkDirty();
             }

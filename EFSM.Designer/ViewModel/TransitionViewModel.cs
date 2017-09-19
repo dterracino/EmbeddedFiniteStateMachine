@@ -30,19 +30,23 @@ namespace EFSM.Designer.ViewModel
         private Geometry _lineGeometry;
         private double _arrowAngle;
         private bool _isSelected;
-
-        private readonly Lazy<TransitionPropertyGridSource> _propertyGridSource;
-
         private StateMachineConditionViewModel _condition;
+        private readonly Lazy<TransitionPropertyGridSource> _propertyGridSource;
+        private List<Guid> _actions;
+
         public StateMachineConditionViewModel Condition
         {
             get { return _condition; }
-            set { _condition = value; RaisePropertyChanged(); }
+            set
+            {
+                _condition = value;
+                RaisePropertyChanged();
+            }
         }
 
         private Point _startLocation;
         private StateMachineTransition _model;
-        private IViewService _viewService;
+        private readonly IViewService _viewService;
 
         public TransitionViewModel(StateMachineViewModel parent, StateMachineTransition model, IViewService viewService)
         {
@@ -76,16 +80,19 @@ namespace EFSM.Designer.ViewModel
         public StateMachineTransition GetModel()
         {
             _model.TransitionActions = Actions.ToArray();
-            _model.Condition = Condition.GetModel();
+            //_model.Condition = Condition.GetModel();
             var model = _model.Clone();
             return model;
         }
-
-        private List<Guid> _actions;
+        
         public List<Guid> Actions
         {
             get { return _actions; }
-            set { _actions = value; RaisePropertyChanged(); }
+            set
+            {
+                _actions = value;
+                RaisePropertyChanged();
+            }
         }
 
         private void Edit()
@@ -99,7 +106,7 @@ namespace EFSM.Designer.ViewModel
         {
             Parent.DirtyService.MarkDirty();
             _model = model;
-            RaisePropertyChanged(nameof(Name));
+            RaisePropertyChanged(null);
             _parent.SaveUndoState();
         }
 
