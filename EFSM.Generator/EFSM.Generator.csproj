@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EmbeddedCodeGenerator.cs" />
+    <Compile Include="Model\GeneratedActionReference.cs" />
     <Compile Include="Model\GeneratedBase.cs" />
     <Compile Include="Model\GeneratedInput.cs" />
     <Compile Include="Model\GeneratedOutput.cs" />
@@ -57,6 +58,9 @@
     <Compile Include="Model\GeneratedStateMachine.cs" />
     <Compile Include="Model\GeneratedTransition.cs" />
     <Compile Include="GenerationExtensions.cs" />
+    <Compile Include="Model\Indenter.cs" />
+    <Compile Include="Model\TextGenerator.cs" />
+    <Compile Include="Model\TextGeneratorExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

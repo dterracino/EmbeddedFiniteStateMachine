@@ -1,4 +1,5 @@
-﻿using EFSM.Domain;
+﻿using System.Collections.Generic;
+using EFSM.Domain;
 
 namespace EFSM.Generator.Model
 {
@@ -12,6 +13,8 @@ namespace EFSM.Generator.Model
 
         public StateMachine Parent { get; }
 
-        
+        public override string IndexDefineName => $"EFSM_{Parent.Name.FixDefineName()}_INDEX";
+
+        public List<GeneratedTransition> Transitions { get; } = new List<GeneratedTransition>();
     }
 }

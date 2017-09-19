@@ -16,5 +16,6 @@ namespace EFSM.Generator.Model
 
         public string FunctionPrototype => $"extern unsigned char {FunctionName}();";
 
+        public override string IndexDefineName => $"EFSM_{Parent.Name.FixDefineName()}_INPUT_{Model.Name.FixDefineName()}_INDEX";
     }
 }

@@ -42,7 +42,7 @@ namespace EFSM.Generator
         {
             //Ensure that the idle state is first
             var orderedStates = stateMachine.States
-                .OrderBy(s => s.StateType)
+                .OrderByDescending(s => s.StateType)
                 .ToArray();
 
             //Generate the states
@@ -59,6 +59,48 @@ namespace EFSM.Generator
             var generatedOutputs = stateMachine.Actions
                 .Select((m, index) => GenerateOutput(m, index, stateMachine))
                 .ToArray();
+
+            int transitionIndex = 0;
+
+            //Hook up the transitions
+            foreach (var transition in stateMachine.Transitions)
+            {
+                var sourceState = generatedStates
+                    .FirstOrDefault(s => s.Model.Id == transition.SourceStateId);
+
+                var targetState = generatedStates
+                    .FirstOrDefault(s => s.Model.Id == transition.TargetStateId);
+
+                if (sourceState == null)
+                    throw new ApplicationException($"Unablet to find source state {transition.SourceStateId} in transition '{transition.Name}'.");
+
+                if (targetState == null)
+                    throw new ApplicationException($"Unablet to find target state {transition.TargetStateId} in transition '{transition.Name}'.");
+
+                var outputActions = new List<GeneratedActionReference>(transition.TransitionActions.Length);
+
+                int actionIndex = 0;
+
+                foreach (var outputActionId in transition.TransitionActions)
+                {
+                    var outputAction = generatedOutputs.FirstOrDefault(o => o.Model.Id == outputActionId);
+
+                    if (outputAction == null)
+                        throw new ApplicationException($"Unable to find output action {outputActionId} in transition '{transition.Name}'.");
+
+                    outputActions.Add(new GeneratedActionReference(outputAction, actionIndex));
+
+                    actionIndex++;
+                }
+
+                //TODO: Deal with the input conditions
+
+                var generatedTransition = new GeneratedTransition(transition, transitionIndex, stateMachine, targetState, outputActions.ToArray());
+
+                sourceState.Transitions.Add(generatedTransition);
+
+                transitionIndex++;
+            }
 
             return new GeneratedStateMachine(
                 stateMachine, 
@@ -82,7 +124,6 @@ namespace EFSM.Generator
         {
             return new GeneratedOutput(output, index, parent);
         }
-
 
         private string GenerateHeader(GeneratedProject project)
         {
@@ -111,6 +152,14 @@ namespace EFSM.Generator
                 {
                     headerFile.AppendLine(input.FunctionPrototype);
                 }
+
+                headerFile.AppendLine();
+
+                foreach (var input in stateMachine.Inputs)
+                {
+                    headerFile.AppendLine(input.IndexDefine);
+                }
+
                 headerFile.AppendLine();
 
                 // ----------- Output Functions --------------------
@@ -119,6 +168,14 @@ namespace EFSM.Generator
                 {
                     headerFile.AppendLine(output.FunctionPrototype);
                 }
+
+                headerFile.AppendLine();
+
+                foreach (var output in stateMachine.Outputs)
+                {
+                    headerFile.AppendLine(output.IndexDefine);
+                }
+
                 headerFile.AppendLine();
 
                 //---- States ---------------
@@ -138,12 +195,90 @@ namespace EFSM.Generator
 
         private string GenerateCode(GeneratedProject project)
         {
-            StringBuilder code = new StringBuilder();
+            var code = new TextGenerator();
 
             foreach (var stateMachine in project.StateMachines)
             {
-                code.AppendLine($"/* State Machine: {stateMachine.Model.Name} */");
-                code.AppendLine();
+                code.AppendLine($"/* [{stateMachine.Index}]State Machine: {stateMachine.Model.Name} */");
+
+                using (new Indenter(code))
+                {
+                    code.AppendLine($"/* Inputs:  */");
+
+                    using (new Indenter(code))
+                    {
+                        foreach (var input in stateMachine.Inputs)
+                        {
+                            code.AppendLine($"/*[{input.Index}]{input.Model.Name} */");
+                        }
+                    }
+
+                    code.AppendLine($"/* Outputs: */");
+
+                    using (new Indenter(code))
+                    {
+                        foreach (var output in stateMachine.Outputs)
+                        {
+                            code.AppendLine($"/*[{output.Index}]{output.Model.Name} */");
+                        }
+                    }
+
+                    code.AppendLine($"/* States: */");
+
+                    using (new Indenter(code))
+                    {
+                        foreach (var state in stateMachine.States)
+                        {
+                            code.AppendLine($"/* [{state.Index}]{state.Model.Name} */");
+
+                            using (new Indenter(code))
+                            {
+                                code.AppendLine("/* Transitions: */");
+
+                                using (new Indenter(code))
+                                {
+                                    foreach (var transition in state.Transitions)
+                                    {
+                                        code.AppendLine($"/* {transition.Model.Name} */");
+
+                                        using (new Indenter(code))
+                                        {
+                                            code.AppendLine("/* Actions: */");
+
+                                            using (new Indenter(code))
+                                            {
+                                                foreach (var action in transition.Actions)
+                                                {
+                                                    code.AppendLine($"/* [{action.Index}]{action.Model.Model.Name}  */");
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                code.AppendLine($"/* Entry Actions */");
+
+                                using (new Indenter(code))
+                                {
+                                    foreach (var action in state.Model.EntryActions)
+                                    {
+                                        code.AppendLine($"/* {action} */");
+                                    }
+                                }
+
+                                code.AppendLine($"/* Exit Actions */");
+
+                                using (new Indenter(code))
+                                {
+                                    foreach (var action in state.Model.ExitActions)
+                                    {
+                                        code.AppendLine($"/* {action} */");
+                                    }
+                                }
+                            }
+                        }
+                    }   
+                }
             }
 
             return code.ToString();

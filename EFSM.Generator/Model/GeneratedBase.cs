@@ -26,5 +26,9 @@ namespace EFSM.Generator.Model
         {
             Index = index;
         }
+
+        public abstract string IndexDefineName { get; }
+
+        public virtual string IndexDefine => $"#define {IndexDefineName} {Index}";
     }
 }

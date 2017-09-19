@@ -25,9 +25,7 @@ namespace EFSM.Generator.Model
 
         public GeneratedOutput[] Outputs { get; }
 
-        public string IndexDefineName => $"EFSM_{Model.Name.FixDefineName()}_INDEX";
-
-        public string IndexDefine => $"#define {IndexDefineName} {Index}";
+        public override string IndexDefineName => $"EFSM_{Model.Name.FixDefineName()}_INDEX";
 
         public string NumStatesDefineName => $"EFSM_{Model.Name.FixDefineName()}_NUM_STATES";
 

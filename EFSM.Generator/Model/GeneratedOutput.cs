@@ -15,5 +15,7 @@ namespace EFSM.Generator.Model
         public string FunctionName => $"EFSM_{Parent.Name.FixFunctionName()}_Output_{Model.Name.FixFunctionName()}";
 
         public string FunctionPrototype => $"extern void {FunctionName}();";
+
+        public override string IndexDefineName => $"EFSM_{Parent.Name.FixDefineName()}_OUTPUT_{Model.Name.FixDefineName()}_INDEX";
     }
 }
