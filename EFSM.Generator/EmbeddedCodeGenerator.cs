@@ -122,7 +122,7 @@ namespace EFSM.Generator
         {
             var entryActions = GetActions(allOutputs, state.EntryActions, $"state {state.Name} entry actions");
 
-            var exitActions = GetActions(allOutputs, state.EntryActions, $"state {state.Name} exit actions");
+            var exitActions = GetActions(allOutputs, state.ExitActions, $"state {state.Name} exit actions");
 
             return new GeneratedState(state, index, parent, entryActions, exitActions);
         }
