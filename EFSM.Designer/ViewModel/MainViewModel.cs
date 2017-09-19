@@ -197,6 +197,7 @@ namespace EFSM.Designer.ViewModel
         {
         }
 
+#pragma warning disable CS0067
         public event EventHandler<CloseEventArgs> Close;
     }
 }

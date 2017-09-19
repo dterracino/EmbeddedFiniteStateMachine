@@ -33,7 +33,7 @@ namespace EFSM.Designer.ViewModel
 
         public override ITool GetTool() => Tool;
 
-        public ICommand OnMouseLeftButtonDownCommand { get; private set; }
+        public ICommand OnMouseLeftButtonDownCommand { get; }
 
         private void MouseLeftButtonDown(MouseEventArgs e)
         {

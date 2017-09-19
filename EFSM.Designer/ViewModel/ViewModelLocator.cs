@@ -5,11 +5,6 @@ namespace EFSM.Designer.ViewModel
 {
     public static class ViewModelLocator
     {
-        //public static StateMachineViewModel StateMachineDialogViewModel
-        //{
-        //    get { return ApplicationContainer.Container.Resolve<StateMachineViewModel>(); }
-        //}
-
         public static MainViewModel Main
         {
             get { return ApplicationContainer.Container.Resolve<MainViewModel>(); }

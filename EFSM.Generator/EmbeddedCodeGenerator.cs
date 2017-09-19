@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using EFSM.Domain;
-using Newtonsoft.Json;
+using EFSM.Generator.Model;
 
 namespace EFSM.Generator
 {
@@ -13,18 +14,79 @@ namespace EFSM.Generator
         {
             var generatedProject = GetGeneratedModel(project);
 
-            GenerateOutput(generatedProject);
+            string header = GenerateHeader(generatedProject);
+            string code = GenerateCode(generatedProject);
+
+            if (!string.IsNullOrWhiteSpace(project.GenerationOptions.HeaderFilePath))
+            {
+                File.WriteAllText(project.GenerationOptions.HeaderFilePath, header);
+            }
+
+            if (!string.IsNullOrWhiteSpace(project.GenerationOptions.CodeFilePath))
+            {
+                File.WriteAllText(project.GenerationOptions.CodeFilePath, code);
+            }
         }
 
         private GeneratedProject GetGeneratedModel(StateMachineProject project)
         {
-            return new GeneratedProject(project, project.StateMachines.Select(s => new GeneratedStateMachine(s, null)).ToArray());
+            //Create the state machines
+            var stateMachines = project.StateMachines
+                .Select(GenerateStateMachine)
+                .ToArray();
+
+            return new GeneratedProject(project, stateMachines);
         }
 
-        private void GenerateOutput(GeneratedProject project)
+        private GeneratedStateMachine GenerateStateMachine(StateMachine stateMachine, int stateMachineIndex)
+        {
+            //Ensure that the idle state is first
+            var orderedStates = stateMachine.States
+                .OrderBy(s => s.StateType)
+                .ToArray();
+
+            //Generate the states
+            var generatedStates = orderedStates
+                .Select((m, index) => GenerateState(m, index, stateMachine))
+                .ToArray();
+
+            //Inputs
+            var generatedInputs = stateMachine.Inputs
+                .Select((m, index) => GenerateInput(m, index, stateMachine))
+                .ToArray();
+
+            //Outputs
+            var generatedOutputs = stateMachine.Actions
+                .Select((m, index) => GenerateOutput(m, index, stateMachine))
+                .ToArray();
+
+            return new GeneratedStateMachine(
+                stateMachine, 
+                generatedStates,
+                generatedInputs, 
+                generatedOutputs, 
+                stateMachineIndex);
+        }
+
+        private GeneratedState GenerateState(State state, int index, StateMachine parent)
+        {
+            return new GeneratedState(state, index, parent);
+        }
+
+        private GeneratedInput GenerateInput (StateMachineInput input, int index, StateMachine parent)
+        {
+            return new GeneratedInput(input, index, parent);
+        }
+
+        private GeneratedOutput GenerateOutput(StateMachineOutputAction output, int index, StateMachine parent)
+        {
+            return new GeneratedOutput(output, index, parent);
+        }
+
+
+        private string GenerateHeader(GeneratedProject project)
         {
             StringBuilder headerFile = new StringBuilder();
-            StringBuilder codeFile = new StringBuilder();
 
             headerFile.Append(project.Model.GenerationOptions.HeaderFileHeader);
 
@@ -34,39 +96,36 @@ namespace EFSM.Generator
 
             headerFile.AppendLine("/* Model Machines */");
 
-            for (int stateMachineIndex = 0; stateMachineIndex < project.StateMachines.Length; stateMachineIndex++)
+            foreach(var stateMachine in project.StateMachines)
             {
-                StateMachine stateMachine = project.StateMachines[stateMachineIndex].Model;
-
-                headerFile.AppendLine($"/* Model Machine: {stateMachine.Name} */");
-                headerFile.AppendLine($"#define EFSM_{stateMachine.Name.FixDefineName()}_INDEX {stateMachineIndex}");
-                headerFile.AppendLine($"#define EFSM_{stateMachine.Name.FixDefineName()}_NUM_STATES {stateMachine.States.Length}");
+                headerFile.AppendLine($"/* Model Machine: {stateMachine.Model.Name} */");
+                headerFile.AppendLine(stateMachine.IndexDefine);
+                headerFile.AppendLine(stateMachine.NumStatesDefine);
+                headerFile.AppendLine(stateMachine.NumInputsDefine);
+                headerFile.AppendLine(stateMachine.NumOutputsDefine);
                 headerFile.AppendLine();
 
                 // ----------- Input Functions --------------------
                 headerFile.AppendLine("/* Input functions */");
                 foreach (var input in stateMachine.Inputs)
                 {
-                    headerFile.AppendLine($"unsigned char EFSM_{stateMachine.Name.FixFunctionName()}_Input_{input.Name.FixFunctionName()}();");
+                    headerFile.AppendLine(input.FunctionPrototype);
                 }
                 headerFile.AppendLine();
 
                 // ----------- Output Functions --------------------
                 headerFile.AppendLine("/* Output functions */");
-                foreach (var output in stateMachine.Actions)
+                foreach (var output in stateMachine.Outputs)
                 {
-                    headerFile.AppendLine($"void EFSM_{stateMachine.Name.FixFunctionName()}_Output_{output.Name.FixFunctionName()}();");
+                    headerFile.AppendLine(output.FunctionPrototype);
                 }
                 headerFile.AppendLine();
 
                 //---- States ---------------
                 headerFile.AppendLine($"/* States */");
-                for (int stateIndex = 0; stateIndex < stateMachine.States.Length; stateIndex++)
+                foreach(var state in stateMachine.States)
                 {
-                    //Get the state
-                    State state = stateMachine.States[stateIndex];
-
-                    headerFile.AppendLine($"#define EFSM_{stateMachine.Name.FixDefineName()}_{state.Name.FixDefineName()} {stateIndex}");
+                    headerFile.AppendLine($"#define EFSM_{stateMachine.Model.Name.FixDefineName()}_{state.Model.Name.FixDefineName()} {state.Index}");
                 }
 
                 headerFile.AppendLine();
@@ -74,8 +133,20 @@ namespace EFSM.Generator
 
             headerFile.Append(project.Model.GenerationOptions.HeaderFileFooter);
 
-            File.WriteAllText(project.Model.GenerationOptions.HeaderFilePath, headerFile.ToString());
-            File.WriteAllText(project.Model.GenerationOptions.CodeFilePath, codeFile.ToString());
+            return headerFile.ToString();
+        }
+
+        private string GenerateCode(GeneratedProject project)
+        {
+            StringBuilder code = new StringBuilder();
+
+            foreach (var stateMachine in project.StateMachines)
+            {
+                code.AppendLine($"/* State Machine: {stateMachine.Model.Name} */");
+                code.AppendLine();
+            }
+
+            return code.ToString();
         }
     }
 }
