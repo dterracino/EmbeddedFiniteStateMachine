@@ -17,12 +17,12 @@ namespace EFSM.Designer.Engine
 
         public StateMachineProject LoadProject(string path)
         {
-            
+            var project = JsonConvert.DeserializeObject<StateMachineProject>(File.ReadAllText(path));
 
-            return JsonConvert.DeserializeObject<StateMachineProject>(File.ReadAllText(path));
+            project.Massage();
+
+            return project;
         }
-
-
 
         public void SaveProject(StateMachineProject project, string path)
         {

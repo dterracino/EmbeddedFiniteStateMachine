@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System;
+using Autofac;
 using Cas.Common.WPF;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Extensions;
@@ -9,6 +10,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using EFSM.Designer.Engine;
+using EFSM.Generator;
 
 namespace EFSM.Designer.ViewModel
 {
@@ -45,7 +48,26 @@ namespace EFSM.Designer.ViewModel
 
         private void Generate()
         {
-            MessageBox.Show("Not Implemented");
+            try
+            {
+                var options = new GenerationOptions()
+                {
+                    CodeFilePath = @"c:\code.c",
+                    HeaderFilePath = @"c:\code.h"
+                };
+
+                var generator = new EmbeddedCodeGenerator();
+
+                var project = GetModel();
+
+                project.Massage();
+
+                generator.Generate(project, options);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private bool CanGenerate() => StateMachines.Any();

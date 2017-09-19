@@ -61,7 +61,7 @@
             <Button ToolTip="Insert a new State Machine..." Command="{Binding Path=Project.NewStateMachineCommand}">Insert</Button>
             <Button ToolTip="Delete the currently selected State Machine" Command="{Binding Project.DeleteStateMachineCommand}">Delete</Button>
             <Separator/>
-            <Button ToolTip="Generate C code...">Generate</Button>
+            <Button ToolTip="Generate C code..." Command="{Binding Path=Project.GenerateCommand}" >Generate</Button>
         </ToolBar>
 
 

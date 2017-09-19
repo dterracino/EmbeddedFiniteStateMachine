@@ -143,6 +143,7 @@
     <Compile Include="Converters\CenterConverter.cs" />
     <Compile Include="Converters\SingletonConverter.cs" />
     <Compile Include="Engine\FilePersistor.cs" />
+    <Compile Include="Engine\ProjectMassager.cs" />
     <Compile Include="Extensions\ConditionViewModelExtensions.cs" />
     <Compile Include="Extensions\INamedEntityExtensions.cs" />
     <Compile Include="Extensions\ISelectionServiceExtensions.cs" />
