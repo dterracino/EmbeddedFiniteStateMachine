@@ -9,12 +9,12 @@ namespace EFSM.Designer.Controls
     /// </summary>
     public partial class InputUserControl : UserControl
     {
-        public static readonly DependencyProperty IsOnProperty;
+        public static readonly DependencyProperty ValueProperty;
         public static readonly DependencyProperty TextProperty;
 
         static InputUserControl()
         {
-            IsOnProperty = DependencyProperty.Register(nameof(IsOn), typeof(bool), typeof(InputUserControl));
+            ValueProperty = DependencyProperty.Register(nameof(Value), typeof(bool), typeof(InputUserControl));
             TextProperty = DependencyProperty.Register(nameof(Text), typeof(string), typeof(InputUserControl));
         }
 
@@ -29,10 +29,10 @@ namespace EFSM.Designer.Controls
             set { SetValue(TextProperty, value); }
         }
 
-        public bool IsOn
+        public bool Value
         {
-            get { return (bool)GetValue(IsOnProperty); }
-            set { SetValue(IsOnProperty, value); }
+            get { return (bool)GetValue(ValueProperty); }
+            set { SetValue(ValueProperty, value); }
         }
 
         public Guid GroupNameGuid { get; } = Guid.NewGuid();

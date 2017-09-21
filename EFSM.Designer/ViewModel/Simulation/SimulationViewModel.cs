@@ -87,7 +87,8 @@ namespace EFSM.Designer.ViewModel
 
         private void InitializeModel()
         {
-            StateMachineViewModel = new SimulationStateMachineViewModel(_model, ApplicationContainer.Container.Resolve<IViewService>());
+            var viewService = ApplicationContainer.Container.Resolve<IViewService>();
+            StateMachineViewModel = new SimulationStateMachineViewModel(_model, viewService);
         }
 
         private void SelectInitialState()

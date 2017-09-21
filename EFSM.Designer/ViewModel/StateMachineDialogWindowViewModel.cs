@@ -4,13 +4,18 @@ using Cas.Common.WPF.Behaviors;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
 using EFSM.Designer.Interfaces;
+using EFSM.Designer.View;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using Microsoft.Win32;
 using System;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace EFSM.Designer.ViewModel
 {
@@ -26,6 +31,7 @@ namespace EFSM.Designer.ViewModel
         public ICommand UndoCommand { get; private set; }
         public ICommand RedoCommand { get; private set; }
         public ICommand SimulationCommand { get; private set; }
+        public ICommand CreateDocumentationCommand { get; private set; }
 
         private StateMachineViewModel _stateMachineViewModel;
 
@@ -87,7 +93,45 @@ namespace EFSM.Designer.ViewModel
             UndoCommand = new RelayCommand(Undo, CanUndo);
             RedoCommand = new RelayCommand(Redo, CanRedo);
             SimulationCommand = new RelayCommand(Simulate);
+            CreateDocumentationCommand = new RelayCommand<StateMachineView>(CreateDocumentation);
         }
+
+        private void CreateDocumentation(StateMachineView control)
+        {
+            try
+            {
+                var saveDialog = new SaveFileDialog()
+                {
+                    Filter = "png (*.png)|*.png"
+                };
+
+                if (saveDialog.ShowDialog() == true)
+                {
+                    RenderTargetBitmap bmp = new RenderTargetBitmap((int)control.ActualHeight, (int)control.ActualWidth, 96, 96, PixelFormats.Pbgra32);
+
+                    bmp.Render(control);
+
+                    var encoder = new PngBitmapEncoder();
+
+                    encoder.Frames.Add(BitmapFrame.Create(bmp));
+
+                    using (var stream = File.Create(saveDialog.FileName))
+                    {
+                        encoder.Save(stream);
+                    }
+
+                    var md = new MarkdownGenerator();
+                    md.Generate(StateMachine, saveDialog.FileName);
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), ex.Message);
+            }
+        }
+
 
         private void Simulate()
         {

@@ -12,7 +12,7 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Label Grid.Column="0" Content="{Binding ElementName=InputUserUserControl, Path=Text}"/>
-        <RadioButton Grid.Column="1" IsChecked="{Binding ElementName=InputUserUserControl, Path=IsOn, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+        <RadioButton Grid.Column="1" IsChecked="{Binding ElementName=InputUserUserControl, Path=Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                      IsThreeState="False" Content="On" GroupName="{Binding ElementName=InputUserUserControl, Path=GroupNameGuid}"  Margin="10,0,0,0" VerticalAlignment="Center"/>
         <RadioButton Grid.Column="2" Content="Off" GroupName="{Binding ElementName=InputUserUserControl, Path=GroupNameGuid}" IsThreeState="False" IsChecked="True" Margin="10,0,0,0" VerticalAlignment="Center"/>
     </Grid>

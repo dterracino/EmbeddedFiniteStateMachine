@@ -48,9 +48,9 @@ namespace EFSM.Designer.ViewModel
         public StateMachineViewModel(StateMachine model, IViewService viewService, IUndoProvider undoProvider, IDirtyService dirtyService, bool isReadOnly = false)
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));
-            _undoProvider = undoProvider ?? throw new ArgumentNullException(nameof(undoProvider));
-            _dirtyService = dirtyService ?? throw new ArgumentNullException(nameof(dirtyService));
             _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
+            _undoProvider = undoProvider;
+            _dirtyService = dirtyService;
             _isReadOnly = isReadOnly;
 
             InitiateModel();

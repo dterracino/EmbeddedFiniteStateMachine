@@ -53,6 +53,7 @@
                         <Button Command="{Binding Path=SimulationCommand}">
                             <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/StatusAnnotations_Play_32xLG_color.png" Width="16"/>
                         </Button>
+                        <Button Content="Documentation" Command="{Binding CreateDocumentationCommand}" CommandParameter="{Binding ElementName=StateMachineView}"/>
                     </ToolBar>
 
                     <Grid Grid.Row="1">
@@ -78,7 +79,7 @@
                         
                         <GridSplitter Grid.Column="1" Style="{StaticResource ColumnGridSplitter}" ResizeBehavior="PreviousAndCurrent"/>
                         <ScrollViewer Grid.Column="2" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" >
-                            <local:StateMachineView DataContext="{Binding StateMachine}" Background="Gray"></local:StateMachineView>
+                            <local:StateMachineView x:Name="StateMachineView" DataContext="{Binding StateMachine}" Background="Gray"></local:StateMachineView>
                         </ScrollViewer>
                         
                         
