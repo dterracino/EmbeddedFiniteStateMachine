@@ -10,5 +10,7 @@
 
         public string CodeFilePath { get; set; }
 
+        public bool IsLittleEndian { get; set; }
+
     }
 }

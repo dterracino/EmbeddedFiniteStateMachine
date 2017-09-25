@@ -2,9 +2,9 @@
 
 namespace EFSM.Generator.Model
 {
-    internal class GeneratedInput : IndexedBase<StateMachineInput>
+    internal class InputGenerationModel : IndexedBase<StateMachineInput>
     {
-        public GeneratedInput(StateMachineInput model, int index, StateMachine parent) 
+        public InputGenerationModel(StateMachineInput model, int index, StateMachine parent) 
             : base(model, index)
         {
             Parent = parent;

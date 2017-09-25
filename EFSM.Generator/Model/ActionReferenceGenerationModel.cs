@@ -2,9 +2,9 @@
 
 namespace EFSM.Generator.Model
 {
-    internal class GeneratedActionReference : IndexedBase<GeneratedOutput>
+    internal class ActionReferenceGenerationModel : IndexedBase<OutputGenerationModel>
     {
-        public GeneratedActionReference(GeneratedOutput model, int index) 
+        public ActionReferenceGenerationModel(OutputGenerationModel model, int index) 
             : base(model, index)
         {
         }
