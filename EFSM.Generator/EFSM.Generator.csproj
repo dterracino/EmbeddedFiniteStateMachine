@@ -52,6 +52,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\DelayedResolutionElementUshort.cs" />
+    <Compile Include="Model\OpCode.cs" />
+    <Compile Include="Model\OpCodeFactory.cs" />
     <Compile Include="Model\StateMachineBinaryGenerationResult.cs" />
     <Compile Include="BinaryGenerator.cs" />
     <Compile Include="CodeFileGenerator.cs" />

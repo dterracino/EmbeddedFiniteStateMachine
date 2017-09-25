@@ -80,8 +80,8 @@ namespace EFSM.Generator
 
                     //TODO: Add the instructions necessary to execute the logical tree
 
-                    //TODO: Add the target state index
-                    rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort) 0), "Target state index"));
+                    //Add the target state index
+                    rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)transition.Target.Index), $"Target state index: {transition.Target.Index}"));
                 }
             }
 

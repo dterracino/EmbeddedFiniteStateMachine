@@ -77,10 +77,10 @@ namespace EFSM.Designer.ViewModel
 
             var input = StateMachineViewModel.GetInputById(transition.Condition.SourceInputId.Value);
 
-            if (input.Value != transition.Condition.Value)
-            {
-                return false;
-            }
+            //if (input.Value != transition.Condition.Value)
+            //{
+            //    return false;
+            //}
 
             return true;
         }

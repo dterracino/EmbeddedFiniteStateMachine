@@ -171,7 +171,7 @@ namespace EFSM.Generator
         //private static void AppendCondition(StateMachineCondition condition, TextGenerator code, InputGenerationModel[] inputs)
         //{
 
-        //    if (condition.CompoundConditionType == null && condition.Conditions == null &&
+        //    if (condition.ConditionType == null && condition.Conditions == null &&
         //        condition.SourceInputId == null)
         //    {
         //        code.AppendLine("/* None */");
@@ -179,7 +179,7 @@ namespace EFSM.Generator
         //        return;
         //    }
 
-        //    if (condition.CompoundConditionType == null)
+        //    if (condition.ConditionType == null)
         //    {
         //        if (condition.SourceInputId == null)
         //            throw new ApplicationException($"No source input was specified in a non-compound condition.");
@@ -195,20 +195,20 @@ namespace EFSM.Generator
         //    }
         //    else
         //    {
-        //        switch (condition.CompoundConditionType.Value)
+        //        switch (condition.ConditionType.Value)
         //        {
-        //            case CompoundConditionType.And:
+        //            case ConditionType.And:
 
         //                code.AppendLine("/* And */");
 
         //                break;
 
-        //            case CompoundConditionType.Or:
+        //            case ConditionType.Or:
         //                code.AppendLine("/* Or */");
         //                break;
 
         //            default:
-        //                throw new InvalidOperationException($"Unexpected enum value '{condition.CompoundConditionType.Value}'");
+        //                throw new InvalidOperationException($"Unexpected enum value '{condition.ConditionType.Value}'");
         //        }
 
         //        using (code.Indent())

@@ -10,13 +10,9 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 {
     public class CriteriaTransitionViewModel : ViewModelBase
     {
-        private TransitionEditorViewModel _owner;
-        private ConditionViewModelBase _selectedCondition;
-        private ConditionViewModelBase _rootCondition;
-
-        public ICommand SetSimpleRootConditionCommand { get; private set; }
-        public ICommand SetCompoundRootConditionCommand { get; private set; }
-        public ICommand DeleteConditionCommand { get; private set; }
+        private readonly TransitionEditorViewModel _owner;
+        private ConditionViewModel _selectedCondition;
+        private ConditionViewModel _rootCondition;
 
         public CriteriaTransitionViewModel(TransitionEditorViewModel owner)
         {
@@ -25,7 +21,13 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             CommandsInitialization();
         }
 
-        public ConditionViewModelBase SelectedCondition
+
+        public ICommand SetSimpleRootConditionCommand { get; private set; }
+        public ICommand SetCompoundRootConditionCommand { get; private set; }
+        public ICommand DeleteConditionCommand { get; private set; }
+
+    
+        public ConditionViewModel SelectedCondition
         {
             get { return _selectedCondition; }
             set
@@ -37,7 +39,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
         public ObservableCollection<StateMachineInputViewModel> Inputs => _owner.Inputs;
 
-        public ConditionViewModelBase RootCondition
+        public ConditionViewModel RootCondition
         {
             get { return _rootCondition; }
             set
@@ -57,14 +59,14 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
         private void SetCompoundRootCondition()
         {
-            RootCondition = new CompoundConditionViewModel(_owner);
+            //RootCondition = new CompoundConditionViewModel(_owner);
         }
 
         private bool CanSetCompoundRootCondition() => RootCondition == null;
 
         private void SetSimpleRootCondition()
         {
-            RootCondition = new SimpleConditionViewModel(_owner) { SourceInputId = _owner.Inputs[0].Id };
+            //RootCondition = new SimpleConditionViewModel(_owner) { SourceInputId = _owner.Inputs[0].Id };
         }
 
         private bool CanSetSimpleRootCondition() => _owner.Inputs.Count > 0 && RootCondition == null;

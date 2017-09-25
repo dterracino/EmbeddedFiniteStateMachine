@@ -42,7 +42,7 @@ namespace EFSM.Designer.Common
         //    if (condition == null)
         //        return null;
 
-        //    if (condition.CompoundConditionType == null)
+        //    if (condition.ConditionType == null)
         //        return $"({inputs.GetConnectorName(condition.SourceInputId)} = {condition.Value})";
 
         //    if (condition.Conditions != null)
@@ -53,7 +53,7 @@ namespace EFSM.Designer.Common
         //        {
         //            if (index > 0)
         //            {
-        //                result += $" {condition.CompoundConditionType} ";
+        //                result += $" {condition.ConditionType} ";
 
         //                result += ToToolTip(condition.Conditions[index], inputs);
 

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using EFSM.Domain;
 
 namespace EFSM.Designer.Common
 {
@@ -121,41 +122,62 @@ namespace EFSM.Designer.Common
         {
             string s = string.Empty;
 
-            if (condition.CompoundConditionType == null)
+            switch (condition.ConditionType)
             {
-                if (condition.SourceInputId != null)
-                {
-                    if (!_conditionGuids.Contains(condition.SourceInputId.Value))
+                case ConditionType.Input:
+
+                    if (condition.SourceInputId == null)
                     {
-                        _conditionGuids.Add(condition.SourceInputId.Value);
+                        s += "<<missing>>";
+                    }
+                    else
+                    {
+                        s += $"{condition.SourceInputId.Value}";
                     }
 
-                    s += $"{condition.SourceInputId.Value}== {condition.Value}";
-                }
-            }
-            else
-            {
-                s += " ( ";
-                string operation = condition.CompoundConditionType == Domain.CompoundConditionType.And ? " AND " : " OR ";
+                    break;
 
-                for (int i = 0; i < condition.Conditions.Count; i++)
-                {
-                    var item = condition.Conditions[i];
+                case ConditionType.Or:
+                case ConditionType.And:
 
-                    if (i > 0)
+                    s += " ( ";
+
+                    string operation = condition.ConditionType == ConditionType.And ? " AND " : " OR ";
+
+                    for (int i = 0; i < condition.Conditions.Count; i++)
                     {
-                        s += operation;
+                        var item = condition.Conditions[i];
+
+                        if (i > 0)
+                        {
+                            s += operation;
+                        }
+
+                        s += AddCondition(item);
                     }
 
-                    s += AddCondition(item);
-                }
+                    foreach (var item in condition.Conditions)
+                    {
+                        s += AddCondition(item);
+                    }
 
-                foreach (var item in condition.Conditions)
-                {
-                    s += AddCondition(item);
-                }
+                    s += " ) ";
 
-                s += " ) ";
+                    break;
+
+                case ConditionType.Not:
+
+                    s += "!";
+
+                    if (condition.Conditions != null && condition.Conditions.Count > 0)
+                    {
+                        s += AddCondition(condition.Conditions[0]);
+                    }
+
+                    break;
+
+                default:
+                    throw new InvalidOperationException($"Unexpected condition type '{condition.ConditionType}'");
             }
 
             return s;

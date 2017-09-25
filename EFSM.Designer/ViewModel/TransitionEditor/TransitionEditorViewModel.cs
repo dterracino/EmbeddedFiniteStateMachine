@@ -71,7 +71,6 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         public StateMachineTransition GetModel()
         {
             var model = _model.Clone();
-            //model.Condition = Transition.Condition.GetModel();
             model.Condition = CriteriaViewModel.GetModel();
             model.TransitionActions = Actions.Items.Where(i => Outputs.Select(o => o.Id).Contains(i.Id)).Select(i => i.Id).ToArray();
             return model;

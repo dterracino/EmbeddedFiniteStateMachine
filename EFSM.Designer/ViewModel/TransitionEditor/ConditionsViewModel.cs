@@ -3,16 +3,16 @@ using System.Collections.ObjectModel;
 
 namespace EFSM.Designer.ViewModel.TransitionEditor
 {
-    public class ConditionsViewModel : ObservableCollection<ConditionViewModelBase>
+    public class ConditionsViewModel : ObservableCollection<ConditionViewModel>
     {
-        private readonly ConditionViewModelBase _parent;
+        private readonly ConditionViewModel _parent;
 
-        public ConditionsViewModel(ConditionViewModelBase parent)
+        public ConditionsViewModel(ConditionViewModel parent)
         {
             _parent = parent ?? throw new ArgumentNullException(nameof(parent));
         }
 
-        protected override void InsertItem(int index, ConditionViewModelBase item)
+        protected override void InsertItem(int index, ConditionViewModel item)
         {
             item.ParentCollection = this;
 
@@ -21,7 +21,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             Parent.DirtyService.MarkDirty();
         }
 
-        protected override void SetItem(int index, ConditionViewModelBase item)
+        protected override void SetItem(int index, ConditionViewModel item)
         {
             item.ParentCollection = this;
 
@@ -48,6 +48,6 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             Parent.DirtyService.MarkDirty();
         }
 
-        internal ConditionViewModelBase Parent => _parent;
+        internal ConditionViewModel Parent => _parent;
     }
 }

@@ -10,7 +10,7 @@ namespace EFSM.Designer.ViewModel
     {
         private readonly StateMachineCondition _model;
         private List<StateMachineConditionViewModel> _conditions = new List<StateMachineConditionViewModel>();
-        private CompoundConditionType? _compoundConditionType;
+        private ConditionType _conditionType;
 
         public StateMachineConditionViewModel(StateMachineCondition model)
         {
@@ -44,17 +44,7 @@ namespace EFSM.Designer.ViewModel
                 RaisePropertyChanged();
             }
         }
-
-        public bool? Value
-        {
-            get { return _model.Value; }
-            set
-            {
-                _model.Value = value;
-                RaisePropertyChanged();
-            }
-        }
-        
+      
         public List<StateMachineConditionViewModel> Conditions
         {
             get { return _conditions; }
@@ -65,12 +55,12 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
-        public CompoundConditionType? CompoundConditionType
+        public ConditionType ConditionType
         {
-            get { return _compoundConditionType; }
+            get { return _conditionType; }
             set
             {
-                _compoundConditionType = value; 
+                _conditionType = value; 
                 RaisePropertyChanged();
             }
         }
