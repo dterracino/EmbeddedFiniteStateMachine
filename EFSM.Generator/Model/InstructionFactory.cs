@@ -15,7 +15,7 @@ namespace EFSM.Generator.Model
 
             var temp = instructions.ToArray();
 
-            temp.ValidateInstructions();
+            temp.Validate(inputs.Length);
 
             return  temp;
         }

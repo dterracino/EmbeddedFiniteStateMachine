@@ -171,5 +171,7 @@ namespace EFSM.Generator.Tests
             Assert.Equal(OpCode.And, instructions[4].OpCode);
             Assert.Null(instructions[4].InputIndex);
         }
+
+        
     }
 }

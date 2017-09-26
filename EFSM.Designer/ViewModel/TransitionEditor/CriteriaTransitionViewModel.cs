@@ -11,7 +11,6 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
     public class CriteriaTransitionViewModel : ViewModelBase
     {
         private readonly TransitionEditorViewModel _owner;
-        private ConditionViewModel _selectedCondition;
         private ConditionViewModel _rootCondition;
 
         public CriteriaTransitionViewModel(TransitionEditorViewModel owner)
@@ -43,7 +42,6 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         }
 
         private bool CanAddCondition() => RootCondition == null;
-
        
         internal StateMachineCondition GetModel()
         {
