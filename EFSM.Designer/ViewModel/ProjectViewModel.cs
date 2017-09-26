@@ -1,17 +1,19 @@
-﻿using System;
-using Autofac;
+﻿using Autofac;
 using Cas.Common.WPF;
 using Cas.Common.WPF.Interfaces;
+using EFSM.Designer.Common;
+using EFSM.Designer.Engine;
 using EFSM.Designer.Extensions;
 using EFSM.Domain;
+using EFSM.Generator;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using EFSM.Designer.Engine;
-using EFSM.Generator;
 
 namespace EFSM.Designer.ViewModel
 {
@@ -19,6 +21,7 @@ namespace EFSM.Designer.ViewModel
     {
         private readonly StateMachineProject _project;
         private readonly IMarkDirty _dirtyService;
+        private const string DocumentationFileName = "doc.md";
 
         private readonly ObservableCollection<StateMachineReferenceViewModel> _stateMachines = new ObservableCollection<StateMachineReferenceViewModel>();
         private StateMachineReferenceViewModel _selectedStateMachine;
@@ -48,6 +51,7 @@ namespace EFSM.Designer.ViewModel
         public ICommand NewStateMachineCommand { get; }
         public ICommand DeleteStateMachineCommand { get; }
         public ICommand GenerateCommand { get; }
+        public ICommand DocumentationCommand { get; }
 
         private void Generate()
         {
@@ -64,6 +68,13 @@ namespace EFSM.Designer.ViewModel
 
                 //Generate. Do it now.
                 generator.Generate(project);
+
+                if (!string.IsNullOrWhiteSpace(GenerationOptions.DocumentationFolder))
+                {
+                    var path = Path.Combine(GenerationOptions.DocumentationFolder, DocumentationFileName);
+
+                    new MarkdownGenerator().Generate(project.StateMachines.ToList(), path);
+                }
             }
             catch (Exception ex)
             {
@@ -71,7 +82,17 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
+        public void GenerateProjectCCodeAndDocumentation()
+        {
+            if (CanGenerate())
+            {
+                Generate();
+            }
+        }
+
         private bool CanGenerate() => StateMachines.Any();
+
+        private bool CanCreateDocumentation() => StateMachines.Any();
 
         private void NewStateMachine()
         {
@@ -130,6 +151,7 @@ namespace EFSM.Designer.ViewModel
         public StateMachineProject GetModel()
         {
             _project.StateMachines = StateMachines.Select(vm => vm.GetModel()).ToArray();
+            _project.GenerationOptions = GenerationOptions.GetModel();
             return _project;
         }
     }

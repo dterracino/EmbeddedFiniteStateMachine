@@ -50,7 +50,11 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-           
+
+            <MenuItem Header="_Tools">
+                <MenuItem Header="_Generate" Command="{Binding Project.GenerateCommand}" />
+            </MenuItem>
+
             <MenuItem Header="_Help">
                 <MenuItem Header="_About..."/>
             </MenuItem>
@@ -69,7 +73,6 @@
                         <Button ToolTip="Insert a new State Machine..." Command="{Binding Path=Project.NewStateMachineCommand}">Insert</Button>
                         <Button ToolTip="Delete the currently selected State Machine" Command="{Binding Project.DeleteStateMachineCommand}">Delete</Button>
                         <Separator/>
-                        <Button ToolTip="Generate C code..." Command="{Binding Path=Project.GenerateCommand}" >Generate</Button>
                     </ToolBar>
 
 
@@ -116,6 +119,7 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -127,6 +131,9 @@
 
                             <TextBlock Grid.Row="1" Grid.Column="0" Margin="4" VerticalAlignment="Center">Header File Path</TextBlock>
                             <TextBox Grid.Row="1" Grid.Column="1" Margin="4" VerticalAlignment="Center" Text="{Binding Path=CodeFilePath, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="4" VerticalAlignment="Center">Documentation folder</TextBlock>
+                            <TextBox Grid.Row="2" Grid.Column="1" Margin="4" VerticalAlignment="Center" Text="{Binding Path=DocumentationFolder, UpdateSourceTrigger=PropertyChanged}" />
 
                         </Grid>
                         

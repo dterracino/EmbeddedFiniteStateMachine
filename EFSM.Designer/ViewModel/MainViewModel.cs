@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using Cas.Common.WPF;
 using Cas.Common.WPF.Behaviors;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Const;
@@ -145,7 +144,9 @@ namespace EFSM.Designer.ViewModel
             _persistor.SaveProject(Project.GetModel(), Filename);
             _dirtyService.MarkClean();
 
-            return false;
+            Project.GenerateProjectCCodeAndDocumentation();
+
+            return true;
         }
 
         private bool CanSave() => _dirtyService.IsDirty;
@@ -162,6 +163,8 @@ namespace EFSM.Designer.ViewModel
                 Filename = dialog.FileName;
                 _persistor.SaveProject(Project.GetModel(), dialog.FileName);
                 _dirtyService.MarkClean();
+
+                Project.GenerateProjectCCodeAndDocumentation();
 
                 return true;
             }

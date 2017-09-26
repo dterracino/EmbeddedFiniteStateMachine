@@ -10,5 +10,6 @@
 
         public string CodeFilePath { get; set; }
 
+        public string DocumentationFolder { get; set; }
     }
 }

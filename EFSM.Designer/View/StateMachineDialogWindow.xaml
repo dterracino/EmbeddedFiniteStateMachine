@@ -53,7 +53,6 @@
                         <Button Command="{Binding Path=SimulationCommand}">
                             <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/StatusAnnotations_Play_32xLG_color.png" Width="16"/>
                         </Button>
-                        <Button Content="Documentation" Command="{Binding CreateDocumentationCommand}" CommandParameter="{Binding ElementName=StateMachineView}"/>
                     </ToolBar>
 
                     <Grid Grid.Row="1">
