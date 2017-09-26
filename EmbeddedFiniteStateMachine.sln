@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFSM.Designer", "EFSM.Desig
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFSM.OffsetWriter", "EFSM.OffsetWriter\EFSM.OffsetWriter.csproj", "{17F7FD7D-65B3-4E6D-8E17-331517C61733}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFSM.Generator.Tests", "EFSM.Generator.Tests\EFSM.Generator.Tests.csproj", "{317649BD-FC69-4C34-B292-978E5B8C8767}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -95,6 +97,18 @@ Global
 		{17F7FD7D-65B3-4E6D-8E17-331517C61733}.Release|x64.Build.0 = Release|Any CPU
 		{17F7FD7D-65B3-4E6D-8E17-331517C61733}.Release|x86.ActiveCfg = Release|Any CPU
 		{17F7FD7D-65B3-4E6D-8E17-331517C61733}.Release|x86.Build.0 = Release|Any CPU
+		{317649BD-FC69-4C34-B292-978E5B8C8767}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{317649BD-FC69-4C34-B292-978E5B8C8767}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{317649BD-FC69-4C34-B292-978E5B8C8767}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{317649BD-FC69-4C34-B292-978E5B8C8767}.Debug|x64.Build.0 = Debug|Any CPU
+		{317649BD-FC69-4C34-B292-978E5B8C8767}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{317649BD-FC69-4C34-B292-978E5B8C8767}.Debug|x86.Build.0 = Debug|Any CPU
+		{317649BD-FC69-4C34-B292-978E5B8C8767}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{317649BD-FC69-4C34-B292-978E5B8C8767}.Release|Any CPU.Build.0 = Release|Any CPU
+		{317649BD-FC69-4C34-B292-978E5B8C8767}.Release|x64.ActiveCfg = Release|Any CPU
+		{317649BD-FC69-4C34-B292-978E5B8C8767}.Release|x64.Build.0 = Release|Any CPU
+		{317649BD-FC69-4C34-B292-978E5B8C8767}.Release|x86.ActiveCfg = Release|Any CPU
+		{317649BD-FC69-4C34-B292-978E5B8C8767}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

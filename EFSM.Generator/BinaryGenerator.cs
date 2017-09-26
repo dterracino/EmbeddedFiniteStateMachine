@@ -6,6 +6,9 @@ using MiscUtil.Conversion;
 
 namespace EFSM.Generator
 {
+    /// <summary>
+    /// Generates the binary info that is used by the embedded runtime.
+    /// </summary>
     internal class BinaryGenerator
     {
         public ProjectBinaryGenerationResult Generate(ProjectGenerationModel project)
@@ -30,13 +33,17 @@ namespace EFSM.Generator
 
         private StateMachineBinaryGenerationResult Generate(StateMachineGenerationModel stateMachine, EndianBitConverter bitConverter)
         {
+            var inputs = stateMachine
+                .Inputs.Select(i => i.Model)
+                .ToArray();
+
             var rootElementList = new ElementList();
 
             //Number of states
             rootElementList.Add(bitConverter, (ushort) stateMachine.States.Length, $"# of states ({stateMachine.States.Length})");
 
-            //Number of inputs
-            rootElementList.Add(bitConverter, (ushort) stateMachine.Inputs.Length, $"# of inputs ({stateMachine.Inputs.Length})");
+            //Number of inputs (do we care about this?)
+            //rootElementList.Add(bitConverter, (ushort) stateMachine.Inputs.Length, $"# of inputs ({stateMachine.Inputs.Length})");
 
             //States TOC
             var statesTocEntries = stateMachine.States
@@ -57,6 +64,12 @@ namespace EFSM.Generator
 
                 //Add this so the beginning of the state gets resolved
                 rootElementList.Add(new MarkerElement(statesTocEntries[stateIndex], $"State '{state.Model.Name}'"));
+
+                //Number of entry actions
+                rootElementList.Add(bitConverter, (ushort) state.EntryActions.Length, "# of entry actions");
+
+                //Number of exit actions
+                rootElementList.Add(bitConverter, (ushort) state.ExitActions.Length, "# of exit actions");
                
                 //Number of transitions
                 rootElementList.Add(bitConverter, (ushort) state.Transitions.Count, "# of transitions ");
@@ -76,9 +89,26 @@ namespace EFSM.Generator
                     rootElementList.Add(new MarkerElement(transitionToc, $"Transition '{transition.Model.Name}'"));
 
                     //TODO: Add the number of instructions
-                    rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)0), "# of opcodes"));
+                    var instructionFactory = new InstructionFactory();
 
-                    //TODO: Add the instructions necessary to execute the logical tree
+                    //Get the instructions
+                    Instruction[] instructions = instructionFactory.GetInstructions(transition.Model.Condition, inputs);
+
+
+                    //Add the number of instructions
+                    rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)transition.Target.Index), $"# of instructions: {instructions.Length}"));
+
+                    //Add the instructions
+                    foreach (var instruction in instructions)
+                    {
+                        rootElementList.Add(new SimpleElement(new byte[] {instruction.ToByte()}, instruction.ToString()));
+                    }
+
+                    //Pad the list of instructions
+                    if (instructions.Length % 2 != 0)
+                    {
+                        rootElementList.Add(new SimpleElement(new byte[] { 0 }, "Padding"));
+                    }
 
                     //Add the target state index
                     rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)transition.Target.Index), $"Target state index: {transition.Target.Index}"));
