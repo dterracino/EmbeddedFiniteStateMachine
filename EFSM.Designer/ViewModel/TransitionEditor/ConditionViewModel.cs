@@ -1,6 +1,7 @@
 ﻿using Cas.Common.WPF.Interfaces;
 using GalaSoft.MvvmLight;
 using System;
+using System.Linq;
 using System.Windows.Input;
 using EFSM.Designer.Common;
 using EFSM.Domain;
@@ -30,14 +31,16 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
             Fix();
 
-            AddConditionCommand = new RelayCommand(AddCondition, CanAddCondition);
+            AddConditionCommand = new RelayCommand(AddCondition, () => CanAddCondition);
+            DeleteCommand = new RelayCommand(Delete);
         }
 
         public ICommand AddConditionCommand { get; }
+        public ICommand DeleteCommand { get; }
 
         private void AddCondition()
         {
-            if (!CanAddCondition())
+            if (!CanAddCondition)
                 return;
 
             var model = new StateMachineCondition()
@@ -55,29 +58,55 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             get { return ConditionType == ConditionType.Input; }
         }
 
-        private bool CanAddCondition()
+        public bool CanAddCondition
         {
-            switch (_model.ConditionType)
+            get
             {
-                case ConditionType.Or:
-                case ConditionType.And:
-                    return true;
+                switch (_model.ConditionType)
+                {
+                    case ConditionType.Or:
+                    case ConditionType.And:
+                        return true;
 
-                case ConditionType.Not:
+                    case ConditionType.Not:
 
-                    return Conditions.Count == 0;
+                        return Conditions.Count == 0;
 
-                default:
-                    return false;
+                    default:
+                        return false;
+                }
             }
         }
 
+        private void Delete()
+        {
+            if (ParentCollection?.Parent == null)
+            {
+                _owner.Criteria.RootCondition = null;
+            }
+            else
+            {
+                ParentCollection.Remove(this);
+            }
+        }
+
+        /// <summary>
+        /// Ensures that the number of sub conditions / the input is correct given its 
+        /// </summary>
         private void Fix()
         {
             switch (ConditionType)
             {
                 case ConditionType.Input:
                     Conditions.Clear();
+
+                    if (InputId == null)
+                    {
+                        //Select the first item
+                        InputId = _owner.Inputs
+                            .FirstOrDefault()?.Id;
+                    }
+
                     break;
 
                 case ConditionType.Or:
@@ -101,30 +130,6 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             }
         }
 
-        //public string DisplayText
-        //{
-        //    get
-        //    {
-        //        switch (_model.ConditionType)
-        //        {
-        //            case ConditionType.Input:
-        //                return "Input";
-
-        //            case ConditionType.Or:
-        //                return "Or";
-
-        //            case ConditionType.And:
-        //                return "And";
-
-        //            case ConditionType.Not:
-        //                return "Not";
-
-        //            default:
-        //                return _model.ConditionType.ToString();
-        //        }
-        //    }
-        //}
-
         public ConditionType ConditionType
         {
             get => _model.ConditionType;
@@ -133,7 +138,9 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
                 _model.ConditionType = value;
                 RaisePropertyChanged();
                 RaisePropertyChanged(() => CanSelectInput);
+                RaisePropertyChanged(() => CanAddCondition);
                 Fix();
+                _owner.DirtyService.MarkDirty();
             }
         }
 
@@ -144,6 +151,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             {
                 _model.SourceInputId = value;
                 RaisePropertyChanged();
+                _owner.DirtyService.MarkDirty();
             }
         }
 
@@ -153,11 +161,13 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
         public IDirtyService DirtyService => _owner.DirtyService;
 
-        public TransitionEditorViewModel Owner => _owner;
-
         internal StateMachineCondition GetModel()
         {
-            
+            Fix();
+
+            _model.Conditions = Conditions
+                .Select(c => c.GetModel())
+                .ToList();
 
             return _model.Clone();
         }

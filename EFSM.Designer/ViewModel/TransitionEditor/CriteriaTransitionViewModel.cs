@@ -18,24 +18,11 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         {
             _owner = owner ?? throw new ArgumentNullException(nameof(owner));
             RootCondition = _owner.Transition.Condition.GetModel().ToViewModel(owner);
-            CommandsInitialization();
+
+            AddConditionCommand = new RelayCommand(AddCondition, CanAddCondition);
         }
 
-
-        public ICommand SetSimpleRootConditionCommand { get; private set; }
-        public ICommand SetCompoundRootConditionCommand { get; private set; }
-        public ICommand DeleteConditionCommand { get; private set; }
-
-    
-        public ConditionViewModel SelectedCondition
-        {
-            get { return _selectedCondition; }
-            set
-            {
-                _selectedCondition = value;
-                RaisePropertyChanged();
-            }
-        }
+        public ICommand AddConditionCommand { get; }
 
         public ObservableCollection<StateMachineInputViewModel> Inputs => _owner.Inputs;
 
@@ -50,50 +37,14 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             }
         }
 
-        private void CommandsInitialization()
+        private void AddCondition()
         {
-            SetSimpleRootConditionCommand = new RelayCommand(SetSimpleRootCondition, CanSetSimpleRootCondition);
-            SetCompoundRootConditionCommand = new RelayCommand(SetCompoundRootCondition, CanSetCompoundRootCondition);
-            DeleteConditionCommand = new RelayCommand(DeleteCondition, CanDeleteCondition);
+            RootCondition = new ConditionViewModel(new StateMachineCondition(), _owner);
         }
 
-        private void SetCompoundRootCondition()
-        {
-            //RootCondition = new CompoundConditionViewModel(_owner);
-        }
+        private bool CanAddCondition() => RootCondition == null;
 
-        private bool CanSetCompoundRootCondition() => RootCondition == null;
-
-        private void SetSimpleRootCondition()
-        {
-            //RootCondition = new SimpleConditionViewModel(_owner) { SourceInputId = _owner.Inputs[0].Id };
-        }
-
-        private bool CanSetSimpleRootCondition() => _owner.Inputs.Count > 0 && RootCondition == null;
-
-        private void DeleteCondition()
-        {
-            if (SelectedCondition == RootCondition)
-            {
-                RootCondition = null;
-                return;
-            }
-
-            if (SelectedCondition.ParentCollection == null)
-            {
-                //This truly shouldn't happen
-                return;
-            }
-
-            //Remove the item from its parent collection
-            SelectedCondition.ParentCollection.Remove(SelectedCondition);
-
-            //Mark it dirty
-            _owner.DirtyService.MarkDirty();
-        }
-
-        private bool CanDeleteCondition() => SelectedCondition != null;
-
+       
         internal StateMachineCondition GetModel()
         {
             return RootCondition?.GetModel();

@@ -15,7 +15,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 {
     public class TransitionEditorViewModel : ViewModelBase, ICloseableViewModel
     {
-        private CriteriaTransitionViewModel _criteriaViewModel;
+        private CriteriaTransitionViewModel _criteria;
         private OrderedListDesigner<StateMachineOutputActionViewModel> _actions;
         private readonly IDirtyService _dirtyService = new DirtyService();
         private readonly TransitionViewModel _transition;
@@ -41,18 +41,18 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
             Name = Transition.Name;
 
-            CriteriaViewModel = new CriteriaTransitionViewModel(this);
+            Criteria = new CriteriaTransitionViewModel(this);
 
             OkCommand = new RelayCommand(Ok);
             _dirtyService.MarkClean();
         }
 
-        public CriteriaTransitionViewModel CriteriaViewModel
+        public CriteriaTransitionViewModel Criteria
         {
-            get { return _criteriaViewModel; }
+            get { return _criteria; }
             private set
             {
-                _criteriaViewModel = value;
+                _criteria = value;
                 RaisePropertyChanged();
             }
         }
@@ -71,7 +71,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         public StateMachineTransition GetModel()
         {
             var model = _model.Clone();
-            model.Condition = CriteriaViewModel.GetModel();
+            model.Condition = Criteria.GetModel();
             model.TransitionActions = Actions.Items.Where(i => Outputs.Select(o => o.Id).Contains(i.Id)).Select(i => i.Id).ToArray();
             return model;
         }
