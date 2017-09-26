@@ -66,17 +66,17 @@ namespace EFSM.Generator
                 rootElementList.Add(new MarkerElement(statesTocEntries[stateIndex], $"State '{state.Model.Name}'"));
 
                 //Number of entry actions
-                rootElementList.Add(bitConverter, (ushort) state.EntryActions.Length, "# of entry actions");
+                rootElementList.Add(bitConverter, (ushort) state.EntryActions.Length, $"# of entry actions: {state.EntryActions.Length}");
 
                 //Number of exit actions
-                rootElementList.Add(bitConverter, (ushort) state.ExitActions.Length, "# of exit actions");
+                rootElementList.Add(bitConverter, (ushort) state.ExitActions.Length, $"# of exit actions: {state.ExitActions.Length}");
                
                 //Number of transitions
-                rootElementList.Add(bitConverter, (ushort) state.Transitions.Count, "# of transitions ");
+                rootElementList.Add(bitConverter, (ushort) state.Transitions.Count, $"# of transitions ({state.Transitions.Count}) ");
 
                 //Transition TOC
                 var transitionsTocEntries = state.Transitions
-                    .Select(t => new DelayedResolutionElementUshort(bitConverter, $"Address of Transition '{t.Model.Name}' {{0}}"))
+                    .Select(t => new DelayedResolutionElementUshort(bitConverter, $"Address of Transition '{t.Model.Name}': {{0}}"))
                     .ToArray();
 
                 rootElementList.AddRange(transitionsTocEntries);
@@ -88,15 +88,16 @@ namespace EFSM.Generator
 
                     rootElementList.Add(new MarkerElement(transitionToc, $"Transition '{transition.Model.Name}'"));
 
-                    //TODO: Add the number of instructions
+                    //Add the target state index
+                    rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)transition.Target.Index), $"Target state index: {transition.Target.Index}"));
+
                     var instructionFactory = new InstructionFactory();
 
                     //Get the instructions
                     Instruction[] instructions = instructionFactory.GetInstructions(transition.Model.Condition, inputs);
-
-
+                    
                     //Add the number of instructions
-                    rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)transition.Target.Index), $"# of instructions: {instructions.Length}"));
+                    rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)instructions.Length), $"# of instructions: {instructions.Length}"));
 
                     //Add the instructions
                     foreach (var instruction in instructions)
@@ -110,8 +111,25 @@ namespace EFSM.Generator
                         rootElementList.Add(new SimpleElement(new byte[] { 0 }, "Padding"));
                     }
 
-                    //Add the target state index
-                    rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)transition.Target.Index), $"Target state index: {transition.Target.Index}"));
+                    //Add the number of actions
+                    rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)transition.Actions.Length), $"# of transition actions: {transition.Actions.Length}"));
+
+                    foreach (var action in transition.Actions)
+                    {
+                        rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort) action.Index), $"Action [{action.Index}]"));
+                    }
+                }
+
+                //Entry actions
+                foreach (var action in state.EntryActions)
+                {
+                    rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)action.Index), $"Entry Action [{action.Index}]"));
+                }
+
+                //Exit actions
+                foreach (var action in state.ExitActions)
+                {
+                    rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)action.Index), $"Exit Action [{action.Index}]"));
                 }
             }
 
