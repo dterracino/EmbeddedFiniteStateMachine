@@ -2,9 +2,9 @@
 
 namespace EFSM.Generator.Model
 {
-    internal class GeneratedOutput : IndexedBase<StateMachineOutputAction>
+    internal class OutputGenerationModel : IndexedBase<StateMachineOutputAction>
     {
-        public GeneratedOutput(StateMachineOutputAction model, int index, StateMachine parent) 
+        public OutputGenerationModel(StateMachineOutputAction model, int index, StateMachine parent) 
             : base(model, index)
         {
             Parent = parent;

@@ -35,6 +35,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MiscUtil, Version=0.2.0.0, Culture=neutral, PublicKeyToken=d3c42c4bfacf7596, processorArchitecture=MSIL">
+      <HintPath>..\packages\JonSkeet.MiscUtil.0.2.0\lib\net35\MiscUtil.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -48,25 +51,37 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\DelayedResolutionElementUshort.cs" />
+    <Compile Include="Model\OpCode.cs" />
+    <Compile Include="Model\OpCodeFactory.cs" />
+    <Compile Include="Model\StateMachineBinaryGenerationResult.cs" />
+    <Compile Include="BinaryGenerator.cs" />
+    <Compile Include="CodeFileGenerator.cs" />
     <Compile Include="EmbeddedCodeGenerator.cs" />
-    <Compile Include="Model\GeneratedActionReference.cs" />
-    <Compile Include="Model\GeneratedBase.cs" />
-    <Compile Include="Model\GeneratedInput.cs" />
-    <Compile Include="Model\GeneratedOutput.cs" />
-    <Compile Include="Model\GeneratedProject.cs" />
-    <Compile Include="Model\GeneratedState.cs" />
-    <Compile Include="Model\GeneratedStateMachine.cs" />
-    <Compile Include="Model\GeneratedTransition.cs" />
+    <Compile Include="GenerationModelFactory.cs" />
+    <Compile Include="HeaderFileGenerator.cs" />
+    <Compile Include="Model\ActionReferenceGenerationModel.cs" />
+    <Compile Include="Model\GenerationModelBase.cs" />
+    <Compile Include="Model\InputGenerationModel.cs" />
+    <Compile Include="Model\OutputGenerationModel.cs" />
+    <Compile Include="Model\ProjectGenerationModel.cs" />
+    <Compile Include="Model\StateGenerationModel.cs" />
+    <Compile Include="Model\StateMachineGenerationModel.cs" />
+    <Compile Include="Model\TransitionGenerationModel.cs" />
     <Compile Include="GenerationExtensions.cs" />
-    <Compile Include="Model\Indenter.cs" />
-    <Compile Include="Model\TextGenerator.cs" />
-    <Compile Include="Model\TextGeneratorExtensions.cs" />
+    <Compile Include="TextGeneration\Indenter.cs" />
+    <Compile Include="TextGeneration\TextGenerator.cs" />
+    <Compile Include="TextGeneration\TextGeneratorExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EFSM.Domain\EFSM.Domain.csproj">
       <Project>{52981e93-1ed0-413d-8c9a-9bb23ef0c34c}</Project>
       <Name>EFSM.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EFSM.OffsetWriter\EFSM.OffsetWriter.csproj">
+      <Project>{17f7fd7d-65b3-4e6d-8e17-331517c61733}</Project>
+      <Name>EFSM.OffsetWriter</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -21,7 +21,22 @@ EFSM_STATE efsm_s_0_1 = {
 	NULL,
 
 	0,
+	
 	NULL
+};
+unsigned char efsm_stateMachine_0[] = {
+	0x00, 0x03, 0x00, 0x03, };
+
+unsigned char efsm_stateMachine_1[] = {
+	0x00, 0x00, 0x00, 0x00, };
+
+unsigned char efsm_stateMachine_2[] = {
+	0x00, 0x00, 0x00, 0x00, };
+
+unsigned char * efsm_stateMachines[] = {
+	efsm_stateMachine_0,
+	efsm_stateMachine_1,
+	efsm_stateMachine_2,
 };
 
 //EFSM_STATES efsm_states_blalb = {
@@ -67,7 +82,7 @@ EFSM_STATE_MACHINE efsm_sm_1;
 
 EFSM_INT efsm_states[EFSM_NUM_STATE_MACHINES];
 
-EFSM_STATE_MACHINE efsm_stateMachines[EFSM_NUM_STATE_MACHINES];
+//EFSM_STATE_MACHINE efsm_stateMachines[EFSM_NUM_STATE_MACHINES];
 
 unsigned char efsm_inputs_MAIN[1];
 unsigned char efsm_inputs_BLOWER[1];

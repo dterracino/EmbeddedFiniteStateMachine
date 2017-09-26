@@ -8,75 +8,78 @@ namespace EFSM.Designer.Extensions
 {
     public static class ConditionExtensions
     {
-        public static ConditionViewModelBase ToViewModel(this StateMachineCondition conditionMetadata, TransitionEditorViewModel owner)
+        public static ConditionViewModel ToViewModel(this StateMachineCondition conditionMetadata, TransitionEditorViewModel owner)
         {
             if (conditionMetadata == null)
                 return null;
 
-            //Treat this as a compound condition
-            if (conditionMetadata.CompoundConditionType.HasValue)
-            {
-                var compoundCondition = new CompoundConditionViewModel(owner)
-                {
-                    ConditionType = conditionMetadata.CompoundConditionType.Value
-                };
+            return  new ConditionViewModel(conditionMetadata, owner);
 
-                if (conditionMetadata.Conditions != null)
-                {
-                    foreach (var childConditionMetadata in conditionMetadata.Conditions)
-                    {
-                        var temporaryCondition = childConditionMetadata.ToViewModel(owner);
+            
 
-                        if (temporaryCondition != null)
-                        {
-                            compoundCondition.Children.Add(temporaryCondition);
-                        }
-                    }
-                }
+            ////Treat this as a compound condition
+            //if (conditionMetadata.ConditionType.HasValue)
+            //{
+            //    var compoundCondition = new CompoundConditionViewModel(owner)
+            //    {
+            //        ConditionType = conditionMetadata.ConditionType.Value
+            //    };
 
-                return compoundCondition;
+            //    if (conditionMetadata.Conditions != null)
+            //    {
+            //        foreach (var childConditionMetadata in conditionMetadata.Conditions)
+            //        {
+            //            var temporaryCondition = childConditionMetadata.ToViewModel(owner);
 
-            }
+            //            if (temporaryCondition != null)
+            //            {
+            //                compoundCondition.Children.Add(temporaryCondition);
+            //            }
+            //        }
+            //    }
 
-            //We should have a warning about this at some point
-            if (conditionMetadata.SourceInputId == null || conditionMetadata.Value == null)
-                return null;
+            //    return compoundCondition;
 
-            return new SimpleConditionViewModel(owner)
-            {
-                SourceInputId = conditionMetadata.SourceInputId.Value,
-                Value = conditionMetadata.Value.Value
-            };
+            //}
+
+            ////We should have a warning about this at some point
+            //if (conditionMetadata.SourceInputId == null || conditionMetadata.Value == null)
+            //    return null;
+
+            //return new SimpleConditionViewModel(owner)
+            //{
+            //    SourceInputId = conditionMetadata.SourceInputId.Value,
+            //    Value = conditionMetadata.Value.Value
+            //};
         }
 
-        public static StateMachineCondition ToMetadata(this ConditionViewModelBase conditionViewModel)
-        {
-            var simple = conditionViewModel as SimpleConditionViewModel;
+        //public static StateMachineCondition ToMetadata(this ConditionViewModelBase conditionViewModel)
+        //{
+        //    var simple = conditionViewModel as SimpleConditionViewModel;
 
-            if (simple != null)
-            {
-                return new StateMachineCondition()
-                {
-                    SourceInputId = simple.SourceInputId,
-                    Value = simple.Value
-                };
-            }
+        //    if (simple != null)
+        //    {
+        //        return new StateMachineCondition()
+        //        {
+        //            SourceInputId = simple.SourceInputId,
+        //        };
+        //    }
 
-            var compound = conditionViewModel as CompoundConditionViewModel;
+        //    var compound = conditionViewModel as CompoundConditionViewModel;
 
-            if (compound != null)
-            {
-                return new StateMachineCondition()
-                {
-                    CompoundConditionType = compound.ConditionType,
-                    Conditions = compound.Children
-                        .Select(c => c.ToMetadata())
-                        .ToList()
-                };
-            }
+        //    if (compound != null)
+        //    {
+        //        return new StateMachineCondition()
+        //        {
+        //            ConditionType = compound.ConditionType,
+        //            Conditions = compound.Children
+        //                .Select(c => c.ToMetadata())
+        //                .ToList()
+        //        };
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
         public static void DeleteInputFromConditions(this List<StateMachineConditionViewModel> conditions, StateMachineInputViewModel input)
         {

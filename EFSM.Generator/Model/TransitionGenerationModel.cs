@@ -2,20 +2,20 @@
 
 namespace EFSM.Generator.Model
 {
-    internal class GeneratedTransition : IndexedBase<StateMachineTransition>
+    internal class TransitionGenerationModel : IndexedBase<StateMachineTransition>
     {
         public StateMachine Parent { get; }
 
-        public GeneratedState Target { get; }
+        public StateGenerationModel Target { get; }
 
-        public GeneratedActionReference[] Actions { get; }
+        public ActionReferenceGenerationModel[] Actions { get; }
 
-        public GeneratedTransition(
+        public TransitionGenerationModel(
             StateMachineTransition model, 
             int index, 
             StateMachine parent, 
-            GeneratedState target,
-            GeneratedActionReference[] actions) 
+            StateGenerationModel target,
+            ActionReferenceGenerationModel[] actions) 
             : base(model, index)
         {
             Parent = parent;

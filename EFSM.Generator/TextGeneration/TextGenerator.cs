@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace EFSM.Generator.Model
+namespace EFSM.Generator.TextGeneration
 {
     public class TextGenerator
     {
@@ -19,12 +19,12 @@ namespace EFSM.Generator.Model
             _spacesPerIndent = spacesPerIndent;
         }
 
-        public void Indent()
+        public void AddIndent()
         {
             _indentLevel++;
         }
 
-        public void Outdent()
+        public void RemoveIndent()
         {
             if (_indentLevel > 0)
             {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EFSM.Generator.Model
+namespace EFSM.Generator.TextGeneration
 {
     public class Indenter : IDisposable
     {
@@ -13,7 +13,7 @@ namespace EFSM.Generator.Model
 
             _textGenerator = textGenerator;
 
-            textGenerator.Indent();
+            textGenerator.AddIndent();
         }
 
         public void Dispose()
@@ -21,7 +21,7 @@ namespace EFSM.Generator.Model
             if (!_isDisposed)
             {
                 _isDisposed = true;
-                _textGenerator.Outdent();
+                _textGenerator.RemoveIndent();
             }
         }
     }

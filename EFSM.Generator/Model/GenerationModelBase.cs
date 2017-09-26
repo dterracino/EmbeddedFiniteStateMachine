@@ -2,10 +2,10 @@
 
 namespace EFSM.Generator.Model
 {
-    internal abstract class GeneratedBase<TModel>
+    internal abstract class GenerationModelBase<TModel>
         where TModel : class
     {
-        protected GeneratedBase(TModel model)
+        protected GenerationModelBase(TModel model)
         {
             if (model == null)
                 throw new ArgumentNullException(nameof(model));
@@ -16,7 +16,7 @@ namespace EFSM.Generator.Model
         public TModel Model { get; }
     }
 
-    internal abstract class IndexedBase<TModel> : GeneratedBase<TModel>
+    internal abstract class IndexedBase<TModel> : GenerationModelBase<TModel>
         where TModel : class 
     {
         public int Index { get; }

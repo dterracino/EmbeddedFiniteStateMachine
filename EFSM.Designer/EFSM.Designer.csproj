@@ -206,11 +206,9 @@
     <Compile Include="ViewModel\ToolCategoryViewModel.cs" />
     <Compile Include="ViewModel\ToolsViewModel.cs" />
     <Compile Include="ViewModel\ToolViewModel.cs" />
-    <Compile Include="ViewModel\TransitionEditor\CompoundConditionViewModel.cs" />
     <Compile Include="ViewModel\TransitionEditor\ConditionsViewModel.cs" />
-    <Compile Include="ViewModel\TransitionEditor\ConditionViewModelBase.cs" />
+    <Compile Include="ViewModel\TransitionEditor\ConditionViewModel.cs" />
     <Compile Include="ViewModel\TransitionEditor\CriteriaTransitionViewModel.cs" />
-    <Compile Include="ViewModel\TransitionEditor\SimpleConditionViewModel.cs" />
     <Compile Include="ViewModel\TransitionEditor\TransitionEditorViewModel.cs" />
     <Compile Include="ViewModel\TransitionToolTipViewModel.cs" />
     <Compile Include="ViewModel\TransitionViewModel.cs" />

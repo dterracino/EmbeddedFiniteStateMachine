@@ -9,8 +9,10 @@
         xmlns:controls="clr-namespace:Cas.Common.WPF.Controls;assembly=Cas.Common.WPF"
         xmlns:converters="clr-namespace:EFSM.Designer.Converters"
         xmlns:behavior="clr-namespace:EFSM.Designer.Behaviors"
+        xmlns:transitionEditor="clr-namespace:EFSM.Designer.ViewModel.TransitionEditor"
         x:Name="Root"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance transitionEditor:TransitionEditorViewModel, d:IsDesignTimeCreatable=False}"
         Title="Transition" Height="400" Width="600">
     <i:Interaction.Behaviors>
         <behaviors:CloseableBehavior/>
@@ -53,7 +55,7 @@
             </Grid.ColumnDefinitions>
 
             <GroupBox Header="Criteria" >
-                <local:CriteriaTransitionView DataContext="{Binding CriteriaViewModel}"/>
+                <local:CriteriaTransitionView DataContext="{Binding Criteria}"/>
             </GroupBox>
 
 
