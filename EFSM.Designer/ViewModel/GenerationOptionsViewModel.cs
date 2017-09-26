@@ -1,9 +1,8 @@
-﻿using System;
-using Cas.Common.WPF.Interfaces;
+﻿using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
 using EFSM.Domain;
-using EFSM.Generator;
 using GalaSoft.MvvmLight;
+using System;
 
 namespace EFSM.Designer.ViewModel
 {
@@ -14,10 +13,8 @@ namespace EFSM.Designer.ViewModel
 
         public GenerationOptionsViewModel(GenerationOptions model, IMarkDirty dirtyService)
         {
-            if (model == null) throw new ArgumentNullException(nameof(model));
-            if (dirtyService == null) throw new ArgumentNullException(nameof(dirtyService));
-            _model = model;
-            _dirtyService = dirtyService;
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+            _dirtyService = dirtyService ?? throw new ArgumentNullException(nameof(dirtyService));
         }
 
         public string CodeFilePath
@@ -25,7 +22,7 @@ namespace EFSM.Designer.ViewModel
             get { return _model.CodeFilePath; }
             set
             {
-                _model.CodeFilePath = value; 
+                _model.CodeFilePath = value;
                 RaisePropertyChanged();
                 _dirtyService.MarkDirty();
             }
@@ -41,6 +38,18 @@ namespace EFSM.Designer.ViewModel
                 _dirtyService.MarkDirty();
             }
         }
+
+        public string DocumentationFolder
+        {
+            get { return _model.DocumentationFolder; }
+            set
+            {
+                _model.DocumentationFolder = value;
+                RaisePropertyChanged();
+                _dirtyService.MarkDirty();
+            }
+        }
+
 
         public string HeaderFileHeader
         {

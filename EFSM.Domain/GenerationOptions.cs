@@ -12,5 +12,6 @@
 
         public bool IsLittleEndian { get; set; }
 
+        public string DocumentationFolder { get; set; }
     }
 }
