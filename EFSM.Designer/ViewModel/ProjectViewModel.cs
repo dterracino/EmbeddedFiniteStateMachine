@@ -71,6 +71,8 @@ namespace EFSM.Designer.ViewModel
 
                 if (!string.IsNullOrWhiteSpace(GenerationOptions.DocumentationFolder))
                 {
+                    Directory.CreateDirectory(GenerationOptions.DocumentationFolder);
+
                     var path = Path.Combine(GenerationOptions.DocumentationFolder, DocumentationFileName);
 
                     new MarkdownGenerator().Generate(project.StateMachines.ToList(), path);

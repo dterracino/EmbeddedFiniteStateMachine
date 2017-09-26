@@ -150,7 +150,7 @@ namespace EFSM.Designer.Common
                 s = $"##### Condition";
                 s += Environment.NewLine;
 
-                s += AddCondition(transition.Condition);
+                // s += AddCondition(transition.Condition);
             }
 
             s = RenameConditionsGuid(s);
@@ -178,7 +178,7 @@ namespace EFSM.Designer.Common
         {
             string s = string.Empty;
 
-            if (condition.CompoundConditionType == null)
+            if (condition.ConditionType == ConditionType.Not)
             {
                 if (condition.SourceInputId != null)
                 {
@@ -187,13 +187,13 @@ namespace EFSM.Designer.Common
                         _conditionGuids.Add(condition.SourceInputId.Value);
                     }
 
-                    s += $"{condition.SourceInputId.Value}== {condition.Value}";
+                    s += $"{condition.SourceInputId.Value}== {condition.SourceInputId}";
                 }
             }
             else
             {
                 s += " ( ";
-                string operation = condition.CompoundConditionType == CompoundConditionType.And ? " AND " : " OR ";
+                string operation = condition.ConditionType == ConditionType.And ? " AND " : " OR ";
 
                 for (int i = 0; i < condition.Conditions.Count; i++)
                 {
