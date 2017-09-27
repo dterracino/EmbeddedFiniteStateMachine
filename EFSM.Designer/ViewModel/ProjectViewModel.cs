@@ -57,17 +57,15 @@ namespace EFSM.Designer.ViewModel
         {
             try
             {
+
+
                 //Create the generator
                 var generator = new EmbeddedCodeGenerator();
 
                 //Get the project model
                 var project = GetModel();
 
-                //Massage it real nice like
-                project.Massage();
 
-                //Generate. Do it now.
-                generator.Generate(project);
 
                 if (!string.IsNullOrWhiteSpace(GenerationOptions.DocumentationFolder))
                 {
@@ -77,6 +75,19 @@ namespace EFSM.Designer.ViewModel
 
                     new MarkdownGenerator().Generate(project.StateMachines.ToList(), path);
                 }
+
+
+
+
+
+
+                //Massage it real nice like
+                project.Massage();
+
+                //Generate. Do it now.
+                generator.Generate(project);
+
+
             }
             catch (Exception ex)
             {

@@ -18,7 +18,8 @@
     
     <Window.InputBindings>
         <KeyBinding Key="S" Modifiers="Control" Command="{Binding Path=SaveCommand}"/>
-        <KeyBinding Key="Delete" Command="{Binding Path=Project.DeleteStateMachineCommand}"></KeyBinding>
+        <KeyBinding Key="Delete" Command="{Binding Path=Project.DeleteStateMachineCommand}" />
+        <KeyBinding Key="F6" Command="{Binding Project.GenerateCommand}"/>
     </Window.InputBindings>
 
     <Grid>
@@ -52,7 +53,7 @@
             </MenuItem>
 
             <MenuItem Header="_Tools">
-                <MenuItem Header="_Generate" Command="{Binding Project.GenerateCommand}" />
+                <MenuItem Header="_Generate" Command="{Binding Project.GenerateCommand}" InputGestureText="F6" />
             </MenuItem>
 
             <MenuItem Header="_Help">

@@ -37,6 +37,8 @@ namespace EFSM.Designer.Common
                 SaveImage(stateMachine, pngPath);
 
                 s += AddImage(pngPath);
+
+                s += Environment.NewLine;
             }
 
             File.WriteAllText(mdFullPath, s);
@@ -78,7 +80,7 @@ namespace EFSM.Designer.Common
 
             s += AddTransitionsList(stateMachine.Transitions);
 
-            s += AddInfoForEachTransition(stateMachine.Transitions, stateMachine.Actions);
+            s += AddInfoForEachTransition(stateMachine.Transitions, stateMachine.Actions, stateMachine.Inputs);
 
             return s;
         }
@@ -103,7 +105,7 @@ namespace EFSM.Designer.Common
             return s;
         }
 
-        private string AddInfoForEachTransition(StateMachineTransition[] transitions, StateMachineOutputAction[] actions)
+        private string AddInfoForEachTransition(StateMachineTransition[] transitions, StateMachineOutputAction[] actions, StateMachineInput[] inputs)
         {
             string s = string.Empty;
 
@@ -115,7 +117,7 @@ namespace EFSM.Designer.Common
                     s += Environment.NewLine;
                     s += AddOutputActions(item, actions);
                     s += Environment.NewLine;
-                    s += AddConditions(item);
+                    s += AddConditions(item, inputs);
                     s += Environment.NewLine;
                 }
             }
@@ -141,7 +143,7 @@ namespace EFSM.Designer.Common
             return s;
         }
 
-        private string AddConditions(StateMachineTransition transition)
+        private string AddConditions(StateMachineTransition transition, StateMachineInput[] inputs)
         {
             var s = $"##### No Condition";
 
@@ -150,7 +152,7 @@ namespace EFSM.Designer.Common
                 s = $"##### Condition";
                 s += Environment.NewLine;
 
-                // s += AddCondition(transition.Condition);
+                s += AddCondition(transition.Condition, inputs);
             }
 
             s = RenameConditionsGuid(s);
@@ -174,23 +176,30 @@ namespace EFSM.Designer.Common
             return s;
         }
 
-        private string AddCondition(StateMachineCondition condition)
+        private string AddCondition(StateMachineCondition condition, StateMachineInput[] inputs)
         {
             string s = string.Empty;
 
-            if (condition.ConditionType == ConditionType.Not)
+            if ((condition.ConditionType == ConditionType.Input || condition.ConditionType == ConditionType.Not)
+                && inputs != null)
             {
-                if (condition.SourceInputId != null)
+                Guid conditionGuid = condition.ConditionType == ConditionType.Input ? condition.SourceInputId.Value : condition.Conditions[0].SourceInputId.Value;
+                StateMachineInput input = inputs.FirstOrDefault(i => i.Id == conditionGuid);
+
+                if (input != null)
                 {
-                    if (!_conditionGuids.Contains(condition.SourceInputId.Value))
+                    string name = input.Name;
+
+                    if (!_conditionGuids.Contains(conditionGuid))
                     {
-                        _conditionGuids.Add(condition.SourceInputId.Value);
+                        _conditionGuids.Add(conditionGuid);
                     }
 
-                    s += $"{condition.SourceInputId.Value}== {condition.SourceInputId}";
+                    string equalityOperator = condition.ConditionType == ConditionType.Input ? "==" : "!=";
+                    s += $"{conditionGuid} {equalityOperator} {name}";
                 }
             }
-            else
+            else if (condition.ConditionType == ConditionType.And || condition.ConditionType == ConditionType.Or)
             {
                 s += " ( ";
                 string operation = condition.ConditionType == ConditionType.And ? " AND " : " OR ";
@@ -204,13 +213,13 @@ namespace EFSM.Designer.Common
                         s += operation;
                     }
 
-                    s += AddCondition(item);
+                    s += AddCondition(item, inputs);
                 }
 
-                foreach (var item in condition.Conditions)
-                {
-                    s += AddCondition(item);
-                }
+                //foreach (var item in condition.Conditions)
+                //{
+                //    s += AddCondition(item, inputs);
+                //}
 
                 s += " ) ";
             }
