@@ -5,6 +5,7 @@ using EFSM.Designer.ViewModel;
 using EFSM.Domain;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -47,27 +48,33 @@ namespace EFSM.Designer.Common
         private void SaveImage(StateMachine stateMachine, string pngPath)
         {
             var stateMachineViewModel = new StateMachineViewModel(stateMachine, ApplicationContainer.Container.Resolve<IViewService>(), null, null, true);
-            UserControl control = new StateMachineView() { Background = Brushes.White };
+            UserControl control = new StateMachineView() { Background = System.Windows.Media.Brushes.White };
             control.DataContext = stateMachineViewModel;
 
             int size = 800;
 
-            control.Measure(new Size(size, size));
-            control.Arrange(new Rect(new Size(size, size)));
+            control.Measure(new System.Windows.Size(size, size));
+            control.Arrange(new Rect(new System.Windows.Size(size, size)));
             control.UpdateLayout();
 
             RenderTargetBitmap bmp = new RenderTargetBitmap(size, size, 96, 96, PixelFormats.Pbgra32);
 
             bmp.Render(control);
 
-            var encoder = new PngBitmapEncoder();
-
-            encoder.Frames.Add(BitmapFrame.Create(bmp));
-
-            using (Stream stm = File.Create(pngPath))
+            using (MemoryStream stream = new MemoryStream())
             {
-                encoder.Save(stm);
-            }
+                BitmapEncoder encoder2 = new BmpBitmapEncoder();
+                encoder2.Frames.Add(BitmapFrame.Create(bmp));
+                encoder2.Save(stream);
+
+                using (Bitmap bitmap = new Bitmap(stream))
+                {
+                    using (var croppedBitmap = new BitmapProcessor().CropUnwantedBackground(bitmap))
+                    {
+                        croppedBitmap.Save(pngPath);
+                    }
+                }
+            };
         }
 
         private string AddStateMachine(StateMachine stateMachine)
@@ -195,8 +202,8 @@ namespace EFSM.Designer.Common
                         _conditionGuids.Add(conditionGuid);
                     }
 
-                    string equalityOperator = condition.ConditionType == ConditionType.Input ? "==" : "!=";
-                    s += $"{conditionGuid} {equalityOperator} {name}";
+                    string equalityOperator = condition.ConditionType == ConditionType.Input ? string.Empty : "!";
+                    s += $" {equalityOperator}{name}";
                 }
             }
             else if (condition.ConditionType == ConditionType.And || condition.ConditionType == ConditionType.Or)

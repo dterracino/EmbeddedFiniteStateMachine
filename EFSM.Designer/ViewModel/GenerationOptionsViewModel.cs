@@ -2,7 +2,9 @@
 using EFSM.Designer.Common;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.CommandWpf;
 using System;
+using System.Windows.Input;
 
 namespace EFSM.Designer.ViewModel
 {
@@ -10,11 +12,18 @@ namespace EFSM.Designer.ViewModel
     {
         private readonly GenerationOptions _model;
         private readonly IMarkDirty _dirtyService;
+        public ICommand HeaderFilePathCommand { get; private set; }
 
         public GenerationOptionsViewModel(GenerationOptions model, IMarkDirty dirtyService)
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _dirtyService = dirtyService ?? throw new ArgumentNullException(nameof(dirtyService));
+            HeaderFilePathCommand = new RelayCommand(OpenHeaderFilePathDialog);
+        }
+
+        private void OpenHeaderFilePathDialog()
+        {
+
         }
 
         public string CodeFilePath

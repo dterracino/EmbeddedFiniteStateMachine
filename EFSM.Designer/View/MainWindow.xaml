@@ -125,10 +125,12 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Grid.Row="0" Grid.Column="0" Margin="4" VerticalAlignment="Center">Header File Path</TextBlock>
                             <TextBox Grid.Row="0" Grid.Column="1" Margin="4" VerticalAlignment="Center" Text="{Binding Path=HeaderFilePath, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button Grid.Row="0" Grid.Column="2" Margin="4" Content="Browse" Command="{Binding HeaderFilePathCommand}" />
 
                             <TextBlock Grid.Row="1" Grid.Column="0" Margin="4" VerticalAlignment="Center">Header File Path</TextBlock>
                             <TextBox Grid.Row="1" Grid.Column="1" Margin="4" VerticalAlignment="Center" Text="{Binding Path=CodeFilePath, UpdateSourceTrigger=PropertyChanged}" />

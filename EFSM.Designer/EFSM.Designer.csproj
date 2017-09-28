@@ -40,6 +40,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>
     </DocumentationFile>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -87,6 +88,10 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Drawing.Primitives.4.3.0\lib\net45\System.Drawing.Primitives.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Expression.Blend.Sdk.1.0.2\lib\net45\System.Windows.Interactivity.dll</HintPath>
       <Private>True</Private>
@@ -145,8 +150,10 @@
     <Compile Include="Behaviors\SelectableBehavior.cs" />
     <Compile Include="Behaviors\SimpleMoveableBehavior.cs" />
     <Compile Include="Behaviors\TransitionCreatorBehavior.cs" />
+    <Compile Include="Common\BitmapProcessor.cs" />
     <Compile Include="Common\Cloner.cs" />
     <Compile Include="Common\GraphicsUtil.cs" />
+    <Compile Include="Common\ImageProcessor.cs" />
     <Compile Include="Common\IntersectionPoint.cs" />
     <Compile Include="Common\MarkdownGenerator.cs" />
     <Compile Include="Common\OrderedListDesigner.cs" />
