@@ -161,6 +161,7 @@
     <Compile Include="Common\ToolTipFactory.cs" />
     <Compile Include="Common\TransitionPropertyGridSource.cs" />
     <Compile Include="Common\UndoService.cs" />
+    <Compile Include="Common\VisualTreeExtensions.cs" />
     <Compile Include="Const\DesignerConstants.cs" />
     <Compile Include="Controls\InputUserControl.xaml.cs">
       <DependentUpon>InputUserControl.xaml</DependentUpon>

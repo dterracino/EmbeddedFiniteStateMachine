@@ -49,7 +49,7 @@
         </Grid>
 
          <!--Transitions--> 
-        <ItemsControl ItemsSource="{Binding Path=Transitions}">
+        <ItemsControl ItemsSource="{Binding Path=Transitions}" x:Name="Transitions">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas IsItemsHost="True" Width="{Binding Path=Width}" Height="{Binding Path=Height}" >
@@ -67,7 +67,7 @@
 
 
         <!-- States -->
-        <ItemsControl ItemsSource="{Binding Path=States}" x:Name="DesignerControl">
+        <ItemsControl ItemsSource="{Binding Path=States}" x:Name="States">
 
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
