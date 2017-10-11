@@ -155,6 +155,8 @@ namespace EFSM.Designer.ViewModel
 
         public State GetModel()
         {
+            _model.X = Location.X;
+            _model.Y = Location.Y;
             return _model.Clone();
         }
 
