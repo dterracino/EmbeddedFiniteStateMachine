@@ -65,7 +65,8 @@ namespace EFSM.Designer.ViewModel
         private void ReloadModel(StateMachine stateMachine)
         {
             _model = stateMachine;
-            RaisePropertyChanged(nameof(Name));
+            // ReSharper disable once ExplicitCallerInfoArgument
+            RaisePropertyChanged(null);
         }
     }
 }

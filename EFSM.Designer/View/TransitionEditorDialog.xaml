@@ -6,9 +6,6 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:local="clr-namespace:EFSM.Designer.View"
         xmlns:behaviors="clr-namespace:Cas.Common.WPF.Behaviors;assembly=Cas.Common.WPF"
-        xmlns:controls="clr-namespace:Cas.Common.WPF.Controls;assembly=Cas.Common.WPF"
-        xmlns:converters="clr-namespace:EFSM.Designer.Converters"
-        xmlns:behavior="clr-namespace:EFSM.Designer.Behaviors"
         xmlns:transitionEditor="clr-namespace:EFSM.Designer.ViewModel.TransitionEditor"
         x:Name="Root"
         mc:Ignorable="d"
@@ -17,9 +14,7 @@
     <i:Interaction.Behaviors>
         <behaviors:CloseableBehavior/>
     </i:Interaction.Behaviors>
-    <Window.Resources>
-        <converters:SingletonConverter x:Key="SingletonConverter"/>
-    </Window.Resources>
+    
 
     <Grid>
 

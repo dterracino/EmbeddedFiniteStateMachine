@@ -61,7 +61,7 @@
 
                         <ComboBox Visibility="{Binding Path=CanSelectInput, Converter={StaticResource CollapsedWhenFalseConverter}}" Margin="3" Background="Transparent" ItemsSource="{Binding ElementName=Root, Path=DataContext.Inputs, diag:PresentationTraceSources.TraceLevel=High}" DisplayMemberPath="Name" SelectedValue="{Binding Path=InputId}" SelectedValuePath="Id" MinWidth="100" VerticalAlignment="Center"/>
 
-                        <Button Margin="3" VerticalAlignment="Center" Command="{Binding Path=DeleteCommand}" ToolTip="Add child condition">
+                        <Button Margin="3" VerticalAlignment="Center" Command="{Binding Path=DeleteCommand}" ToolTip="Delete condition">
                             <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/Delete.gif"></controls:AutoGreyableImage>
                         </Button>
 

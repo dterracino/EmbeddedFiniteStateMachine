@@ -21,13 +21,13 @@ namespace EFSM.Designer.ViewModel
         private double _width = DefaultHeightWidth;
         private double _height = DefaultHeightWidth;
         private State _model;
-        public StateMachineViewModel Parent { get; private set; }
+        public StateMachineViewModel Parent { get; }
         private Point _startLocation;
-        private IViewService _viewService;
+        private readonly IViewService _viewService;
         private readonly List<TransitionViewModel> _transitions = new List<TransitionViewModel>();
 
-        public ICommand EditCommand { get; private set; }
-        public ICommand DeleteCommand { get; private set; }
+        public ICommand EditCommand { get; }
+        public ICommand DeleteCommand { get; }
 
         public StateViewModel(State state, StateMachineViewModel parent, IViewService viewService)
         {
