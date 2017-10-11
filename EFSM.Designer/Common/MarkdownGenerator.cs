@@ -49,17 +49,47 @@ namespace EFSM.Designer.Common
         {
             var stateMachineViewModel = new StateMachineViewModel(stateMachine, ApplicationContainer.Container.Resolve<IViewService>(), null, null, true);
             UserControl control = new StateMachineView() { Background = System.Windows.Media.Brushes.White };
+
+            //foreach (var item in stateMachineViewModel.States)
+            //{
+            //    item.Location = new System.Windows.Point(item.Location.X - 100, item.Location.Y);
+            //}
+
             control.DataContext = stateMachineViewModel;
 
             int size = 800;
+
+
 
             control.Measure(new System.Windows.Size(size, size));
             control.Arrange(new Rect(new System.Windows.Size(size, size)));
             control.UpdateLayout();
 
+            var abc = GetAllChildren(control.Content as Grid);
+
+            var b = abc.Where(x => x.GetType() == typeof(StateView));
+
+            //var aaa = control.Content as Grid;
+            //var def = b.Select(x => GetPoint(x, aaa));
+
+            //var left = def.Min(x => x.X);
+            //var top = def.Min(x => x.Y);
+
+            var aaa = b.First();
+
+            var left = stateMachineViewModel.States.Min(x => x.Location.X);
+            var rectangles = stateMachineViewModel.Transitions.Select(x => x.LineGeometry.Bounds);
+            var left2 = rectangles.Min(x => x.Left);
+
+            if (left > left2)
+            {
+                left = left2;
+            }
+
             RenderTargetBitmap bmp = new RenderTargetBitmap(size, size, 96, 96, PixelFormats.Pbgra32);
 
             bmp.Render(control);
+
 
             using (MemoryStream stream = new MemoryStream())
             {
@@ -69,12 +99,47 @@ namespace EFSM.Designer.Common
 
                 using (Bitmap bitmap = new Bitmap(stream))
                 {
-                    using (var croppedBitmap = new BitmapProcessor().CropUnwantedBackground(bitmap))
-                    {
-                        croppedBitmap.Save(pngPath);
-                    }
+                    Rectangle rect = new Rectangle(100, 0, 700, 800);
+                    Bitmap cloned = new ImageProcessor().AutoCrop(bitmap);
+                    cloned.Save(pngPath);
                 }
             };
+        }
+
+
+
+        private System.Windows.Point GetPoint(FrameworkElement element, UIElement control)
+        {
+            var x = element.TranslatePoint(new System.Windows.Point(0, 0), control);
+            var a = element.TransformToAncestor(control).Transform(new System.Windows.Point(0, 0));
+            var b = element.TransformToVisual(control).Transform(new System.Windows.Point(0, 0));
+
+            var c = VisualTreeHelper.GetDescendantBounds(element);
+
+            if (x.X == 0 && x.Y == 0)
+            {
+
+            }
+
+            return x;
+        }
+
+        private List<FrameworkElement> GetAllChildren(FrameworkElement parent)
+        {
+            List<FrameworkElement> controls = new List<FrameworkElement>();
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var item = VisualTreeHelper.GetChild(parent, i);
+
+                if (item is FrameworkElement frameworkElement)
+                {
+                    controls.Add(frameworkElement);
+                    controls.AddRange(GetAllChildren(frameworkElement));
+                }
+            }
+
+            return controls;
         }
 
         private string AddStateMachine(StateMachine stateMachine)

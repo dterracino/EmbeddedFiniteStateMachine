@@ -20,7 +20,7 @@
     <Grid>
 
         <!-- New Transition line -->
-        <Grid  Width="{Binding Path=Width}" Height="{Binding Path=Height}" IsHitTestVisible="True" AllowDrop="True">
+        <Grid  Width="{Binding Path=Width}" Height="{Binding Path=Height}" Name="Agin" IsHitTestVisible="True" AllowDrop="True">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseLeftButtonDown">
                     <command:EventToCommand Command="{Binding OnMouseLeftButtonDownCommand}" PassEventArgsToCommand="True"/>
