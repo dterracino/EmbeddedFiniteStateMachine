@@ -44,11 +44,15 @@ namespace EFSM.Designer.Common
         private void SaveImage(StateMachine stateMachine, string pngPath)
         {
             var stateMachineViewModel = new StateMachineViewModel(stateMachine, ApplicationContainer.Container.Resolve<IViewService>(), null, null, true);
-            StateMachineView control = new StateMachineView();
-            
-            control.DataContext = stateMachineViewModel;
 
-            int size = 800;
+            //Render using this approach
+            // https://stackoverflow.com/a/5189179/232566
+            StateMachineView control = new StateMachineView
+            {
+                DataContext = stateMachineViewModel
+            };
+            
+            const int size = 800;
 
             control.Measure(new System.Windows.Size(size, size));
             control.Arrange(new Rect(new System.Windows.Size(size, size)));
@@ -61,24 +65,31 @@ namespace EFSM.Designer.Common
 
             if (width > 0 && height > 0)
             {
-
+                //Got the render transform idea here:
+                // https://stackoverflow.com/a/224492/232566
                 DrawingVisual visual = new DrawingVisual();
 
                 using (DrawingContext context = visual.RenderOpen())
                 {
+                    //Create a brush that references the visual representation of the state machine
                     VisualBrush brush = new VisualBrush(control.RenderRoot);
 
+                    //Fill the visual with our background
                     context.DrawRectangle(System.Windows.Media.Brushes.White, null, combined);
 
+                    //Draw the system onto the visual
                     context.DrawRectangle(brush,
                         null,
                         combined);
                 }
 
+                //Apply a transform that positions the system near (0, 0)
                 visual.Transform = new TranslateTransform(combined.X * -1, combined.Y * -1);
 
+                //Create the render target
                 RenderTargetBitmap bmp = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
 
+                //Render it
                 bmp.Render(visual);
 
                 using (MemoryStream stream = new MemoryStream())
@@ -90,6 +101,7 @@ namespace EFSM.Designer.Common
 
                     using (Bitmap bitmap = new Bitmap(stream))
                     {
+                        //Save it
                         bitmap.Save(pngPath);
                     }
                 };
