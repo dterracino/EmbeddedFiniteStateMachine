@@ -48,7 +48,7 @@ namespace EFSM.Designer.Common
         private void SaveImage(StateMachine stateMachine, string pngPath)
         {
             var stateMachineViewModel = new StateMachineViewModel(stateMachine, ApplicationContainer.Container.Resolve<IViewService>(), null, null, true);
-            UserControl control = new StateMachineView() { Background = System.Windows.Media.Brushes.White };
+            StateMachineView control = new StateMachineView() { Background = System.Windows.Media.Brushes.Transparent };
 
             //foreach (var item in stateMachineViewModel.States)
             //{
@@ -64,6 +64,14 @@ namespace EFSM.Designer.Common
             control.Measure(new System.Windows.Size(size, size));
             control.Arrange(new Rect(new System.Windows.Size(size, size)));
             control.UpdateLayout();
+
+            var stateBounds = VisualTreeHelper.GetDescendantBounds(control.States);
+            var transitionBounds = VisualTreeHelper.GetDescendantBounds(control.Transitions);
+
+            //This should be the bounding box for all of the states and transitions
+            var combined = Rect.Union(stateBounds, transitionBounds);
+
+
 
             var abc = GetAllChildren(control.Content as Grid);
 
