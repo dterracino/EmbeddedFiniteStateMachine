@@ -52,17 +52,19 @@ namespace EFSM.Designer.Common
                 DataContext = stateMachineViewModel
             };
             
-            const int size = 800;
+            const int temporarySize = 800;
 
-            control.Measure(new System.Windows.Size(size, size));
-            control.Arrange(new Rect(new System.Windows.Size(size, size)));
+            control.Measure(new System.Windows.Size(temporarySize, temporarySize));
+            control.Arrange(new Rect(new System.Windows.Size(temporarySize, temporarySize)));
             control.UpdateLayout();
 
-            var combined = VisualTreeHelper.GetDescendantBounds(control.RenderRoot);
+            //Calculate the bounds of the state machine
+            var bounds = VisualTreeHelper.GetDescendantBounds(control.RenderRoot);
 
-            int width = (int)combined.Width;
-            int height = (int)combined.Height;
+            int width = (int)bounds.Width;
+            int height = (int)bounds.Height;
 
+            //There are errors if these are 0.
             if (width > 0 && height > 0)
             {
                 //Got the render transform idea here:
@@ -75,16 +77,16 @@ namespace EFSM.Designer.Common
                     VisualBrush brush = new VisualBrush(control.RenderRoot);
 
                     //Fill the visual with our background
-                    context.DrawRectangle(System.Windows.Media.Brushes.White, null, combined);
+                    context.DrawRectangle(System.Windows.Media.Brushes.White, null, bounds);
 
                     //Draw the system onto the visual
                     context.DrawRectangle(brush,
                         null,
-                        combined);
+                        bounds);
                 }
 
                 //Apply a transform that positions the system near (0, 0)
-                visual.Transform = new TranslateTransform(combined.X * -1, combined.Y * -1);
+                visual.Transform = new TranslateTransform(bounds.X * -1, bounds.Y * -1);
 
                 //Create the render target
                 RenderTargetBitmap bmp = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
