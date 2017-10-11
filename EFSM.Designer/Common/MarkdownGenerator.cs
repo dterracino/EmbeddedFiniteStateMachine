@@ -17,14 +17,10 @@ namespace EFSM.Designer.Common
 {
     public class MarkdownGenerator
     {
-        private List<Guid> _conditionGuids = new List<Guid>();
-
-        private List<StateMachine> _stateMachines;
+        private readonly List<Guid> _conditionGuids = new List<Guid>();
 
         public void Generate(List<StateMachine> stateMachines, string mdFullPath)
         {
-            _stateMachines = stateMachines;
-
             string s = string.Empty;
 
             for (int i = 0; i < stateMachines.Count; i++)
@@ -48,106 +44,70 @@ namespace EFSM.Designer.Common
         private void SaveImage(StateMachine stateMachine, string pngPath)
         {
             var stateMachineViewModel = new StateMachineViewModel(stateMachine, ApplicationContainer.Container.Resolve<IViewService>(), null, null, true);
-            StateMachineView control = new StateMachineView() { Background = System.Windows.Media.Brushes.Transparent };
 
-            //foreach (var item in stateMachineViewModel.States)
-            //{
-            //    item.Location = new System.Windows.Point(item.Location.X - 100, item.Location.Y);
-            //}
+            //Render using this approach
+            // https://stackoverflow.com/a/5189179/232566
+            StateMachineView control = new StateMachineView
+            {
+                DataContext = stateMachineViewModel
+            };
+            
+            const int temporarySize = 800;
 
-            control.DataContext = stateMachineViewModel;
-
-            int size = 800;
-
-
-
-            control.Measure(new System.Windows.Size(size, size));
-            control.Arrange(new Rect(new System.Windows.Size(size, size)));
+            control.Measure(new System.Windows.Size(temporarySize, temporarySize));
+            control.Arrange(new Rect(new System.Windows.Size(temporarySize, temporarySize)));
             control.UpdateLayout();
 
-            var stateBounds = VisualTreeHelper.GetDescendantBounds(control.States);
-            var transitionBounds = VisualTreeHelper.GetDescendantBounds(control.Transitions);
+            //Calculate the bounds of the state machine
+            var bounds = VisualTreeHelper.GetDescendantBounds(control.RenderRoot);
 
-            //This should be the bounding box for all of the states and transitions
-            var combined = Rect.Union(stateBounds, transitionBounds);
+            int width = (int)bounds.Width;
+            int height = (int)bounds.Height;
 
-
-
-            var abc = GetAllChildren(control.Content as Grid);
-
-            var b = abc.Where(x => x.GetType() == typeof(StateView));
-
-            //var aaa = control.Content as Grid;
-            //var def = b.Select(x => GetPoint(x, aaa));
-
-            //var left = def.Min(x => x.X);
-            //var top = def.Min(x => x.Y);
-
-            var aaa = b.First();
-
-            var left = stateMachineViewModel.States.Min(x => x.Location.X);
-            var rectangles = stateMachineViewModel.Transitions.Select(x => x.LineGeometry.Bounds);
-            var left2 = rectangles.Min(x => x.Left);
-
-            if (left > left2)
+            //There are errors if these are 0.
+            if (width > 0 && height > 0)
             {
-                left = left2;
-            }
+                //Got the render transform idea here:
+                // https://stackoverflow.com/a/224492/232566
+                DrawingVisual visual = new DrawingVisual();
 
-            RenderTargetBitmap bmp = new RenderTargetBitmap(size, size, 96, 96, PixelFormats.Pbgra32);
-
-            bmp.Render(control);
-
-
-            using (MemoryStream stream = new MemoryStream())
-            {
-                BitmapEncoder encoder2 = new BmpBitmapEncoder();
-                encoder2.Frames.Add(BitmapFrame.Create(bmp));
-                encoder2.Save(stream);
-
-                using (Bitmap bitmap = new Bitmap(stream))
+                using (DrawingContext context = visual.RenderOpen())
                 {
-                    Rectangle rect = new Rectangle(100, 0, 700, 800);
-                    Bitmap cloned = new ImageProcessor().AutoCrop(bitmap);
-                    cloned.Save(pngPath);
+                    //Create a brush that references the visual representation of the state machine
+                    VisualBrush brush = new VisualBrush(control.RenderRoot);
+
+                    //Fill the visual with our background
+                    context.DrawRectangle(System.Windows.Media.Brushes.White, null, bounds);
+
+                    //Draw the system onto the visual
+                    context.DrawRectangle(brush,
+                        null,
+                        bounds);
                 }
-            };
-        }
 
+                //Apply a transform that positions the system near (0, 0)
+                visual.Transform = new TranslateTransform(bounds.X * -1, bounds.Y * -1);
 
+                //Create the render target
+                RenderTargetBitmap bmp = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
 
-        private System.Windows.Point GetPoint(FrameworkElement element, UIElement control)
-        {
-            var x = element.TranslatePoint(new System.Windows.Point(0, 0), control);
-            var a = element.TransformToAncestor(control).Transform(new System.Windows.Point(0, 0));
-            var b = element.TransformToVisual(control).Transform(new System.Windows.Point(0, 0));
+                //Render it
+                bmp.Render(visual);
 
-            var c = VisualTreeHelper.GetDescendantBounds(element);
-
-            if (x.X == 0 && x.Y == 0)
-            {
-
-            }
-
-            return x;
-        }
-
-        private List<FrameworkElement> GetAllChildren(FrameworkElement parent)
-        {
-            List<FrameworkElement> controls = new List<FrameworkElement>();
-
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
-            {
-                var item = VisualTreeHelper.GetChild(parent, i);
-
-                if (item is FrameworkElement frameworkElement)
+                using (MemoryStream stream = new MemoryStream())
                 {
-                    controls.Add(frameworkElement);
-                    controls.AddRange(GetAllChildren(frameworkElement));
-                }
-            }
+                    BitmapEncoder encoder2 = new BmpBitmapEncoder();
 
-            return controls;
+                    encoder2.Frames.Add(BitmapFrame.Create(bmp));
+                    encoder2.Save(stream);
+
+                    using (Bitmap bitmap = new Bitmap(stream))
+                    {
+                        //Save it
+                        bitmap.Save(pngPath);
+                    }
+                };
+            }
         }
 
         private string AddStateMachine(StateMachine stateMachine)

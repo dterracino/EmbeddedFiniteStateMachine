@@ -57,5 +57,10 @@ namespace EFSM.Designer.Common
 
             return foundChild;
         }
+
+        //public static Visual Transform(this Visual visual, Transform transform)
+        //{
+            
+        //}
     }
 }

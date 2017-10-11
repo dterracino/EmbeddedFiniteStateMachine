@@ -48,45 +48,49 @@
             </Line>
         </Grid>
 
-         <!--Transitions--> 
-        <ItemsControl ItemsSource="{Binding Path=Transitions}" x:Name="Transitions">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas IsItemsHost="True" Width="{Binding Path=Width}" Height="{Binding Path=Height}" >
-                    </Canvas>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
+        <Grid x:Name="RenderRoot">
 
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <local:TransitionView/>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
+            <!--Transitions-->
+            <ItemsControl ItemsSource="{Binding Path=Transitions}" x:Name="Transitions">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas IsItemsHost="True" Width="{Binding Path=Width}" Height="{Binding Path=Height}" >
+                        </Canvas>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
 
-        </ItemsControl>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <local:TransitionView/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+            </ItemsControl>
 
 
-        <!-- States -->
-        <ItemsControl ItemsSource="{Binding Path=States}" x:Name="States">
+            <!-- States -->
+            <ItemsControl ItemsSource="{Binding Path=States}" x:Name="States">
 
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas IsItemsHost="True" Width="{Binding Path=Width}" Height="{Binding Path=Height}"  />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas IsItemsHost="True" Width="{Binding Path=Width}" Height="{Binding Path=Height}"  />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
 
-            <ItemsControl.ItemContainerStyle>
-                <Style TargetType="ContentPresenter" >
-                    <Setter Property="Canvas.Left" Value="{Binding Path=Location.X}"></Setter>
-                    <Setter Property="Canvas.Top" Value="{Binding Path=Location.Y}"></Setter>
-                </Style>
-            </ItemsControl.ItemContainerStyle>
+                <ItemsControl.ItemContainerStyle>
+                    <Style TargetType="ContentPresenter" >
+                        <Setter Property="Canvas.Left" Value="{Binding Path=Location.X}"></Setter>
+                        <Setter Property="Canvas.Top" Value="{Binding Path=Location.Y}"></Setter>
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
 
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <local:StateView></local:StateView>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <local:StateView></local:StateView>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+        </Grid>
     </Grid>
 </UserControl>
