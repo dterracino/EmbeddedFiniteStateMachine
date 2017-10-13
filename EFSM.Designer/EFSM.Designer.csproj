@@ -155,6 +155,7 @@
     <Compile Include="Common\GraphicsUtil.cs" />
     <Compile Include="Common\ImageProcessor.cs" />
     <Compile Include="Common\IntersectionPoint.cs" />
+    <Compile Include="Common\MarkdownConditionGenerator.cs" />
     <Compile Include="Common\MarkdownGenerator.cs" />
     <Compile Include="Common\OrderedListDesigner.cs" />
     <Compile Include="Common\SelectionService.cs" />

@@ -17,11 +17,8 @@ namespace EFSM.Designer.Common
 {
     public class MarkdownGenerator
     {
-        private readonly List<Guid> _conditionGuids = new List<Guid>();
-
         public void Generate(List<StateMachine> stateMachines, string mdFullPath)
         {
-            string s = string.Empty;
             StringBuilder textFile = new StringBuilder();
 
             for (int i = 0; i < stateMachines.Count; i++)
@@ -39,7 +36,7 @@ namespace EFSM.Designer.Common
                 textFile.Append(Environment.NewLine);
             }
 
-            File.WriteAllText(mdFullPath, s);
+            File.WriteAllText(mdFullPath, textFile.ToString());
         }
 
         private void SaveImage(StateMachine stateMachine, string pngPath)
@@ -158,7 +155,11 @@ namespace EFSM.Designer.Common
                     s.Append(Environment.NewLine);
                     s.Append(AddOutputActions(item, actions));
                     s.Append(Environment.NewLine);
-                    s.Append(AddConditions(item, inputs));
+
+                    string conditionHeadline = item.Condition == null ? "##### No Condition" : "##### Condition" + Environment.NewLine;
+                    s.Append(conditionHeadline);
+
+                    s.Append(new MarkdownConditionGenerator().Generate(item, inputs));
                     s.Append(Environment.NewLine);
                 }
             }
@@ -179,67 +180,6 @@ namespace EFSM.Designer.Common
                 {
                     s.Append($"* {(actions.First(x => x.Id == item).Name)}");
                 }
-            }
-
-            return s;
-        }
-
-        private StringBuilder AddConditions(StateMachineTransition transition, StateMachineInput[] inputs)
-        {
-            StringBuilder s = new StringBuilder($"##### No Condition");
-
-            if (transition.Condition != null)
-            {
-                s = new StringBuilder($"##### Condition");
-                s.Append(Environment.NewLine);
-
-                s.Append(AddCondition(transition.Condition, inputs));
-            }
-
-            _conditionGuids.Clear();
-
-            return s;
-        }
-
-        private StringBuilder AddCondition(StateMachineCondition condition, StateMachineInput[] inputs)
-        {
-            StringBuilder s = new StringBuilder();
-
-            if ((condition.ConditionType == ConditionType.Input || condition.ConditionType == ConditionType.Not)
-                && inputs != null)
-            {
-                Guid conditionGuid = condition.ConditionType == ConditionType.Input ? condition.SourceInputId.Value : condition.Conditions[0].SourceInputId.Value;
-                StateMachineInput input = inputs.FirstOrDefault(i => i.Id == conditionGuid);
-
-                if (input != null)
-                {
-                    if (!_conditionGuids.Contains(conditionGuid))
-                    {
-                        _conditionGuids.Add(conditionGuid);
-                    }
-
-                    string equalityOperator = condition.ConditionType == ConditionType.Input ? string.Empty : "!";
-                    s.Append($" {equalityOperator}{input.Name}");
-                }
-            }
-            else if (condition.ConditionType == ConditionType.And || condition.ConditionType == ConditionType.Or)
-            {
-                s.Append(" ( ");
-                string operation = condition.ConditionType == ConditionType.And ? " AND " : " OR ";
-
-                for (int i = 0; i < condition.Conditions.Count; i++)
-                {
-                    var item = condition.Conditions[i];
-
-                    if (i > 0)
-                    {
-                        s.Append(operation);
-                    }
-
-                    s.Append(AddCondition(item, inputs));
-                }
-
-                s.Append(" ) ");
             }
 
             return s;

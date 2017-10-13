@@ -63,21 +63,14 @@ namespace EFSM.Designer.ViewModel
                 //Get the project model
                 var project = GetModel();
 
-
-
-
                 if (!string.IsNullOrWhiteSpace(GenerationOptions.DocumentationFolder))
                 {
                     Directory.CreateDirectory(GenerationOptions.DocumentationFolder);
 
-                    var path = Path.Combine(GenerationOptions.DocumentationFolder, DocumentationFileName);
+                    var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GenerationOptions.DocumentationFolder, DocumentationFileName);
 
                     new MarkdownGenerator().Generate(project.StateMachines.ToList(), path);
                 }
-
-
-
-
 
                 //Massage it real nice like
                 project.Massage();

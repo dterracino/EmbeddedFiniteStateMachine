@@ -1,16 +1,19 @@
 ﻿using Cas.Common.WPF.Interfaces;
-using GalaSoft.MvvmLight;
-using System;
-using System.Linq;
-using System.Windows.Input;
 using EFSM.Designer.Common;
 using EFSM.Domain;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using System;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Windows.Input;
 
 namespace EFSM.Designer.ViewModel.TransitionEditor
 {
     public class ConditionViewModel : ViewModelBase
     {
+        public event EventHandler ConditionChanged;
+
         private readonly StateMachineCondition _model;
         private readonly TransitionEditorViewModel _owner;
 
@@ -19,7 +22,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             _model = model;
             _owner = owner ?? throw new ArgumentNullException(nameof(owner));
 
-            Conditions  = new ConditionsViewModel(this);
+            Conditions = new ConditionsViewModel(this);
 
             if (model.Conditions != null)
             {
@@ -33,6 +36,29 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
             AddConditionCommand = new RelayCommand(AddCondition, () => CanAddCondition);
             DeleteCommand = new RelayCommand(Delete);
+            Conditions.CollectionChanged += ConditionsCollectionChanged;
+        }
+
+        private void ConditionsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                OnConditionChanged(this);
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                foreach (var item in e.NewItems.OfType<ConditionViewModel>())
+                {
+                    item.ConditionChanged += ItemConditionChanged;
+                }
+
+                OnConditionChanged(this);
+            }
+        }
+
+        private void ItemConditionChanged(object sender, EventArgs e)
+        {
+            OnConditionChanged(sender);
         }
 
         public ICommand AddConditionCommand { get; }
@@ -141,6 +167,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
                 RaisePropertyChanged(() => CanAddCondition);
                 Fix();
                 _owner.DirtyService.MarkDirty();
+                OnConditionChanged(this);
             }
         }
 
@@ -152,7 +179,13 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
                 _model.SourceInputId = value;
                 RaisePropertyChanged();
                 _owner.DirtyService.MarkDirty();
+                OnConditionChanged(this);
             }
+        }
+
+        protected virtual void OnConditionChanged(object sender)
+        {
+            ConditionChanged?.Invoke(sender, EventArgs.Empty);
         }
 
         public ConditionsViewModel ParentCollection { get; internal set; }

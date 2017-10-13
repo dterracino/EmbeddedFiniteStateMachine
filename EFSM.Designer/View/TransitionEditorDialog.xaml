@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:EFSM.Designer.View"
         xmlns:behaviors="clr-namespace:Cas.Common.WPF.Behaviors;assembly=Cas.Common.WPF"
         xmlns:transitionEditor="clr-namespace:EFSM.Designer.ViewModel.TransitionEditor"
-        x:Name="Root"
+        x:Name="Root" 
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance transitionEditor:TransitionEditorViewModel, d:IsDesignTimeCreatable=False}"
         Title="Transition" Height="400" Width="600">
@@ -49,9 +49,20 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <GroupBox Header="Criteria" >
-                <local:CriteriaTransitionView DataContext="{Binding Criteria}"/>
-            </GroupBox>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+                <GroupBox Header="Criteria" Grid.Row="0">
+                    <local:CriteriaTransitionView DataContext="{Binding Criteria}"/>
+                </GroupBox>
+
+                <Label Grid.Row="1" MinHeight="25" Content="{Binding ConditionText}"/>
+            </Grid>
+            
+            
 
 
             <GridSplitter Grid.Column="1" ResizeBehavior="PreviousAndNext" Background="LightGray" HorizontalAlignment="Stretch"/>

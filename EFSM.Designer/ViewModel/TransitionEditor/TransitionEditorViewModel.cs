@@ -22,6 +22,8 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         private readonly StateMachineTransition _model;
         private readonly Action<StateMachineTransition> _updateParentModel;
         private readonly StateMachineViewModel _parent;
+        private string _conditionText;
+        private MarkdownConditionGenerator _markdownConditionGenerator = new MarkdownConditionGenerator();
 
         public TransitionEditorViewModel(StateMachineTransition model, StateMachineViewModel parent, Action<StateMachineTransition> updateParentModel)
         {
@@ -45,6 +47,52 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
             OkCommand = new RelayCommand(Ok);
             _dirtyService.MarkClean();
+
+
+            RecalculateConditionText();
+
+            Criteria.PropertyChanged += CriteriaPropertyChanged;
+            Criteria.RootCondition.ConditionChanged += RootConditionChanged;
+        }
+
+        private void RootConditionChanged(object sender, EventArgs e)
+        {
+            RecalculateConditionText();
+        }
+
+        private void CriteriaPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Criteria.RootCondition))
+            {
+                RecalculateConditionText();
+
+                if (Criteria.RootCondition != null)
+                {
+                    Criteria.RootCondition.ConditionChanged += RootConditionChanged;
+                }
+            }
+        }
+
+        private bool _isRecalculationConditionText = false;
+        private void RecalculateConditionText()
+        {
+            //if (Criteria.RootCondition != null)
+            //{
+            //    Criteria.RootCondition.ConditionChanged -= RootConditionChanged;
+            //}
+            
+
+            if (!_isRecalculationConditionText)
+            {
+                _isRecalculationConditionText = true;
+                ConditionText = _markdownConditionGenerator.Generate(GetModel(), Inputs.Select(i => i.GetModel()).ToArray()).ToString();
+            }
+
+            _isRecalculationConditionText = false; 
+            //if (Criteria.RootCondition != null)
+            //{
+            //    Criteria.RootCondition.ConditionChanged += RootConditionChanged;
+            //}
         }
 
         public CriteriaTransitionViewModel Criteria
@@ -55,6 +103,12 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
                 _criteria = value;
                 RaisePropertyChanged();
             }
+        }
+
+        public string ConditionText
+        {
+            get { return _conditionText; }
+            set { _conditionText = value; RaisePropertyChanged(); }
         }
 
         public event EventHandler<CloseEventArgs> Close;
