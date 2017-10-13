@@ -8,8 +8,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -22,20 +22,21 @@ namespace EFSM.Designer.Common
         public void Generate(List<StateMachine> stateMachines, string mdFullPath)
         {
             string s = string.Empty;
+            StringBuilder textFile = new StringBuilder();
 
             for (int i = 0; i < stateMachines.Count; i++)
             {
                 var stateMachine = stateMachines[i];
 
-                s += AddStateMachine(stateMachine);
+                textFile.Append(AddStateMachine(stateMachine));
 
                 string pngPath = mdFullPath.Remove(mdFullPath.LastIndexOf(@"\")) + $@"\StateMachine_{i}.png";
 
                 SaveImage(stateMachine, pngPath);
 
-                s += AddImage(pngPath);
+                textFile.Append(AddImage(pngPath));
 
-                s += Environment.NewLine;
+                textFile.Append(Environment.NewLine);
             }
 
             File.WriteAllText(mdFullPath, s);
@@ -51,7 +52,7 @@ namespace EFSM.Designer.Common
             {
                 DataContext = stateMachineViewModel
             };
-            
+
             const int temporarySize = 800;
 
             control.Measure(new System.Windows.Size(temporarySize, temporarySize));
@@ -110,115 +111,99 @@ namespace EFSM.Designer.Common
             }
         }
 
-        private string AddStateMachine(StateMachine stateMachine)
+        private StringBuilder AddStateMachine(StateMachine stateMachine)
         {
-            var s = $"## State Machine Name: {stateMachine.Name}\n";
+            StringBuilder s = new StringBuilder($"## State Machine Name: {stateMachine.Name}\n");
 
-            s += AddStatesList(stateMachine.States);
+            s.Append(AddStatesList(stateMachine.States));
 
-            s += AddInfoForEachState(stateMachine.States, stateMachine.Actions);
+            s.Append(AddInfoForEachState(stateMachine.States, stateMachine.Actions));
 
-            s += AddTransitionsList(stateMachine.Transitions);
+            s.Append(AddTransitionsList(stateMachine.Transitions));
 
-            s += AddInfoForEachTransition(stateMachine.Transitions, stateMachine.Actions, stateMachine.Inputs);
+            s.Append(AddInfoForEachTransition(stateMachine.Transitions, stateMachine.Actions, stateMachine.Inputs));
 
             return s;
         }
 
-        private string AddInfoForEachState(State[] states, StateMachineOutputAction[] actions)
+        private StringBuilder AddInfoForEachState(State[] states, StateMachineOutputAction[] actions)
         {
-            string s = string.Empty;
+            StringBuilder s = new StringBuilder();
 
             if (states != null || states.Any())
             {
                 foreach (var item in states)
                 {
-                    s += $"#### State: {item.Name}";
-                    s += Environment.NewLine;
-                    s += AddEntryFunctions(item, actions);
-                    s += Environment.NewLine;
-                    s += AddExitFunctions(item, actions);
-                    s += Environment.NewLine;
+                    s.Append($"#### State: {item.Name}");
+                    s.Append(Environment.NewLine);
+                    s.Append(AddEntryFunctions(item, actions));
+                    s.Append(Environment.NewLine);
+                    s.Append(AddExitFunctions(item, actions));
+                    s.Append(Environment.NewLine);
                 }
             }
 
             return s;
         }
 
-        private string AddInfoForEachTransition(StateMachineTransition[] transitions, StateMachineOutputAction[] actions, StateMachineInput[] inputs)
+        private StringBuilder AddInfoForEachTransition(StateMachineTransition[] transitions, StateMachineOutputAction[] actions, StateMachineInput[] inputs)
         {
-            string s = string.Empty;
+            StringBuilder s = new StringBuilder();
 
             if (transitions != null)
             {
                 foreach (var item in transitions)
                 {
-                    s += $"#### Transition: {item.Name}";
-                    s += Environment.NewLine;
-                    s += AddOutputActions(item, actions);
-                    s += Environment.NewLine;
-                    s += AddConditions(item, inputs);
-                    s += Environment.NewLine;
+                    s.Append($"#### Transition: {item.Name}");
+                    s.Append(Environment.NewLine);
+                    s.Append(AddOutputActions(item, actions));
+                    s.Append(Environment.NewLine);
+                    s.Append(AddConditions(item, inputs));
+                    s.Append(Environment.NewLine);
                 }
             }
 
             return s;
         }
 
-        private string AddOutputActions(StateMachineTransition transition, StateMachineOutputAction[] actions)
+        private StringBuilder AddOutputActions(StateMachineTransition transition, StateMachineOutputAction[] actions)
         {
-            var s = $"##### No Output Actions";
+            StringBuilder s = new StringBuilder($"##### No Output Actions");
 
             if (transition.TransitionActions != null && transition.TransitionActions.Any())
             {
-                s = $"##### Output Actions";
-                s += Environment.NewLine;
+                s = new StringBuilder($"##### Output Actions");
+                s.Append(Environment.NewLine);
 
                 foreach (var item in transition.TransitionActions)
                 {
-                    s += $"* {(actions.First(x => x.Id == item).Name)}";
+                    s.Append($"* {(actions.First(x => x.Id == item).Name)}");
                 }
             }
 
             return s;
         }
 
-        private string AddConditions(StateMachineTransition transition, StateMachineInput[] inputs)
+        private StringBuilder AddConditions(StateMachineTransition transition, StateMachineInput[] inputs)
         {
-            var s = $"##### No Condition";
+            StringBuilder s = new StringBuilder($"##### No Condition");
 
             if (transition.Condition != null)
             {
-                s = $"##### Condition";
-                s += Environment.NewLine;
+                s = new StringBuilder($"##### Condition");
+                s.Append(Environment.NewLine);
 
-                s += AddCondition(transition.Condition, inputs);
+                s.Append(AddCondition(transition.Condition, inputs));
             }
-
-            s = RenameConditionsGuid(s);
 
             _conditionGuids.Clear();
 
             return s;
         }
 
-        private string RenameConditionsGuid(string s)
+        private StringBuilder AddCondition(StateMachineCondition condition, StateMachineInput[] inputs)
         {
-            char letter = 'A';
-
-            for (int i = 0 + letter; i < _conditionGuids.Count + letter; i++)
-            {
-                Guid item = _conditionGuids[i - letter];
-                string replaceLetter = ((char)i).ToString();
-                s = s.Replace(item.ToString(), replaceLetter);
-            }
-
-            return s;
-        }
-
-        private string AddCondition(StateMachineCondition condition, StateMachineInput[] inputs)
-        {
-            string s = string.Empty;
+            StringBuilder s = new StringBuilder();
 
             if ((condition.ConditionType == ConditionType.Input || condition.ConditionType == ConditionType.Not)
                 && inputs != null)
@@ -228,20 +213,18 @@ namespace EFSM.Designer.Common
 
                 if (input != null)
                 {
-                    string name = input.Name;
-
                     if (!_conditionGuids.Contains(conditionGuid))
                     {
                         _conditionGuids.Add(conditionGuid);
                     }
 
                     string equalityOperator = condition.ConditionType == ConditionType.Input ? string.Empty : "!";
-                    s += $" {equalityOperator}{name}";
+                    s.Append($" {equalityOperator}{input.Name}");
                 }
             }
             else if (condition.ConditionType == ConditionType.And || condition.ConditionType == ConditionType.Or)
             {
-                s += " ( ";
+                s.Append(" ( ");
                 string operation = condition.ConditionType == ConditionType.And ? " AND " : " OR ";
 
                 for (int i = 0; i < condition.Conditions.Count; i++)
@@ -250,27 +233,22 @@ namespace EFSM.Designer.Common
 
                     if (i > 0)
                     {
-                        s += operation;
+                        s.Append(operation);
                     }
 
-                    s += AddCondition(item, inputs);
+                    s.Append(AddCondition(item, inputs));
                 }
 
-                //foreach (var item in condition.Conditions)
-                //{
-                //    s += AddCondition(item, inputs);
-                //}
-
-                s += " ) ";
+                s.Append(" ) ");
             }
 
             return s;
         }
 
-        private string AddTransitionsList(StateMachineTransition[] transitions)
+        private StringBuilder AddTransitionsList(StateMachineTransition[] transitions)
         {
-            string s = $"### Transitions:";
-            s += Environment.NewLine;
+            StringBuilder s = new StringBuilder($"### Transitions:");
+            s.Append(Environment.NewLine);
 
             if (transitions == null || !transitions.Any())
             {
@@ -280,27 +258,27 @@ namespace EFSM.Designer.Common
             {
                 foreach (var transition in transitions)
                 {
-                    s += $"* {transition.Name}\n";
+                    s.Append($"* {transition.Name}\n");
                 }
             }
 
             return s;
         }
 
-        private string AddStatesList(State[] states)
+        private StringBuilder AddStatesList(State[] states)
         {
-            string s = $"### States:";
-            s += Environment.NewLine;
+            StringBuilder s = new StringBuilder($"### States:");
+            s.Append(Environment.NewLine);
 
             if (states == null || !states.Any())
             {
-                s += "No states";
+                s.Append("No states");
             }
             else
             {
                 foreach (var item in states)
                 {
-                    s += $"* {item.Name}\n";
+                    s.Append($"* {item.Name}\n");
                 }
             }
 
@@ -314,45 +292,45 @@ namespace EFSM.Designer.Common
             return $"![image](/{saving})";
         }
 
-        private string AddExitFunctions(State state, StateMachineOutputAction[] actions)
+        private StringBuilder AddExitFunctions(State state, StateMachineOutputAction[] actions)
         {
-            string s = string.Empty;
+            StringBuilder s = new StringBuilder();
 
             if (state.ExitActions != null && state.ExitActions.Any())
             {
-                s = $"##### Exit Actions";
-                s += Environment.NewLine;
+                s = new StringBuilder($"##### Exit Actions");
+                s.Append(Environment.NewLine);
 
                 foreach (var item in state.ExitActions)
                 {
-                    s += $"* {(actions.First(x => x.Id == item).Name)}\n";
+                    s.Append($"* {(actions.First(x => x.Id == item).Name)}\n");
                 }
             }
             else
             {
-                s = $"##### No Exit Actions";
+                s = new StringBuilder($"##### No Exit Actions");
             }
 
             return s;
         }
 
-        private string AddEntryFunctions(State state, StateMachineOutputAction[] actions)
+        private StringBuilder AddEntryFunctions(State state, StateMachineOutputAction[] actions)
         {
-            string s = string.Empty;
+            StringBuilder s = new StringBuilder();
 
             if (state.EntryActions != null && state.EntryActions.Any())
             {
-                s = $"##### Entry Actions";
-                s += Environment.NewLine;
+                s = new StringBuilder($"##### Entry Actions");
+                s.Append(Environment.NewLine);
 
                 foreach (var item in state.EntryActions)
                 {
-                    s += $"* {(actions.First(x => x.Id == item).Name)}\n";
+                    s.Append($"* {(actions.First(x => x.Id == item).Name)}\n");
                 }
             }
             else
             {
-                s = $"##### No Entry Actions";
+                s = new StringBuilder($"##### No Entry Actions");
             }
 
             return s;
