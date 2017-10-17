@@ -171,7 +171,7 @@ namespace EFSM.Designer.ViewModel
             e.Handled = true;
         }
 
-        public override void OnMouseLeftButtonDown(MouseEventArgs e)
+        public override void OnPreviewMouseLeftButtonUp(MouseEventArgs e)
         {
             SelectionService.SelectNone();
             SelectionService.Select(this);
@@ -414,6 +414,19 @@ namespace EFSM.Designer.ViewModel
         {
             _undoProvider?.SaveUndoState();
             _dirtyService?.MarkDirty();
+        }
+
+        public override void SelectBox(Rect rec)
+        {
+            var selection = States
+                .Select(s => new { State = s, Rect = new Rect(s.Location, new Size(s.Width / 2, s.Height / 2)) })
+                .Where(t => rec.Contains(t.Rect))
+                .Select(t => t.State);
+
+            foreach (var state in selection)
+            {
+                SelectionService.Select(state);
+            }
         }
     }
 }

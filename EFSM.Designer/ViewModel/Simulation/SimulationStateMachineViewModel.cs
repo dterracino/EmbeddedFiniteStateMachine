@@ -16,7 +16,7 @@ namespace EFSM.Designer.ViewModel
         {
         }
 
-        public override void OnMouseLeftButtonDown(MouseEventArgs e)
+        public override void OnPreviewMouseLeftButtonUp(MouseEventArgs e)
         {
         }
     }

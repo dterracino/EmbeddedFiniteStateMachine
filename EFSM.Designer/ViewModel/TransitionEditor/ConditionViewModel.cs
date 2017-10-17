@@ -12,8 +12,14 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 {
     public class ConditionViewModel : ViewModelBase
     {
+        private const string InputErrorMessage = "Cannot have any children";
+        private const string AndErrorMessage = "Has to have at least one child";
+        private const string OrErrorMessage = "Has to have at least one child";
+        private const string NotErrorMessage = "Has to have one and only one child";
+
         public event EventHandler ConditionChanged;
 
+        private bool _isValid = true;
         private readonly StateMachineCondition _model;
         private readonly TransitionEditorViewModel _owner;
 
@@ -56,6 +62,27 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             }
         }
 
+        private void Validate()
+        {
+            switch (ConditionType)
+            {
+                case ConditionType.Input:
+                    IsValid = !Conditions.Any();
+                    break;
+                case ConditionType.And:
+                    IsValid = (Conditions.Count >= 1);
+                    break;
+                case ConditionType.Or:
+                    IsValid = (Conditions.Count >= 1);
+                    break;
+                case ConditionType.Not:
+                    IsValid = (Conditions.Count == 1);
+                    break;
+            }
+
+            ValidateChildren();
+        }
+
         private void ItemConditionChanged(object sender, EventArgs e)
         {
             OnConditionChanged(sender);
@@ -63,6 +90,73 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
         public ICommand AddConditionCommand { get; }
         public ICommand DeleteCommand { get; }
+
+        public bool IsValid
+        {
+            get { return _isValid; }
+            set
+            {
+                if (_isValid != value)
+                {
+                    _isValid = value;
+                    RaisePropertyChanged();
+                    ValidateChildren();
+                }
+            }
+        }
+
+        private void SetErrorMessage()
+        {
+            switch (ConditionType)
+            {
+                case ConditionType.Input:
+                    ErrorMessage = InputErrorMessage;
+                    break;
+                case ConditionType.And:
+                    ErrorMessage = AndErrorMessage;
+                    break;
+                case ConditionType.Or:
+                    ErrorMessage = OrErrorMessage;
+                    break;
+                case ConditionType.Not:
+                    ErrorMessage = NotErrorMessage;
+                    break;
+            }
+        }
+
+        private string _errorMessage;
+        public string ErrorMessage
+        {
+            get { return _errorMessage; }
+            set { _errorMessage = value; RaisePropertyChanged(); }
+        }
+
+        public void ValidateChildren()
+        {
+            if (Conditions.Any(c => c.IsValid == false) || IsValid == false)
+            {
+                AreChildrenValid = false;
+            }
+            else
+            {
+                AreChildrenValid = true;
+            }
+        }
+
+        private bool _areChildrenValid = true;
+        public bool AreChildrenValid
+        {
+            get { return _areChildrenValid; }
+            set
+            {
+                if (_areChildrenValid != value)
+                {
+                    _areChildrenValid = value;
+                    SetErrorMessage();
+                    RaisePropertyChanged();
+                }
+            }
+        }
 
         private void AddCondition()
         {
@@ -185,6 +279,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
         protected virtual void OnConditionChanged(object sender)
         {
+            Validate();
             ConditionChanged?.Invoke(sender, EventArgs.Empty);
         }
 

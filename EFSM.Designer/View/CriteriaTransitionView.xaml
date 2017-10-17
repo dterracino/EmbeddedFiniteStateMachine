@@ -20,6 +20,7 @@
 
     <UserControl.Resources>
         <converters1:CollapsedWhenFalseConverter x:Key="CollapsedWhenFalseConverter"/>
+        <converters1:HiddenWhenTrueConverter x:Key="HiddenWhenTrueConverter" />
         <ObjectDataProvider x:Key="ConditionTypes" MethodName="GetValues"
                             ObjectType="{x:Type System:Enum}">
             <ObjectDataProvider.MethodParameters>
@@ -42,7 +43,17 @@
             </LinearGradientBrush>
 
             <HierarchicalDataTemplate DataType="{x:Type viewModel:ConditionViewModel}" ItemsSource="{Binding Path=Conditions}">
-                <Border Background="{StaticResource ConditionBackground}" Padding="2" Margin="2" BorderBrush="DarkGray" BorderThickness="1" CornerRadius="5">
+                <Border  Padding="2" Margin="2" BorderBrush="DarkGray" BorderThickness="1" CornerRadius="5">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="{StaticResource ConditionBackground}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsValid}" Value="False">
+                                    <Setter Property="Background" Value="Yellow"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
                     <StackPanel Orientation="Horizontal">
                         <StackPanel.ContextMenu>
                             <ContextMenu>
@@ -68,8 +79,9 @@
                         <Button Visibility="{Binding Path=CanAddCondition, Converter={StaticResource CollapsedWhenFalseConverter}}" Margin="3" VerticalAlignment="Center" Command="{Binding Path=AddConditionCommand}" ToolTip="Add child condition">
                             <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/NewCompoundCondition.png"></controls:AutoGreyableImage>    
                         </Button>
-                        
-                        
+
+                        <Image Source="/EFSM.Designer;component/Images/Error_16x16.png" ToolTip="{Binding ErrorMessage}" Margin="3" VerticalAlignment="Center"
+                               Visibility="{Binding Path=IsValid, Converter={StaticResource HiddenWhenTrueConverter}}" />
 
                     </StackPanel>
                 </Border>

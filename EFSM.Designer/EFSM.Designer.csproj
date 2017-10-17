@@ -13,9 +13,10 @@
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
+    <InstallFrom>Web</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
     <UpdateMode>Foreground</UpdateMode>
     <UpdateInterval>7</UpdateInterval>
@@ -23,9 +24,10 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
+    <InstallUrl>https://github.com/CaptiveAire/EmbeddedFiniteStateMachine/blob/master/</InstallUrl>
+    <UpdateUrl>https://github.com/CaptiveAire/EmbeddedFiniteStateMachine/blob/master/</UpdateUrl>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -148,7 +150,9 @@
     <Compile Include="Behaviors\DesignerDragBehavior.cs" />
     <Compile Include="Behaviors\DropDownButtonBehavior.cs" />
     <Compile Include="Behaviors\SelectableBehavior.cs" />
+    <Compile Include="Behaviors\SelectionAreaBehavior.cs" />
     <Compile Include="Behaviors\SimpleMoveableBehavior.cs" />
+    <Compile Include="Behaviors\StateDragBehavior.cs" />
     <Compile Include="Behaviors\TransitionCreatorBehavior.cs" />
     <Compile Include="Common\BitmapProcessor.cs" />
     <Compile Include="Common\Cloner.cs" />
@@ -416,6 +420,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Select.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Error_16x16.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

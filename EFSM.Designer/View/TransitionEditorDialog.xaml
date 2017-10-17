@@ -80,7 +80,8 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="1" VerticalAlignment="Center" Margin="4" MinWidth="60" IsDefault="True" Command="{Binding Path=OkCommand}">OK</Button>
+            <Button Grid.Column="1" VerticalAlignment="Center" Margin="4" MinWidth="60" IsDefault="True" Command="{Binding Path=OkCommand}" 
+                    IsEnabled="{Binding Criteria.RootCondition.AreChildrenValid}">OK</Button>
             <Button Grid.Column="2" VerticalAlignment="Center" Margin="4" MinWidth="60" IsCancel="True">Cancel</Button>
         </Grid>
 

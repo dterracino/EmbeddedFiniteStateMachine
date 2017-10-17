@@ -30,7 +30,7 @@
     </UserControl.ContextMenu>
 
     <i:Interaction.Behaviors>
-        <behavior:DesignerDragBehavior IsEnabled="{Binding Path=Parent.IsPointerMode}" SelectionService="{Binding Path=Parent.SelectionService}"/>
+        <behavior:StateDragBehavior IsEnabled="{Binding Path=Parent.IsPointerMode}" SelectionService="{Binding Path=Parent.SelectionService}"/>
         <behavior:TransitionCreatorBehavior IsEnabled="{Binding Path=Parent.IsConnectorMode}" TransitionCreator="{Binding Path=Parent}"/>
     </i:Interaction.Behaviors>
 

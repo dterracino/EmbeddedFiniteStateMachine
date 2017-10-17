@@ -8,6 +8,7 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:viewModel="clr-namespace:EFSM.Designer.ViewModel"
              xmlns:command="http://www.galasoft.ch/mvvmlight"
+             xmlns:behaviors="clr-namespace:EFSM.Designer.Behaviors"
              mc:Ignorable="d" 
              Background="Transparent"
              d:DesignHeight="300" d:DesignWidth="300">
@@ -15,20 +16,29 @@
         <converters:CollapsedWhenFalseConverter x:Key="CollapsedWhenFalseConverter"/>
     </UserControl.Resources>
 
+    <i:Interaction.Behaviors>
+        <behaviors:SelectionAreaBehavior AreaSelector="{Binding}" />
+    </i:Interaction.Behaviors>
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+            <command:EventToCommand Command="{Binding OnPreviewMouseLeftButtonUpCommand}" PassEventArgsToCommand="True"/>
+        </i:EventTrigger>
+        <!--<i:EventTrigger EventName="Drop">
+            <command:EventToCommand Command="{Binding OnDropCommand}" PassEventArgsToCommand="True"/>
+        </i:EventTrigger>-->
+    </i:Interaction.Triggers>
+
 
 
     <Grid>
 
+
+
         <!-- New Transition line -->
         <Grid  Width="{Binding Path=Width}" Height="{Binding Path=Height}" Name="Agin" IsHitTestVisible="True" AllowDrop="True">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="MouseLeftButtonDown">
-                    <command:EventToCommand Command="{Binding OnMouseLeftButtonDownCommand}" PassEventArgsToCommand="True"/>
-                </i:EventTrigger>
-                <i:EventTrigger EventName="Drop">
-                    <command:EventToCommand Command="{Binding OnDropCommand}" PassEventArgsToCommand="True"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
+            
+            
             
             <Grid.Style>
                 <Style TargetType="Grid">
@@ -46,6 +56,12 @@
                           StrokeThickness="1" Stroke="Black" StrokeDashArray="2 4"
                           Visibility="{Binding Path=IsCreatingTransition, Converter={StaticResource CollapsedWhenFalseConverter}}">
             </Line>
+
+            <Rectangle HorizontalAlignment="Left" VerticalAlignment="Top" Fill="Gray" Opacity="0.3" Width="{Binding Path=SelectionBox.Width}" Height="{Binding Path=SelectionBox.Height}" Visibility="{Binding Path=IsSelectionBoxVisible, Converter={StaticResource CollapsedWhenFalseConverter}}" Stroke="Black" StrokeThickness="1">
+                <Rectangle.RenderTransform>
+                    <TranslateTransform X="{Binding Path=SelectionBox.X}" Y="{Binding Path=SelectionBox.Y}"/>
+                </Rectangle.RenderTransform>
+            </Rectangle>
         </Grid>
 
         <Grid x:Name="RenderRoot">

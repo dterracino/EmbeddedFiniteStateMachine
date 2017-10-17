@@ -76,23 +76,21 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         private bool _isRecalculationConditionText = false;
         private void RecalculateConditionText()
         {
-            //if (Criteria.RootCondition != null)
-            //{
-            //    Criteria.RootCondition.ConditionChanged -= RootConditionChanged;
-            //}
-            
-
-            if (!_isRecalculationConditionText)
+            if (!_isRecalculationConditionText & Criteria.RootCondition != null)
             {
                 _isRecalculationConditionText = true;
-                ConditionText = _markdownConditionGenerator.Generate(GetModel(), Inputs.Select(i => i.GetModel()).ToArray()).ToString();
+
+                if (Criteria.RootCondition.AreChildrenValid)
+                {
+                    ConditionText = _markdownConditionGenerator.Generate(GetModel(), Inputs.Select(i => i.GetModel()).ToArray()).ToString();
+                }
+                else
+                {
+                    ConditionText = string.Empty;
+                }
             }
 
-            _isRecalculationConditionText = false; 
-            //if (Criteria.RootCondition != null)
-            //{
-            //    Criteria.RootCondition.ConditionChanged += RootConditionChanged;
-            //}
+            _isRecalculationConditionText = false;
         }
 
         public CriteriaTransitionViewModel Criteria

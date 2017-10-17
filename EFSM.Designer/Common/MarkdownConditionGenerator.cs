@@ -1,4 +1,6 @@
-﻿using EFSM.Domain;
+﻿using EFSM.Designer.ViewModel;
+using EFSM.Designer.ViewModel.TransitionEditor;
+using EFSM.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +24,7 @@ namespace EFSM.Designer.Common
 
             return s;
         }
+              
 
         private StringBuilder AddCondition(StateMachineCondition condition, StateMachineInput[] inputs)
         {

@@ -27,6 +27,7 @@ namespace EFSM.Designer.ViewModel
         public ICommand RedoCommand { get; private set; }
         public ICommand SimulationCommand { get; private set; }
         public ICommand CreateDocumentationCommand { get; private set; }
+        public ICommand SelectAllCommand { get; private set; }
 
         private StateMachineViewModel _stateMachineViewModel;
 
@@ -88,6 +89,17 @@ namespace EFSM.Designer.ViewModel
             UndoCommand = new RelayCommand(Undo, CanUndo);
             RedoCommand = new RelayCommand(Redo, CanRedo);
             SimulationCommand = new RelayCommand(Simulate);
+            SelectAllCommand = new RelayCommand(SelectAll);
+        }
+
+        private void SelectAll()
+        {
+            StateMachine.SelectionService.SelectNone();
+
+            foreach (var state in StateMachine.States)
+            {
+                StateMachine.SelectionService.Select(state);
+            }
         }
 
         private void Simulate()
