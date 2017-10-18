@@ -427,5 +427,8 @@
   <ItemGroup>
     <Resource Include="Images\Error_16x16.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include=".gitattributes" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
