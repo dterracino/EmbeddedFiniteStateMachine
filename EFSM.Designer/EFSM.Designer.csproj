@@ -24,11 +24,11 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>https://github.com/CaptiveAire/EmbeddedFiniteStateMachine/blob/master/EFSM.Designer/clickonce/</InstallUrl>
-    <UpdateUrl>https://github.com/CaptiveAire/EmbeddedFiniteStateMachine/blob/master/EFSM.Designer/clickonce/</UpdateUrl>
+    <InstallUrl>https://raw.githubusercontent.com/CaptiveAire/EmbeddedFiniteStateMachine/master/EFSM.Designer/clickonce/</InstallUrl>
+    <UpdateUrl>https://raw.githubusercontent.com/CaptiveAire/EmbeddedFiniteStateMachine/master/EFSM.Designer/clickonce/</UpdateUrl>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>7</ApplicationRevision>
+    <ApplicationRevision>8</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
