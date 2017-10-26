@@ -24,9 +24,9 @@
         <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
             <command:EventToCommand Command="{Binding OnPreviewMouseLeftButtonUpCommand}" PassEventArgsToCommand="True"/>
         </i:EventTrigger>
-        <!--<i:EventTrigger EventName="Drop">
+        <i:EventTrigger EventName="Drop">
             <command:EventToCommand Command="{Binding OnDropCommand}" PassEventArgsToCommand="True"/>
-        </i:EventTrigger>-->
+        </i:EventTrigger>
     </i:Interaction.Triggers>
 
 
