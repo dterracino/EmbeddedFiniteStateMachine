@@ -1,6 +1,6 @@
 ﻿using Cas.Common.WPF.Behaviors;
-using EFSM.Designer.Common;
 using EFSM.Designer.Interfaces;
+using System;
 using System.Windows;
 using System.Windows.Input;
 
@@ -26,14 +26,14 @@ namespace EFSM.Designer.Behaviors
 
         protected override Point GetPositionFromMouse(MouseEventArgs e)
         {
-            var parent = GraphicsUtil.FindVisualParent<FrameworkElement>(AssociatedObject, "DesignRoot");
-
             return e.GetPosition(AssociatedObject);
         }
 
         protected override void StartDrag(Point position)
         {
             _startPosition = position;
+
+            Console.WriteLine($"{position.X}; {position.Y}");
 
             AreaSelector?.BeginBoxSelection(new Rect(position, position));
         }

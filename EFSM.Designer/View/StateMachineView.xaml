@@ -11,14 +11,10 @@
              xmlns:behaviors="clr-namespace:EFSM.Designer.Behaviors"
              mc:Ignorable="d" 
              Background="Transparent"
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300" x:Name="DesignRoot">
     <UserControl.Resources>
         <converters:CollapsedWhenFalseConverter x:Key="CollapsedWhenFalseConverter"/>
     </UserControl.Resources>
-
-    <i:Interaction.Behaviors>
-        <behaviors:SelectionAreaBehavior AreaSelector="{Binding}" />
-    </i:Interaction.Behaviors>
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
@@ -33,13 +29,13 @@
 
     <Grid>
 
-
-
         <!-- New Transition line -->
-        <Grid  Width="{Binding Path=Width}" Height="{Binding Path=Height}" Name="Agin" IsHitTestVisible="True" AllowDrop="True">
-            
-            
-            
+        <Grid  Width="{Binding Path=Width}" Height="{Binding Path=Height}" IsHitTestVisible="True" AllowDrop="True">
+
+            <i:Interaction.Behaviors>
+                <behaviors:SelectionAreaBehavior AreaSelector="{Binding}" />
+            </i:Interaction.Behaviors>
+
             <Grid.Style>
                 <Style TargetType="Grid">
                     <Setter Property="Background" Value="White"/>
