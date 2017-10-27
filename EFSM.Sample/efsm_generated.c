@@ -1,5 +1,4 @@
 
-#include "stdafx.h"
 #include "efsm_generated.h"
 
 EFSM_STATE efsm_s_0_0 = {

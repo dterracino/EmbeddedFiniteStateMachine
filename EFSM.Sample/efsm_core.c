@@ -1,89 +1,154 @@
-#include "stdafx.h"
 #include "efsm.h"
+#include "stdint.h"
+#include "efsm_core.h"
+#include "efsm_binary_protocol.h"
+
+uint16_t efsmBinary0Raw[EFSM_BINARY_0_SIZE];
+EFSM_BINARY efsmBinary0 = { .data = efsmBinary0Raw,.binaryId = 0 };
+
+uint16_t efsmBinary1Raw[EFSM_BINARY_1_SIZE];
+EFSM_BINARY efsmBinary1 = { .data = efsmBinary1Raw,.binaryId = 1 };
+
+void(*Actions0[EFSM_NUM_ACTIONS_FOR_ID_0])();
+void(*Actions1[EFSM_NUM_ACTIONS_FOR_ID_1])();
+
+uint8_t(*InputQueries0[EFSM_NUM_INPUTS_FOR_ID_0])();
+uint8_t(*InputQueries1[EFSM_NUM_INPUTS_FOR_ID_1])();
+
+EFSM_INSTANCE * efsmInstanceArray[EFSM_NUM_STATE_MACHINES];
+
+EFSM_INSTANCE efsm0;
+EFSM_INSTANCE efsm1;
+
+EFSM_INPUTS_EVALUATION_RESULT EFSM_EvaluateInputs(EFSM_INSTANCE * efsmInstance)
+{
+	EFSM_INPUTS_EVALUATION_RESULT res = { .result = 0,.transitionIndex = 0 };
+
+	return res;
+}
+
+void ExecuteGenericStateAction(EFSM_INSTANCE * efsmInstance)
+{
+
+}
 
 /*
-Set the input of a statemachine.
-
-stateMachineIndex: The index of the state machine.
-inputIndex:        The index of the input to set.
-value:             Zero (0) to clear the bit, non-zero to set the bit.
+Returns the number of states administered by the EFSM binary. References off of index 0
+in the EFSM binary.
 */
-
-unsigned char EFSM_GetInput(EFSM_INT stateMachineIndex, EFSM_INT inputIndex) {
-
-	/* Come up with the mask */
-	unsigned char mask = inputIndex % 8;
-
-	/* get a pointer to the member where our bit is located */
-	return (efsm_inputs[stateMachineIndex][inputIndex / 8]) & mask;
-
+uint16_t EFSM_GetNumberOfStates(EFSM_BINARY * efsmBinary)
+{
+	return efsmBinary->data[EFSM_BIN_INDEX_NUMBER_OF_STATES];
 }
 
-void EFSM_SetInput(EFSM_INT stateMachineIndex, EFSM_INT inputIndex, unsigned char value) {
+/*
+Returns the total number of inputs administered by the EFSM binary. References off of
+index 0 in the EFSM binary.
+*/
+uint16_t EFSM_GetTotalNumberOfInputs(EFSM_BINARY * efsmBinary)
+{
+	return efsmBinary->data[EFSM_BIN_INDEX_TOTAL_NUMBER_OF_INPUTS];
+}
 
-	/* Come up with the mask */
-	unsigned char mask = inputIndex % 8;
+/*
+Returns the starting state recorded in the EFSM binary. References off of index 0 in
+the EFSM binary.
+*/
+uint16_t EFSM_GetInitialStateIdentifier(EFSM_BINARY * efsmBinary)
+{
+	return efsmBinary->data[EFSM_BIN_INDEX_INITIAL_STATE_IDENTIFIER];
+}
 
-	/* get a pointer to the member where our bit is located */
-	unsigned char * element = efsm_inputs[stateMachineIndex][inputIndex / 8];
+/*
+Returns the EFSM binary index where the data corresponding to a particular state begin.
+*/
+uint16_t EFSM_GetBaseIndexForState(uint16_t stateId, EFSM_BINARY * efsmBinary)
+{
+	return efsmBinary->data[EFSM_BIN_INDEX_STATE_DATA_TABLE_OF_CONTENTS + stateId];
+}
 
-	/* Check to see if we're trying to set it or clear it */
-	if (value) {
+uint16_t EFSM_GetBaseIndexForStateHeader(uint16_t stateId, EFSM_BINARY * efsmBinary)
+{
+	return efsmBinary->data[EFSM_BIN_INDEX_STATE_DATA_TABLE_OF_CONTENTS + stateId];
+}
 
-		/* set the bit*/
-		*element = *element | mask;
+uint16_t EFSM_GetBaseIndexStateIqfnData(uint16_t stateId, EFSM_BINARY * efsmBinary)
+{
+	/*Need the index of the base state.*/
+
+	/*Add that to the standard offset for this value and return.*/
+	return 0;
+}
+
+
+/*
+An instance of the EFSM_INSTANCE struct is what maintains operational/state information
+for a single state machine. This function associates a given instance of the EFSM_INSTANCE
+struct with an EFSM binary, and the EFSM binarys' corresponding function reference
+arrays (for Actions and InputQueries). It also initializes all other members of the struct
+instance.
+*/
+EFSM_InitializeInstance(EFSM_INSTANCE * efsmInstance, EFSM_BINARY * efsmBinary, void(**Actions)(), uint8_t(**InputQueries)())
+{
+	/*Pair the state machine instance with binary instructions and function reference arrays.*/
+	efsmInstance->efsmBinary = efsmBinary;
+	efsmInstance->Actions = Actions;
+	efsmInstance->InputQueries = InputQueries;
+
+	/*Start reading the SMB and initializing parameters.*/
+	efsmInstance->numberOfStates = EFSM_GetNumberOfStates(efsmBinary);
+	efsmInstance->totalNumberOfInputs = EFSM_GetTotalNumberOfInputs(efsmBinary);
+	efsmInstance->state = EFSM_GetInitialStateIdentifier(efsmBinary);
+
+	efsmInstance->baseIndexCurrentState = EFSM_GetBaseIndexForState(efsmInstance->state, efsmBinary);
+	efsmInstance->baseIndexStateHeaderAndToc = EFSM_GetBaseIndexForStateHeader(efsmInstance->state, efsmBinary);
+	efsmInstance->baseIndexIqfnData = EFSM_GetBaseIndexStateIqfnData(efsmInstance->state, efsmBinary);
+}
+
+void EFSM_InitializeProcess()
+{
+	/*Load the instance pointer array.*/
+	efsmInstanceArray[0] = &efsm0;
+	efsmInstanceArray[1] = &efsm1;
+
+	/*Initialize instances.*/
+	EFSM_InitializeInstance(&efsm0, &efsmBinary0, Actions0, InputQueries0);
+	EFSM_InitializeInstance(&efsm1, &efsmBinary1, Actions1, InputQueries1);
+}
+
+void EFSM_Execute(EFSM_INSTANCE * efsmInstance)
+{
+	EFSM_INPUTS_EVALUATION_RESULT inputsEvaluationResult;
+	/*Evaluate inputs.*/
+	inputsEvaluationResult = EFSM_EvaluateInputs(efsmInstance);
+
+	/*If a set of input conditions required for a transition have been met...*/
+	if (inputsEvaluationResult.result)
+	{
+		/*Execute transition.*/
 	}
-	else {
-
-		/* clear the bit */
-		*element = *element & ~mask;
+	else
+	{
+		ExecuteGenericStateAction(efsmInstance);
 	}
+	/*
+	If conditions for a transition are met, fire transition. Will need to execute the exit actions
+	for the current state, update the current state, and execute the entry actions for the new state.
+	*/
 }
 
-/* Gets the current state of a state machine  */
-EFSM_INT EFSM_GetState(EFSM_INT stateMachineIndex) {
-
-	return efsm_states[EFSM_NUM_STATE_MACHINES];
-}
-
-/* Executes a state machine. Returns a pointer to a transition if a transition has occurred. */
-EFSM_TRANSITION * EFSM_Execute(EFSM_INT stateMachineIndex) {
-
-	/* TODO: Do stuff */
-	return NULL;
-}
-
-void ESFM_InvokeAction(unsigned char stateMachine, EFSM_INT actionIndex) {
-
-	/* TODO: Consider moving this to the "user" code */
-}
-
-void EFSM_Process() {
-
-	unsigned char beforeState;
-	unsigned char afterState;
+void EFSM_Process()
+{
 	unsigned char stateMachineIndex;
+	EFSM_INSTANCE * efsmInstance;
 
-	/* Consider each state machine */
-	for (stateMachineIndex = 0; stateMachineIndex < EFSM_NUM_STATE_MACHINES; stateMachineIndex++) {
+	/*Consider each state machine.*/
+	for (stateMachineIndex = 0; stateMachineIndex < EFSM_NUM_STATE_MACHINES; stateMachineIndex++)
+	{
+		/*Get a pointer to the state machine instance data per the stateMachineIndex.*/
+		efsmInstance = efsmInstanceArray[stateMachineIndex];
 
-		/* Get the before state */
-		beforeState = efsm_states[stateMachineIndex];
-
-		/* Check to see if we're moving */
-		EFSM_TRANSITION* transition = EFSM_Execute(stateMachineIndex);
-
-		if (transition != NULL) {
-
-			/* Perform the exit action of the previous state */
-
-			/* Perform the transition actions */
-
-			/* Perform the entrance action of the new state  */
-		}
-		else {
-
-			printf("No transition found.\n");
-		}
+		/*Run the state machine.*/
+		EFSM_Execute(efsmInstance);
 	}
 }

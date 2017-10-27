@@ -1,7 +1,6 @@
 #ifndef GENERATED_H2
 #define GENERATED_H2
 
-#include "stdafx.h"
 #include "efsm.h"
 
 #define EFSM_NUM_STATE_MACHINES 2
