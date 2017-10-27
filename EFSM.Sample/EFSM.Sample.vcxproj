@@ -139,6 +139,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="debug.h" />
     <ClInclude Include="efsm.h" />
     <ClInclude Include="efsm_binary_protocol.h" />
     <ClInclude Include="efsm_core.h" />
@@ -146,6 +147,7 @@
     <ClInclude Include="efsm_generated.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="debug.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="efsm_core.c" />
     <ClCompile Include="efsm_generated.c" />

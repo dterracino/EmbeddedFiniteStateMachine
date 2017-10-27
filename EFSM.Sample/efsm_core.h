@@ -16,7 +16,7 @@
 typedef struct
 {
 	uint16_t * data;
-	uint16_t binaryId;
+	uint16_t id;
 }EFSM_BINARY;
 
 typedef struct
@@ -35,9 +35,9 @@ typedef struct
 	uint16_t state;
 	uint16_t numberOfInputs;
 	uint16_t numberOfTransitions;
-	uint16_t baseIndexCurrentState;			/*Holds the SMB index where the current states' data begins.*/
-	uint16_t baseIndexStateHeaderAndToc;	/*Holds the SMB index of the current states' header data.*/
-	uint16_t baseIndexIqfnData;				/*Holds the SMB index of the current state's Input Query Function (IQFN) data.*/
+	uint16_t baseIndexCurrentState;			/*Holds the index in the EFSM binary where the current states' data begins.*/
+	uint16_t baseIndexStateHeader;	/*Holds the index in the EFSM binary of the current states' header data.*/
+	uint16_t baseIndexIqfnData;				/*Holds the index in the EFSM binary of the current state's Input Query Function (IQFN) data.*/
 
 }EFSM_INSTANCE;
 
@@ -63,6 +63,8 @@ extern EFSM_INSTANCE * efsmInstanceArray[EFSM_NUM_STATE_MACHINES];
 
 extern EFSM_INSTANCE efsm0;
 extern EFSM_INSTANCE efsm1;
+
+EFSM_InitializeInstance(EFSM_INSTANCE * efsmInstance, EFSM_BINARY * efsmBinary, void(**Actions)(), uint8_t(**InputQueries)());
 
 #endif
 

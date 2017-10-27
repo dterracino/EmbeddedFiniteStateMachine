@@ -4,10 +4,10 @@
 #include "efsm_binary_protocol.h"
 
 uint16_t efsmBinary0Raw[EFSM_BINARY_0_SIZE];
-EFSM_BINARY efsmBinary0 = { .data = efsmBinary0Raw,.binaryId = 0 };
+EFSM_BINARY efsmBinary0 = { .data = efsmBinary0Raw,.id = 0 };
 
 uint16_t efsmBinary1Raw[EFSM_BINARY_1_SIZE];
-EFSM_BINARY efsmBinary1 = { .data = efsmBinary1Raw,.binaryId = 1 };
+EFSM_BINARY efsmBinary1 = { .data = efsmBinary1Raw,.id = 1 };
 
 void(*Actions0[EFSM_NUM_ACTIONS_FOR_ID_0])();
 void(*Actions1[EFSM_NUM_ACTIONS_FOR_ID_1])();
@@ -51,8 +51,7 @@ uint16_t EFSM_GetTotalNumberOfInputs(EFSM_BINARY * efsmBinary)
 }
 
 /*
-Returns the starting state recorded in the EFSM binary. References off of index 0 in
-the EFSM binary.
+Returns the starting state recorded in the EFSM binary. 
 */
 uint16_t EFSM_GetInitialStateIdentifier(EFSM_BINARY * efsmBinary)
 {
@@ -67,19 +66,23 @@ uint16_t EFSM_GetBaseIndexForState(uint16_t stateId, EFSM_BINARY * efsmBinary)
 	return efsmBinary->data[EFSM_BIN_INDEX_STATE_DATA_TABLE_OF_CONTENTS + stateId];
 }
 
+/*
+Returns the EFSM binary index corresponding the start of header data for a given state.
+*/
 uint16_t EFSM_GetBaseIndexForStateHeader(uint16_t stateId, EFSM_BINARY * efsmBinary)
 {
 	return efsmBinary->data[EFSM_BIN_INDEX_STATE_DATA_TABLE_OF_CONTENTS + stateId];
 }
 
-uint16_t EFSM_GetBaseIndexStateIqfnData(uint16_t stateId, EFSM_BINARY * efsmBinary)
-{
-	/*Need the index of the base state.*/
-
-	/*Add that to the standard offset for this value and return.*/
-	return 0;
+/*
+Returns the EFSM binary index corresponding to the start of input query function (IQFN)
+data for a given state. The state itself is not explicity submitted as an argument, but
+rather the base index of the header data for the state whose IQFN's need to be accessed. 
+*/
+uint16_t EFSM_GetBaseIndexIqfnData(uint16_t stateHeaderBaseIndex, EFSM_BINARY * efsmBinary)
+{		
+	return (stateHeaderBaseIndex + EFSM_STATE_HEADER_OFFSET_BIN_INDEX_OF_IQFN_DATA);
 }
-
 
 /*
 An instance of the EFSM_INSTANCE struct is what maintains operational/state information
@@ -95,14 +98,13 @@ EFSM_InitializeInstance(EFSM_INSTANCE * efsmInstance, EFSM_BINARY * efsmBinary, 
 	efsmInstance->Actions = Actions;
 	efsmInstance->InputQueries = InputQueries;
 
-	/*Start reading the SMB and initializing parameters.*/
+	/*Start reading the EFSM binary and initializing parameters.*/
 	efsmInstance->numberOfStates = EFSM_GetNumberOfStates(efsmBinary);
 	efsmInstance->totalNumberOfInputs = EFSM_GetTotalNumberOfInputs(efsmBinary);
 	efsmInstance->state = EFSM_GetInitialStateIdentifier(efsmBinary);
-
 	efsmInstance->baseIndexCurrentState = EFSM_GetBaseIndexForState(efsmInstance->state, efsmBinary);
-	efsmInstance->baseIndexStateHeaderAndToc = EFSM_GetBaseIndexForStateHeader(efsmInstance->state, efsmBinary);
-	efsmInstance->baseIndexIqfnData = EFSM_GetBaseIndexStateIqfnData(efsmInstance->state, efsmBinary);
+	efsmInstance->baseIndexStateHeader = EFSM_GetBaseIndexForStateHeader(efsmInstance->state, efsmBinary);
+	efsmInstance->baseIndexIqfnData = EFSM_GetBaseIndexIqfnData(efsmInstance->baseIndexStateHeader, efsmBinary);
 }
 
 void EFSM_InitializeProcess()
