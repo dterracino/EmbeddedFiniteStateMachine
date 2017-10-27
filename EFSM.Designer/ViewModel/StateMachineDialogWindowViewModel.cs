@@ -8,6 +8,7 @@ using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -196,6 +197,12 @@ namespace EFSM.Designer.ViewModel
 
         private void Delete()
         {
+            List<StateViewModel> statesForDelete = StateMachine.States.Where(s => s.IsSelected).ToList();
+
+            foreach (var state in statesForDelete)
+            {
+                state.Delete();
+            }
         }
 
         private StateMachine SaveMomento() => GetModel();

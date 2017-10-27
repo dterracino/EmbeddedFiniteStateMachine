@@ -173,7 +173,11 @@ namespace EFSM.Designer.ViewModel
 
         public override void OnPreviewMouseLeftButtonUp(MouseEventArgs e)
         {
-            SelectionService.SelectNone();
+            if (Keyboard.IsKeyUp(Key.LeftShift) && Keyboard.IsKeyUp(Key.LeftCtrl))
+            {
+                SelectionService.SelectNone();
+            }
+           
             SelectionService.Select(this);
         }
 

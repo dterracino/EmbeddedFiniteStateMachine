@@ -26,6 +26,7 @@
         <KeyBinding Key="A" Modifiers="Control" Command="{Binding SelectAllCommand}"/>
         <KeyBinding Key="U" Modifiers="Control" Command="{Binding UndoCommand}" />
         <KeyBinding Key="Y" Modifiers="Control" Command="{Binding RedoCommand}"/>
+        <KeyBinding Key="Delete" Command="{Binding DeleteCommand}"/>
     </Window.InputBindings>
 
     <Grid>
