@@ -51,7 +51,6 @@ namespace EFSM.Designer.ViewModel
         public ICommand NewStateMachineCommand { get; }
         public ICommand DeleteStateMachineCommand { get; }
         public ICommand GenerateCommand { get; }
-        public ICommand DocumentationCommand { get; }
 
         private void Generate()
         {
