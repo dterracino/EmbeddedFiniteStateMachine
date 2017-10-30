@@ -95,8 +95,6 @@ namespace EFSM.Designer.ViewModel
 
         private bool CanGenerate() => StateMachines.Any();
 
-        private bool CanCreateDocumentation() => StateMachines.Any();
-
         private void NewStateMachine()
         {
             var textEditService = new TextEditService();
