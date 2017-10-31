@@ -24,12 +24,14 @@ namespace EFSM.Generator
             if (!string.IsNullOrWhiteSpace(project.GenerationOptions.HeaderFilePath))
             {
                 var path = Path.Combine(projectPath, project.GenerationOptions.HeaderFilePath);
+                Directory.CreateDirectory(path);
                 File.WriteAllText(path, header);
             }
 
             if (!string.IsNullOrWhiteSpace(project.GenerationOptions.CodeFilePath))
             {
                 var path = Path.Combine(projectPath, project.GenerationOptions.CodeFilePath);
+                Directory.CreateDirectory(path);
                 File.WriteAllText(path, code);
             }
         }
