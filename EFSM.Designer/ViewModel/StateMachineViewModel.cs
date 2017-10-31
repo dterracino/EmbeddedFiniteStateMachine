@@ -177,7 +177,7 @@ namespace EFSM.Designer.ViewModel
             {
                 SelectionService.SelectNone();
             }
-           
+
             SelectionService.Select(this);
         }
 
@@ -399,7 +399,7 @@ namespace EFSM.Designer.ViewModel
                 Name = transitionName,
                 SourceStateId = source.Id,
                 TargetStateId = target.Id,
-                Condition = condition ?? new StateMachineCondition(),
+                Condition = condition, //?? new StateMachineCondition(),
                 TransitionActions = actionGuids
             };
 

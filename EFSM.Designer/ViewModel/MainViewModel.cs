@@ -8,6 +8,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using Microsoft.Win32;
 using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 
@@ -69,8 +70,12 @@ namespace EFSM.Designer.ViewModel
                 _filename = value;
                 RaisePropertyChanged();
                 RaisePropertyChanged(() => Title);
+                RaisePropertyChanged(nameof(ProjectFilePath));
             }
         }
+
+
+        public string ProjectFilePath => Path.GetDirectoryName(Filename);
 
         public string Title
         {
@@ -144,7 +149,7 @@ namespace EFSM.Designer.ViewModel
             _persistor.SaveProject(Project.GetModel(), Filename);
             _dirtyService.MarkClean();
 
-            Project.GenerateProjectCCodeAndDocumentation();
+            Project.GenerateProjectCCodeAndDocumentation(ProjectFilePath);
 
             return true;
         }
@@ -164,7 +169,7 @@ namespace EFSM.Designer.ViewModel
                 _persistor.SaveProject(Project.GetModel(), dialog.FileName);
                 _dirtyService.MarkClean();
 
-                Project.GenerateProjectCCodeAndDocumentation();
+                Project.GenerateProjectCCodeAndDocumentation(ProjectFilePath);
 
                 return true;
             }
