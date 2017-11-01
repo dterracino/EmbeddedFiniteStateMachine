@@ -13,11 +13,24 @@
 #define EFSM_NUM_INPUTS_FOR_ID_0								10
 #define EFSM_NUM_INPUTS_FOR_ID_1								10
 
+#define EFSM_INPUT_BUFFER_NUMBER_OF_ELEMENTS					32
+#define EFSM_WORKSPACE_NUMBER_OF_ELEMENTS						32
+
+#define EFSM_TRANSITION_RESULT_NONE								0
+#define EFSM_TRANSITION_RESULT_TRANSITION_REQUIRED				1
+#define EFSM_TRANSITION_INDEX_DEFAULT							0
+
 typedef struct
 {
 	uint16_t * data;
 	uint16_t id;
 }EFSM_BINARY;
+
+typedef struct
+{
+	uint8_t * buffer;
+	uint8_t numberOfElements;
+}EFSM_WORKSPACE_UINT8;
 
 typedef struct
 {
@@ -39,13 +52,15 @@ typedef struct
 	uint16_t baseIndexStateHeader;	/*Holds the index in the EFSM binary of the current states' header data.*/
 	uint16_t baseIndexIqfnData;				/*Holds the index in the EFSM binary of the current state's Input Query Function (IQFN) data.*/
 
+	uint8_t inputBuffer[EFSM_INPUT_BUFFER_NUMBER_OF_ELEMENTS];
+	uint8_t workspace[EFSM_WORKSPACE_NUMBER_OF_ELEMENTS];
 }EFSM_INSTANCE;
 
 typedef struct
 {
-	EFSM_INT result;
-	EFSM_INT transitionIndex;
-}EFSM_INPUTS_EVALUATION_RESULT;
+	uint8_t status;
+	uint16_t index;
+}EFSM_EVAL_TRANSITIONS_RESULT;
 
 extern uint16_t efsmBinary0Raw[EFSM_BINARY_0_SIZE];
 extern EFSM_BINARY efsmBinary0;
