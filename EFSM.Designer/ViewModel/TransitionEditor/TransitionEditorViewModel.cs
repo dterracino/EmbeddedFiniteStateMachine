@@ -52,7 +52,11 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             RecalculateConditionText();
 
             Criteria.PropertyChanged += CriteriaPropertyChanged;
-            Criteria.RootCondition.ConditionChanged += RootConditionChanged;
+
+            if (Criteria.RootCondition != null)
+            {
+                Criteria.RootCondition.ConditionChanged += RootConditionChanged;
+            }
         }
 
         private void RootConditionChanged(object sender, EventArgs e)
@@ -76,7 +80,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         private bool _isRecalculationConditionText = false;
         private void RecalculateConditionText()
         {
-            if (!_isRecalculationConditionText & Criteria.RootCondition != null)
+            if (!_isRecalculationConditionText & Criteria.RootCondition != null && Inputs.Any())
             {
                 _isRecalculationConditionText = true;
 

@@ -45,14 +45,14 @@ namespace EFSM.Designer.ViewModel
 
             NewStateMachineCommand = new RelayCommand(NewStateMachine);
             DeleteStateMachineCommand = new RelayCommand(DeleteStateMachine, CanDeleteStateMachine);
-            GenerateCommand = new RelayCommand(Generate, CanGenerate);
+            GenerateCommand = new RelayCommand<string>((s) => Generate(s), (s) => CanGenerate(s));
         }
 
         public ICommand NewStateMachineCommand { get; }
         public ICommand DeleteStateMachineCommand { get; }
         public ICommand GenerateCommand { get; }
 
-        private void Generate()
+        private void Generate(string projectPath)
         {
             try
             {
@@ -64,9 +64,11 @@ namespace EFSM.Designer.ViewModel
 
                 if (!string.IsNullOrWhiteSpace(GenerationOptions.DocumentationFolder))
                 {
-                    Directory.CreateDirectory(GenerationOptions.DocumentationFolder);
+                    var directory = Path.Combine(projectPath, GenerationOptions.DocumentationFolder);
 
-                    var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GenerationOptions.DocumentationFolder, DocumentationFileName);
+                    Directory.CreateDirectory(directory);
+
+                    var path = Path.Combine(directory, DocumentationFileName);
 
                     new MarkdownGenerator().Generate(project.StateMachines.ToList(), path);
                 }
@@ -75,7 +77,7 @@ namespace EFSM.Designer.ViewModel
                 project.Massage();
 
                 //Generate. Do it now.
-                generator.Generate(project);
+                generator.Generate(project, projectPath);
 
 
             }
@@ -85,15 +87,18 @@ namespace EFSM.Designer.ViewModel
             }
         }
 
-        public void GenerateProjectCCodeAndDocumentation()
+        public void GenerateProjectCCodeAndDocumentation(string projectPath)
         {
-            if (CanGenerate())
+            if (CanGenerate(projectPath))
             {
-                Generate();
+                Generate(projectPath);
             }
         }
 
-        private bool CanGenerate() => StateMachines.Any();
+        private bool CanGenerate(string projectPath)
+        {
+            return StateMachines.Any() && !string.IsNullOrWhiteSpace(projectPath);
+        }
 
         private void NewStateMachine()
         {

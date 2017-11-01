@@ -94,7 +94,7 @@
         </Grid.RowDefinitions>
 
         <ToolBar>
-            <Button Command="{Binding Path=AddConditionCommand}" ToolTip="Add Condition" >
+            <Button Command="{Binding Path=AddConditionCommand}" ToolTip="{Binding AddConditionToolTip}" ToolTipService.ShowOnDisabled="True" >
                 <StackPanel Orientation="Horizontal">
                     <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/NewCompoundCondition.png"></controls:AutoGreyableImage>
                 </StackPanel>

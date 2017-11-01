@@ -1,5 +1,5 @@
-﻿using System.IO;
-using EFSM.Domain;
+﻿using EFSM.Domain;
+using System.IO;
 
 namespace EFSM.Generator
 {
@@ -10,7 +10,7 @@ namespace EFSM.Generator
         private readonly CodeFileGenerator _codeFileGenerator = new CodeFileGenerator();
         private readonly BinaryGenerator _binaryGenerator = new BinaryGenerator();
 
-        public void Generate(StateMachineProject project)
+        public void Generate(StateMachineProject project, string projectPath)
         {
             // Get the model that we will use to generate the binary / code
             var generationModel = _generationModelFactory.GetGenerationModel(project);
@@ -23,15 +23,19 @@ namespace EFSM.Generator
 
             if (!string.IsNullOrWhiteSpace(project.GenerationOptions.HeaderFilePath))
             {
-                File.WriteAllText(project.GenerationOptions.HeaderFilePath, header);
+                var path = Path.Combine(projectPath, project.GenerationOptions.HeaderFilePath);
+                Directory.CreateDirectory(path);
+                File.WriteAllText(path, header);
             }
 
             if (!string.IsNullOrWhiteSpace(project.GenerationOptions.CodeFilePath))
             {
-                File.WriteAllText(project.GenerationOptions.CodeFilePath, code);
+                var path = Path.Combine(projectPath, project.GenerationOptions.CodeFilePath);
+                Directory.CreateDirectory(path);
+                File.WriteAllText(path, code);
             }
         }
-        
-       
+
+
     }
 }

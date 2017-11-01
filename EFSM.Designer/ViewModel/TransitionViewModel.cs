@@ -69,7 +69,11 @@ namespace EFSM.Designer.ViewModel
         private void ModelInitialize()
         {
             Actions = _model.TransitionActions == null ? new List<Guid>() : _model.TransitionActions.ToList();
-            _condition = new StateMachineConditionViewModel(_model.Condition);
+
+            if (_model.Condition != null)
+            {
+                _condition = new StateMachineConditionViewModel(_model.Condition);
+            }
         }
 
         public ICommand DeleteCommand { get; private set; }
@@ -79,12 +83,16 @@ namespace EFSM.Designer.ViewModel
 
         public StateMachineTransition GetModel()
         {
+            if (Condition != null)
+            {
+                _model.Condition = Condition.GetModel();
+            }
+
             _model.TransitionActions = Actions.ToArray();
-            //_model.Condition = Condition.GetModel();
             var model = _model.Clone();
             return model;
         }
-        
+
         public List<Guid> Actions
         {
             get { return _actions; }
