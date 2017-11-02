@@ -2,44 +2,15 @@
 #include "stdint.h"
 #include "efsm_core.h"
 #include "efsm_binary_protocol.h"
+#include "debug.c"
 
-uint16_t efsmBinary0Raw[EFSM_BINARY_0_SIZE];
-EFSM_BINARY efsmBinary0 = { .data = efsmBinary0Raw,.id = 0 };
-
-uint16_t efsmBinary1Raw[EFSM_BINARY_1_SIZE];
-EFSM_BINARY efsmBinary1 = { .data = efsmBinary1Raw,.id = 1 };
-
+//EFSM_BINARY efsmBinary0 = { .data = testBinary0Data,.id = 0 };
 void(*Actions0[EFSM_NUM_ACTIONS_FOR_ID_0])();
-void(*Actions1[EFSM_NUM_ACTIONS_FOR_ID_1])();
-
 uint8_t(*InputQueries0[EFSM_NUM_INPUTS_FOR_ID_0])();
-uint8_t(*InputQueries1[EFSM_NUM_INPUTS_FOR_ID_1])();
 
 EFSM_INSTANCE * efsmInstanceArray[EFSM_NUM_STATE_MACHINES];
 
 EFSM_INSTANCE efsm0;
-EFSM_INSTANCE efsm1;
-
-void EFSM_EvaluateInputs(EFSM_INSTANCE * efsmInstance)
-{
-	uint8_t numberOfInputs = EFSM_GetNumberIqfnsCurrentState(efsmInstance);
-	uint8_t frarrInputIndex;
-
-	/*Evaluate each input, and buffer the results.*/
-	for (uint8_t i = 0; i < numberOfInputs; i++)
-	{
-		/*Get the index of the relevant function pointer in the input function referance array (FRARR).*/
-		frarrInputIndex = efsmInstance->efsmBinary->data[efsmInstance->baseIndexIqfnData + i];
-
-		/*Run the input query and buffer the result.*/
-		efsmInstance->inputBuffer[i] = efsmInstance->InputQueries[frarrInputIndex]();
-	}
-}
-
-void ExecuteGenericStateAction(EFSM_INSTANCE * efsmInstance)
-{
-
-}
 
 /*
 Returns the number of states administered by the EFSM binary. References off of index 0
@@ -126,64 +97,85 @@ uint16_t EFSM_GetNumberOfOpcodes(EFSM_INSTANCE * efsmInstance, uint16_t baseInde
 	return efsmInstance->efsmBinary->data[baseIndexForTransition + EFSM_TRN_INSTR_OFFSET_NUMBER_OF_OPCODES];
 }
 
-#define EFSM_OPCODE_MASK_PUSH								0x80
-#define EFSM_OPCODE_MASK_INPUT_BUFFER_INDEX					0x7f
-#define EFSM_OPCODE_OR										0x01
-#define EFSM_OPCODE_AND										0x02
-#define EFSM_OPCODE_NOT										0x03
+/*
+Evaluates every input relevant to the current state, and stores the results. 
+*/
+void EFSM_EvaluateInputs(EFSM_INSTANCE * efsmInstance)
+{
+	uint16_t numberOfInputs = 0;
+	uint8_t frarrInputIndex = 0;
 
-#define EFSM_MIN_WORKSPACE_INDEX_FOR_OR_OPERATION			2
-#define EFSM_MIN_WORKSPACE_INDEX_FOR_AND_OPERATION			2
-#define EFSM_MIN_WORKSPACE_INDEX_FOR_NOT_OPERATION			1
+	numberOfInputs = EFSM_GetNumberIqfnsCurrentState(efsmInstance);
 
-#define EFSM_OR_OPERATION_STORE_OFFSET						2
-#define EFSM_OR_OPERATION_OPERAND_A_OFFSET					1
-#define EFSM_OR_OPERATION_OPERAND_B_OFFSET					2
+	/*Evaluate each input, and buffer the results.*/
+	for (uint16_t i = 0; i < numberOfInputs; i++)
+	{
+		/*Get the index of the relevant function pointer in the input function referance array (FRARR).*/
+		frarrInputIndex = efsmInstance->efsmBinary->data[efsmInstance->baseIndexIqfnData + i];
 
-#define EFSM_AND_OPERATION_STORE_OFFSET						2
-#define EFSM_AND_OPERATION_OPERAND_A_OFFSET					1
-#define EFSM_AND_OPERATION_OPERAND_B_OFFSET					2
+		/*Run the input query and buffer the result.*/
+		efsmInstance->inputBuffer[i] = efsmInstance->InputQueries[frarrInputIndex]();
+	}
+}
 
-#define EFSM_NOT_OPERATION_STORE_OFFSET						1
-#define EFSM_NOT_OPERATION_OPERAND_OFFSET					1
+/*
+Returns a 1 byte opcode, as read from a buffer whose element size is 2 bytes. Each element of the buffer
+contains two opcodes. The opcode with the lesser index is stored in the least significant byte of an 
+element, and the opcode with the greater index is stored at the most significant byte of an element. 
+*/
+uint8_t OpcodeFetch(uint16_t * opcodes, uint16_t opcodeIndex)
+{
+	if (opcodeIndex % 2)
+		return (uint8_t)((opcodes[opcodeIndex / 2] >> 8) & 0xff);
 
+	return (uint8_t)(opcodes[opcodeIndex / 2] & 0xff);
+}
+
+/*
+Performs boolean operations on a set of input values per a series of single byte opcodes. If the final result
+of the operations is true, a one is returned. If the result is false, a zero is returned. 
+*/
 uint8_t EFSM_PerformLogicOpsOnInputs(uint16_t * opcodes, uint16_t numberOfOpcodes, uint8_t * inputBuffer, EFSM_WORKSPACE_UINT8 workspace)
-{	
+{
 	uint8_t opcode;
 	uint16_t opcodeIndex = 0;
 	uint16_t workspaceIndex = 0;
 	uint8_t operationResult;
+	uint8_t operandA = 0;
+	uint8_t operandB = 0;
 
 	for (opcodeIndex = 0; opcodeIndex < numberOfOpcodes; opcodeIndex++)
 	{
-		opcode = OpcodeFetch(opcodeIndex, opcodes);		
-		
+		opcode = OpcodeFetch(opcodes, opcodeIndex);
+
 		if (opcode & EFSM_OPCODE_MASK_PUSH)
-		{			
+		{
 			workspace.buffer[workspaceIndex++] = inputBuffer[opcode & EFSM_OPCODE_MASK_INPUT_BUFFER_INDEX];
 		}
 		else if ((opcode == EFSM_OPCODE_OR) && (workspaceIndex >= EFSM_MIN_WORKSPACE_INDEX_FOR_OR_OPERATION))
 		{
-			operationResult = ((workspace.buffer[workspaceIndex - EFSM_OR_OPERATION_OPERAND_A_OFFSET]) || 
-				(workspace.buffer[workspaceIndex - EFSM_OR_OPERATION_OPERAND_B_OFFSET]));
-			
+			operandA = workspace.buffer[workspaceIndex - EFSM_OR_OPERATION_OPERAND_A_OFFSET];
+			operandB = workspace.buffer[workspaceIndex - EFSM_OR_OPERATION_OPERAND_B_OFFSET];
+			operationResult = operandA || operandB;
 			workspace.buffer[workspaceIndex - EFSM_OR_OPERATION_STORE_OFFSET] = operationResult;
+			workspaceIndex--;
 		}
 		else if ((opcode == EFSM_OPCODE_AND) && (workspaceIndex >= EFSM_MIN_WORKSPACE_INDEX_FOR_AND_OPERATION))
 		{
-			operationResult = ((workspace.buffer[workspaceIndex - EFSM_AND_OPERATION_OPERAND_A_OFFSET]) &&
-				(workspace.buffer[workspaceIndex - EFSM_AND_OPERATION_OPERAND_B_OFFSET));
-
+			operandA = workspace.buffer[workspaceIndex - EFSM_AND_OPERATION_OPERAND_A_OFFSET];
+			operandB = workspace.buffer[workspaceIndex - EFSM_AND_OPERATION_OPERAND_B_OFFSET];
+			operationResult = operandA && operandB;
 			workspace.buffer[workspaceIndex - EFSM_AND_OPERATION_STORE_OFFSET] = operationResult;
+			workspaceIndex--;
 		}
 		else if ((opcode == EFSM_OPCODE_NOT) && (workspaceIndex >= EFSM_MIN_WORKSPACE_INDEX_FOR_NOT_OPERATION))
 		{
 			operationResult = !(workspace.buffer[workspaceIndex - EFSM_NOT_OPERATION_OPERAND_OFFSET]);
-			workspace.buffer[workspaceIndex - EFSM_NOT_OPERATION_STORE_OFFSET];
-		}		
+			workspace.buffer[workspaceIndex - EFSM_NOT_OPERATION_STORE_OFFSET] = operationResult;
+		}
 	}
-	
-	return operationResult;
+
+	return workspace.buffer[EFSM_WORKSPACE_INDEX_FOR_RESULT];
 }
 
 /*
@@ -193,7 +185,7 @@ struct with an EFSM binary, and the EFSM binarys' corresponding function referen
 arrays (for Actions and InputQueries). It also initializes all other members of the struct
 instance.
 */
-EFSM_InitializeInstance(EFSM_INSTANCE * efsmInstance, EFSM_BINARY * efsmBinary, void(**Actions)(), uint8_t(**InputQueries)())
+void EFSM_InitializeInstance(EFSM_INSTANCE * efsmInstance, EFSM_BINARY * efsmBinary, void(**Actions)(), uint8_t(**InputQueries)())
 {
 	/*Pair the state machine instance with binary instructions and function reference arrays.*/
 	efsmInstance->efsmBinary = efsmBinary;
@@ -209,15 +201,18 @@ EFSM_InitializeInstance(EFSM_INSTANCE * efsmInstance, EFSM_BINARY * efsmBinary, 
 	efsmInstance->baseIndexIqfnData = EFSM_GetBaseIndexIqfnData(efsmInstance->baseIndexStateHeader, efsmBinary);
 }
 
+/*
+Gets things ready for calls to EFSM_Process().
+*/
 void EFSM_InitializeProcess()
 {
 	/*Load the instance pointer array.*/
-	efsmInstanceArray[0] = &efsm0;
-	//efsmInstanceArray[1] = &efsm1;
+	efsmInstanceArray[0] = &efsm0;	
+
+	Test0Init();
 
 	/*Initialize instances.*/
-	EFSM_InitializeInstance(&efsm0, &efsmBinary0, Actions0, InputQueries0);
-	//EFSM_InitializeInstance(&efsm1, &efsmBinary1, Actions1, InputQueries1);
+	EFSM_InitializeInstance(&efsm0, &test0Binary, Test0Actions, Test0Inputs);	
 }
 
 EFSM_EVAL_TRANSITIONS_RESULT EFSM_EvaluateTransitions(EFSM_INSTANCE * efsmInstance)
@@ -225,7 +220,7 @@ EFSM_EVAL_TRANSITIONS_RESULT EFSM_EvaluateTransitions(EFSM_INSTANCE * efsmInstan
 	uint16_t baseIndexForTransition = 0;
 	uint16_t numberOfOpcodes = 0;
 	uint16_t * opcodes;
-	EFSM_EVAL_TRANSITIONS_RESULT result = { .status = EFSM_TRANSITION_RESULT_NONE,.index = EFSM_TRANSITION_INDEX_DEFAULT };
+	EFSM_EVAL_TRANSITIONS_RESULT result = { .status = EFSM_TRANSITION_NONE,.index = EFSM_TRANSITION_INDEX_DEFAULT };
 
 	/*
 	The general purpose of a workspace is to provide a pointer to a block of memory, WITH an associated size. In this
@@ -239,14 +234,14 @@ EFSM_EVAL_TRANSITIONS_RESULT EFSM_EvaluateTransitions(EFSM_INSTANCE * efsmInstan
 		baseIndexForTransition = EFSM_GetBaseIndexForTransition(efsmInstance, transition);		
 
 		/*Get a pointer to the relevant block of opcodes in the EFSM binary.*/
-		opcodes = &(efsmInstance->efsmBinary[baseIndexForTransition + EFSM_TRN_INSTR_OFFSET_OPCODES]);
+		opcodes = &(efsmInstance->efsmBinary->data[baseIndexForTransition + EFSM_TRN_INSTR_OFFSET_OPCODES]);
 
 		/*Get the number of opcodes.*/
 		numberOfOpcodes = EFSM_GetNumberOfOpcodes(efsmInstance, baseIndexForTransition);		
 		
 		if (EFSM_PerformLogicOpsOnInputs(opcodes, numberOfOpcodes, efsmInstance->inputBuffer, workspace))
 		{
-			result.status = EFSM_TRANSITION_RESULT_TRANSITION_REQUIRED;
+			result.status = EFSM_TRANSITION_REQUIRED;
 			result.index = transition;
 			return result;
 		}
@@ -255,21 +250,61 @@ EFSM_EVAL_TRANSITIONS_RESULT EFSM_EvaluateTransitions(EFSM_INSTANCE * efsmInstan
 	return result;
 }
 
+uint16_t EFSM_GetBaseIndexForTrnActions(EFSM_INSTANCE * efsmInstance, uint16_t transitionIndex)
+{
+	uint16_t baseIndexForTransition = 0;
+	baseIndexForTransition = EFSM_GetBaseIndexForTransition(efsmInstance, transitionIndex);
+
+	return efsmInstance->efsmBinary->data[baseIndexForTransition + EFSM_TRN_INSTR_OFFSET_BIN_INDEX_FOR_TRN_ACTIONS_DATA];
+}
+
+uint16_t EFSM_GetNextState(EFSM_INSTANCE * efsmInstance, uint16_t transitionIndex)
+{
+	uint16_t baseIndexForTransition = 0; 
+	baseIndexForTransition = EFSM_GetBaseIndexForTransition(efsmInstance, transitionIndex);
+
+	return efsmInstance->efsmBinary->data[baseIndexForTransition + EFSM_TRN_INSTR_OFFSET_NEXT_STATE_AFTER_TRANSITION];
+}
+
+void EFSM_PeformTransition(EFSM_INSTANCE * efsmInstance, uint16_t transitionIndex)
+{
+	
+	uint16_t baseIndexForTrnActions = 0;
+	uint16_t numberOfTransitionActions = 0;
+	uint16_t actionsArrayIndex = 0;
+	uint16_t * binary = efsmInstance->efsmBinary->data;
+
+	baseIndexForTrnActions = EFSM_GetBaseIndexForTrnActions(efsmInstance, transitionIndex);
+	numberOfTransitionActions = binary[baseIndexForTrnActions + EFSM_TRN_ACTIONS_DATA_OFFSET_NUMBER_OF_TRN_ACTIONS];
+	
+	for (uint16_t actionIndex = 0; actionIndex < numberOfTransitionActions; actionIndex++)
+	{
+		actionsArrayIndex = binary[baseIndexForTrnActions + EFSM_TRN_ACTIONS_DATA_OFFSET_TRN_ACTIONS_ARR_INDICES + actionIndex];
+		efsmInstance->Actions[actionsArrayIndex]();
+	}
+
+	/*Initialize the efsmInstance to the data in the next state.*/
+	efsmInstance->state = EFSM_GetNextState(efsmInstance, transitionIndex);;
+	efsmInstance->baseIndexCurrentState = EFSM_GetBaseIndexForState(efsmInstance->state, efsmInstance->efsmBinary);
+	efsmInstance->baseIndexStateHeader = EFSM_GetBaseIndexForStateHeader(efsmInstance->state, efsmInstance->efsmBinary);
+	efsmInstance->baseIndexIqfnData = EFSM_GetBaseIndexIqfnData(efsmInstance->baseIndexStateHeader, efsmInstance->efsmBinary);
+}
+
 void EFSM_Execute(EFSM_INSTANCE * efsmInstance)
 {	
+	EFSM_EVAL_TRANSITIONS_RESULT evalTransitionsResult;
+
 	/*Runs the input query functions (IQFNS's), as required by the current state, and buffers the results.*/
 	EFSM_EvaluateInputs(efsmInstance);
 
+	evalTransitionsResult = EFSM_EvaluateTransitions(efsmInstance);
+
 	/*If a set of input conditions required for a transition have been met...*/
-	if (EFSM_EvaluateTransitions(efsmInstance).status == EFSM_TRANSITION_RESULT_TRANSITION_REQUIRED)
+	if (evalTransitionsResult.status == EFSM_TRANSITION_REQUIRED)
 	{
 		/*Perform transition.*/
+		EFSM_PeformTransition(efsmInstance, evalTransitionsResult.index);
 	}
-	
-	/*
-	If conditions for a transition are met, fire transition. Will need to execute the exit actions
-	for the current state, update the current state, and execute the entry actions for the new state.
-	*/
 }
 
 void EFSM_Process()

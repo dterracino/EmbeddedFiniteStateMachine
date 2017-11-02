@@ -3,7 +3,7 @@
 
 #include "efsm.h"
 
-#define EFSM_NUM_STATE_MACHINES 2
+#define EFSM_NUM_STATE_MACHINES 1
 
 /* State Machine MAIN */
 #define EFSM_SM_MAIN 0
@@ -22,7 +22,7 @@ unsigned char EFSM_SM_MAIN_Input_CallForAir();
 #define EFSM_SM_BLOWER_S_WAIT_FOR_AIRFLOW 2
 #define EFSM_SM_BLOWER_S_BLOWER_RUNNING 3
 
-void EFSM_Process();
+
 
 #endif
 

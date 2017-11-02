@@ -103,6 +103,17 @@ void EvalInterface(EFSM_INSTANCE * efsmInstance)
 		{
 			printf("Exiting");
 			exit = 1;
+		}	
+		else if (!strcmp(iBuf, "init"))
+		{
+			printf("Initializing efsm process");			
+			EFSM_InitializeProcess();
 		}
+		else if (!strcmp(iBuf, ">>"))
+		{
+			printf("Running state machine...\n");
+			EFSM_Process();
+		}
+		
 	}	
 }

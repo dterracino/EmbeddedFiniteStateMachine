@@ -14,9 +14,9 @@ int main()
 	uint8_t len = 0;
 	uint8_t index = 0;
 	
-	Test0Init();
-	EFSM_InitializeInstance(&efsm0, &test0Binary, Test0Actions, Test0Inputs);
-	DisplayInstanceData(&efsm0);
+	//Test0Init();
+	//EFSM_InitializeInstance(&efsm0, &test0Binary, Test0Actions, Test0Inputs);
+	//DisplayInstanceData(&efsm0);
 
 	EvalInterface(&efsm0);
 	return 0;

@@ -16,9 +16,34 @@
 #define EFSM_INPUT_BUFFER_NUMBER_OF_ELEMENTS					32
 #define EFSM_WORKSPACE_NUMBER_OF_ELEMENTS						32
 
-#define EFSM_TRANSITION_RESULT_NONE								0
-#define EFSM_TRANSITION_RESULT_TRANSITION_REQUIRED				1
+#define EFSM_TRANSITION_NONE									0
+#define EFSM_TRANSITION_REQUIRED								1
 #define EFSM_TRANSITION_INDEX_DEFAULT							0
+
+/*Defines related to EFSM boolean operations on inputs.*/
+
+#define EFSM_OPCODE_MASK_PUSH								0x80
+#define EFSM_OPCODE_MASK_INPUT_BUFFER_INDEX					0x7f
+#define EFSM_OPCODE_OR										0x01
+#define EFSM_OPCODE_AND										0x02
+#define EFSM_OPCODE_NOT										0x03
+
+#define EFSM_MIN_WORKSPACE_INDEX_FOR_OR_OPERATION			2
+#define EFSM_MIN_WORKSPACE_INDEX_FOR_AND_OPERATION			2
+#define EFSM_MIN_WORKSPACE_INDEX_FOR_NOT_OPERATION			1
+
+#define EFSM_OR_OPERATION_STORE_OFFSET						2
+#define EFSM_OR_OPERATION_OPERAND_A_OFFSET					1
+#define EFSM_OR_OPERATION_OPERAND_B_OFFSET					2
+
+#define EFSM_AND_OPERATION_STORE_OFFSET						2
+#define EFSM_AND_OPERATION_OPERAND_A_OFFSET					1
+#define EFSM_AND_OPERATION_OPERAND_B_OFFSET					2
+
+#define EFSM_NOT_OPERATION_STORE_OFFSET						1
+#define EFSM_NOT_OPERATION_OPERAND_OFFSET					1
+
+#define EFSM_WORKSPACE_INDEX_FOR_RESULT						0
 
 typedef struct
 {
@@ -79,7 +104,9 @@ extern EFSM_INSTANCE * efsmInstanceArray[EFSM_NUM_STATE_MACHINES];
 extern EFSM_INSTANCE efsm0;
 extern EFSM_INSTANCE efsm1;
 
-EFSM_InitializeInstance(EFSM_INSTANCE * efsmInstance, EFSM_BINARY * efsmBinary, void(**Actions)(), uint8_t(**InputQueries)());
+void EFSM_InitializeProcess();
+void EFSM_InitializeInstance(EFSM_INSTANCE * efsmInstance, EFSM_BINARY * efsmBinary, void(**Actions)(), uint8_t(**InputQueries)());
+void EFSM_Process();
 
 #endif
 
