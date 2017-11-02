@@ -23,15 +23,19 @@ namespace EFSM.Generator
 
             if (!string.IsNullOrWhiteSpace(project.GenerationOptions.HeaderFilePath))
             {
-                var path = Path.Combine(projectPath, project.GenerationOptions.HeaderFilePath);
+                var fullPath = project.GenerationOptions.HeaderFilePath;
+                var path = Path.Combine(projectPath, Path.GetDirectoryName(fullPath));
                 Directory.CreateDirectory(path);
+                path = Path.Combine(path, Path.GetFileName(fullPath));
                 File.WriteAllText(path, header);
             }
 
             if (!string.IsNullOrWhiteSpace(project.GenerationOptions.CodeFilePath))
             {
-                var path = Path.Combine(projectPath, project.GenerationOptions.CodeFilePath);
+                var fullPath = project.GenerationOptions.CodeFilePath;
+                var path = Path.Combine(projectPath, Path.GetDirectoryName(fullPath));
                 Directory.CreateDirectory(path);
+                path = Path.Combine(path, Path.GetFileName(fullPath));
                 File.WriteAllText(path, code);
             }
         }
