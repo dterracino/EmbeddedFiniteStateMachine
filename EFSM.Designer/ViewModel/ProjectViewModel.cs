@@ -78,8 +78,6 @@ namespace EFSM.Designer.ViewModel
 
                 //Generate. Do it now.
                 generator.Generate(project, projectPath);
-
-
             }
             catch (Exception ex)
             {
