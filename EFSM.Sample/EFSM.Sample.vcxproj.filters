@@ -33,10 +33,10 @@
     <ClInclude Include="efsm_binary_protocol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="debug.h">
+    <ClInclude Include="eval.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eval.h">
+    <ClInclude Include="test.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,10 +50,10 @@
     <ClCompile Include="main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="debug.c">
+    <ClCompile Include="eval.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="eval.c">
+    <ClCompile Include="test.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

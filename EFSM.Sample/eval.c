@@ -2,23 +2,7 @@
 #include <stdint.h>
 #include "efsm_core.h"
 #include <stdio.h>
-
-void DisplayInstanceData(EFSM_INSTANCE * efsmInstance)
-{
-	printf("\nGeneral Information\n\n");
-	printf("Associated binary: %d\n", efsmInstance->efsmBinary->id);
-	printf("numberOfStates: %d\n", efsmInstance->numberOfStates);
-	printf("totalNumberOfInputs: %d\n", efsmInstance->totalNumberOfInputs);
-
-	printf("\nState Specific Information\n\n");
-
-	printf("state: %d\n", efsmInstance->state);
-	printf("numberOfInputs: %d\n", efsmInstance->numberOfInputs);
-	printf("numberOfTransitions: %d\n", efsmInstance->numberOfTransitions);
-	printf("baseIndexCurrentState: %d\n", efsmInstance->baseIndexCurrentState);
-	printf("baseIndexStateHeader: %d\n", efsmInstance->baseIndexStateHeader);
-	printf("baseIndexIqfnData: %d\n", efsmInstance->baseIndexIqfnData);
-}
+#include "test.h"
 
 uint8_t DoesStringIndicateAnInteger(char * str)
 {
@@ -39,16 +23,6 @@ char * GetTrueOrFalseString(uint8_t value)
 		return "true";
 
 	return "false";
-}
-
-void SetInput(EFSM_INSTANCE * efsmInstance, uint8_t efsmInputNumber, uint8_t value)
-{
-	printf("Setting input %d to %s\n", efsmInputNumber, GetTrueOrFalseString(value));
-}
-
-void DisplayEfsmCondtion(EFSM_INSTANCE * efsmInstance)
-{
-	printf("current state: %d\n", efsmInstance->state);
 }
 
 void EvalInterface(EFSM_INSTANCE * efsmInstance)
@@ -80,20 +54,26 @@ void EvalInterface(EFSM_INSTANCE * efsmInstance)
 				if (iBuf[index] == 'T')
 				{
 					SetInput(efsmInstance, efsmInputNumber, 1);
-					DisplayEfsmCondtion(efsmInstance);
+					//DisplayEfsmCondtion(efsmInstance);
 					index = 0;
 				}
 				else if (iBuf[index] == 'F')
 				{
 					SetInput(efsmInstance, efsmInputNumber, 0);
-					DisplayEfsmCondtion(efsmInstance);
+					//DisplayEfsmCondtion(efsmInstance);
 					index = 0;
 				}
 				else
+				{
+					index = 0;
 					printf("expected T or F");
+				}					
 			}
 			else
+			{
 				printf("expected integer. got %s", token);
+				index = 0;
+			}			
 		}
 		else if (!strcmp(iBuf, "condition"))		
 			DisplayEfsmCondtion(efsmInstance);		
@@ -114,6 +94,5 @@ void EvalInterface(EFSM_INSTANCE * efsmInstance)
 			printf("Running state machine...\n");
 			EFSM_Process();
 		}
-		
 	}	
 }

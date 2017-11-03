@@ -1,7 +1,7 @@
 #include "efsm_generated.h"
 #include "stdio.h"
 #include "efsm_core.h"
-#include "debug.h"
+#include "test.h"
 #include "eval.h"
 #include <stdlib.h>
 
