@@ -18,7 +18,7 @@ namespace EFSM.Generator.Model
             _commentFormat = commentFormat;
         }
 
-        public override int ResolveCore(int absoluteOffset)
+        protected override int ResolveCore(int absoluteOffset)
         {
             return 2;
         }

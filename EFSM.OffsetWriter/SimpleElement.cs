@@ -15,7 +15,7 @@ namespace EFSM.OffsetWriter
 
         public byte[] Content { get; }
 
-        public override int ResolveCore(int absoluteOffset)
+        protected override int ResolveCore(int absoluteOffset)
         {
             return Content.Length;
         }

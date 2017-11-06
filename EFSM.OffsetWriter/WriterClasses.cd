@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="EFSM.OffsetWriter.ElementList">
+    <Position X="5.25" Y="9.25" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAIAAAAABAAAAAAAAAAAAAAAAAACAAAAAAAAAAEEAAA=</HashCode>
+      <FileName>ElementList.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EFSM.OffsetWriter.MarkerElement">
+    <Position X="8.5" Y="9.25" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAAAAAAAAAAAAAQAACAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>MarkerElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EFSM.OffsetWriter.OffsetElement">
+    <Position X="5" Y="6" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACCAAAAAAAAAAAAAQAACAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>OffsetElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EFSM.OffsetWriter.SimpleElement">
+    <Position X="2" Y="9.25" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEgAAAAAAAAAAAAAAQAACAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>SimpleElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

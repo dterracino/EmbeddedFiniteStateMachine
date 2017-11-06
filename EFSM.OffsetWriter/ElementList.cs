@@ -28,7 +28,7 @@ namespace EFSM.OffsetWriter
             }
         }
 
-        public override int ResolveCore(int absoluteOffset)
+        protected override int ResolveCore(int absoluteOffset)
         {
             int bytes = 0;
 

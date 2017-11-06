@@ -134,7 +134,7 @@ namespace EFSM.Generator
             }
 
             //Resolve
-            int size = rootElementList.ResolveCore(0);
+            int size = rootElementList.Resolve(0);
 
             //Create the element write target
             var elementWriteTarget = new ElementWriteTarget(size);

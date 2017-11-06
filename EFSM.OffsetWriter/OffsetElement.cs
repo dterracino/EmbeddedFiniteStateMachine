@@ -33,7 +33,7 @@ namespace EFSM.OffsetWriter
         /// </summary>
         /// <param name="absoluteOffset"></param>
         /// <returns></returns>
-        public abstract int ResolveCore(int absoluteOffset);
+        protected abstract int ResolveCore(int absoluteOffset);
 
         public abstract void Write(IElementWriteTarget target);
     }
