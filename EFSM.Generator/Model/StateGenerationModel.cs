@@ -4,32 +4,22 @@ using EFSM.Domain;
 
 namespace EFSM.Generator.Model
 {
-    internal class StateGenerationModel : IndexedBase<State>
+    internal class StateGenerationModel
     {
-        public StateGenerationModel(
-            State model, 
-            int index, 
-            StateMachine parent, 
-            ActionReferenceGenerationModel[] entryActions, 
-            ActionReferenceGenerationModel[] exitActions) 
-            : base(model, index)
+        public StateGenerationModel()
         {
-            if (parent == null) throw new ArgumentNullException(nameof(parent));
-            if (entryActions == null) throw new ArgumentNullException(nameof(entryActions));
-            if (exitActions == null) throw new ArgumentNullException(nameof(exitActions));
-            Parent = parent;
-            EntryActions = entryActions;
-            ExitActions = exitActions;
+
         }
 
-        public StateMachine Parent { get; }
+        /*General information about the state.*/     
+        public List<InputGenerationModel> inputList;
+        public List<TransitionGenerationModel> transitionList;
 
-        public ActionReferenceGenerationModel[] EntryActions { get; }
+        public TransitionGenerationModel Transitions;
 
-        public ActionReferenceGenerationModel[] ExitActions { get; }
+        /*Inputs relevant to state.*/
 
-        public override string IndexDefineName => $"EFSM_{Parent.Name.FixDefineName()}_INDEX";
+        /*Transitions relevant to state.*/
 
-        public List<TransitionGenerationModel> Transitions { get; } = new List<TransitionGenerationModel>();
-    }
+    }    
 }

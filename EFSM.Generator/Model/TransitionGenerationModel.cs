@@ -1,28 +1,21 @@
 ﻿using EFSM.Domain;
+using System;
 
 namespace EFSM.Generator.Model
 {
-    internal class TransitionGenerationModel : IndexedBase<StateMachineTransition>
+    internal class TransitionGenerationModel 
     {
-        public StateMachine Parent { get; }
-
-        public StateGenerationModel Target { get; }
-
-        public ActionReferenceGenerationModel[] Actions { get; }
-
-        public TransitionGenerationModel(
-            StateMachineTransition model, 
-            int index, 
-            StateMachine parent, 
-            StateGenerationModel target,
-            ActionReferenceGenerationModel[] actions) 
-            : base(model, index)
+        public TransitionGenerationModel(Guid parentStateId, Guid targetStateId, string name)
         {
-            Parent = parent;
-            Target = target;
-            Actions = actions;
+            ParentStateId = parentStateId;
+            TargetStateId = targetStateId;
+            Name = name;            
         }
-
-        public override string IndexDefineName => $"EFSM_{Parent.Name.FixDefineName()}_{Model.Name.FixDefineName()}_INDEX";
+        
+        Guid ParentStateId { get; }
+        Guid TargetStateId { get; }
+        public string Name { get; }
+        ActionReferenceGenerationModel Actions { get; set; }
+        OpcodeGenerationModel Opcodes { get; set; }
     }
 }

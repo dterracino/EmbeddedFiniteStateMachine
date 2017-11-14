@@ -1,44 +1,56 @@
 ﻿using EFSM.Domain;
+using System.Collections.Generic;
 
 namespace EFSM.Generator.Model
 {
     internal class StateMachineGenerationModel : IndexedBase<StateMachine>
     {
-        public StateMachineGenerationModel(
-            StateMachine model, 
-            StateGenerationModel[] states, 
-            InputGenerationModel[] inputs, 
-            OutputGenerationModel[] outputs,
-            int index) : base(model, index)
+        public StateMachineGenerationModel(StateMachine model, int index):base(model, index)
         {
-            States = states;
-            Inputs = inputs;
-            Outputs = outputs;
+
         }
 
-        /// <summary>
-        /// The states
-        /// </summary>
-        public StateGenerationModel[] States { get; }
+        public override string IndexDefineName =>  $"not initialized";
 
-        public InputGenerationModel[] Inputs { get; }
+        /**/
+        public List<StateGenerationModel> States { get; }
 
-        public OutputGenerationModel[] Outputs { get; }
 
-        public override string IndexDefineName => $"EFSM_{Model.Name.FixDefineName()}_INDEX";
+        //public StateMachineGenerationModel(
+        //    StateMachine model, 
+        //    StateGenerationModel[] states, 
+        //    InputGenerationModel[] inputs, 
+        //    OutputGenerationModel[] outputs,
+        //    int index) : base(model, index)
+        //{
+        //    States = states;
+        //    Inputs = inputs;
+        //    Outputs = outputs;
+        //}
 
-        public string NumStatesDefineName => $"EFSM_{Model.Name.FixDefineName()}_NUM_STATES";
+        ///// <summary>
+        ///// The states
+        ///// </summary>
+        //public StateGenerationModel[] States { get; }
 
-        public string NumStatesDefine => $"#define {NumStatesDefineName} {States.Length}";
+        //public InputGenerationModel[] Inputs { get; }
 
-        public string NumInputsDefineName => $"EFSM_{Model.Name.FixDefineName()}_NUM_INPUTS";
+        //public OutputGenerationModel[] Outputs { get; }
 
-        public string NumInputsDefine => $"#define {NumInputsDefineName} {Inputs.Length}";
+        //public override string IndexDefineName => $"EFSM_{Model.Name.FixDefineName()}_INDEX";
 
-        public string NumOutputsDefineName => $"EFSM_{Model.Name.FixDefineName()}_NUM_OUTPUTS";
+        //public string NumStatesDefineName => $"EFSM_{Model.Name.FixDefineName()}_NUM_STATES";
 
-        public string NumOutputsDefine => $"#define {NumOutputsDefineName} {Outputs.Length}";
+        //public string NumStatesDefine => $"#define {NumStatesDefineName} {States.Length}";
 
-        public string LocalBinaryVariableName => $"efsm_stateMachineDefinition_{Index}";
+        //public string NumInputsDefineName => $"EFSM_{Model.Name.FixDefineName()}_NUM_INPUTS";
+
+        //public string NumInputsDefine => $"#define {NumInputsDefineName} {Inputs.Length}";
+
+        //public string NumOutputsDefineName => $"EFSM_{Model.Name.FixDefineName()}_NUM_OUTPUTS";
+
+        //public string NumOutputsDefine => $"#define {NumOutputsDefineName} {Outputs.Length}";
+
+        //public string LocalBinaryVariableName => $"efsm_stateMachineDefinition_{Index}";
     }
 }

@@ -44,14 +44,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ElementList.cs" />
+    <Compile Include="ElementList2.cs" />
     <Compile Include="ElementWriteTarget.cs" />
+    <Compile Include="ElementWriteTarget2.cs" />
     <Compile Include="IDelayedResolutionElement.cs" />
     <Compile Include="IElementWriteTarget.cs" />
     <Compile Include="MarkerElement.cs" />
+    <Compile Include="MarkerElement2.cs" />
     <Compile Include="OffsetElement.cs" />
+    <Compile Include="OffsetElement2.cs" />
     <Compile Include="OffsetWriterExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleElement.cs" />
+    <Compile Include="SimpleElementV2.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

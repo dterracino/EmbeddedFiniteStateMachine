@@ -6,4 +6,9 @@ namespace EFSM.OffsetWriter
     {
         void Write(byte[] content, OffsetElement source);
     }
+
+    public interface IElementWriteTarget2
+    {
+        void Write(UInt16[] content, OffsetElement2 source);
+    }
 }
