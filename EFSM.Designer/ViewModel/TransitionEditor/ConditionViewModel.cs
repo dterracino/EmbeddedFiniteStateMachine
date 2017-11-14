@@ -222,6 +222,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
                     if (InputId == null)
                     {
+
                         //Select the first item
                         InputId = _owner.Inputs
                             .FirstOrDefault()?.Id;
@@ -270,10 +271,13 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             get { return _model.SourceInputId; }
             set
             {
-                _model.SourceInputId = value;
-                RaisePropertyChanged();
-                _owner.DirtyService.MarkDirty();
-                OnConditionChanged(this);
+                if (_model.SourceInputId != value)
+                {
+                    _model.SourceInputId = value;
+                    RaisePropertyChanged();
+                    _owner.DirtyService.MarkDirty();
+                    OnConditionChanged(this);
+                }
             }
         }
 
