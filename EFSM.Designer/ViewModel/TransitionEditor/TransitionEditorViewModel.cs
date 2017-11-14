@@ -78,6 +78,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         }
 
         private bool _isRecalculationConditionText = false;
+
         private void RecalculateConditionText()
         {
             if (!_isRecalculationConditionText & Criteria.RootCondition != null && Inputs.Any())
@@ -86,7 +87,8 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
                 if (Criteria.RootCondition.AreChildrenValid)
                 {
-                    ConditionText = _markdownConditionGenerator.Generate(GetModel(), Inputs.Select(i => i.GetModel()).ToArray()).ToString();
+                    var model = GetModel();
+                    ConditionText = _markdownConditionGenerator.Generate(model, Inputs.Select(i => i.GetModel()).ToArray()).ToString();
                 }
                 else
                 {

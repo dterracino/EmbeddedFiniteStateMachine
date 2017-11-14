@@ -114,6 +114,7 @@ namespace EFSM.Designer.ViewModel
         {
             Parent.DirtyService.MarkDirty();
             _model = model;
+            ModelInitialize();
             RaisePropertyChanged(null);
             _parent.SaveUndoState();
         }
