@@ -62,7 +62,8 @@ namespace EFSM.Generator
                 headerFile.AppendLine($"/* States */");
                 foreach (var state in stateMachine.States)
                 {
-                    headerFile.AppendLine($"#define EFSM_{stateMachine.Model.Name.FixDefineName()}_{state.Model.Name.FixDefineName()} {state.Index}");
+                    //headerFile.AppendLine($"#define EFSM_{stateMachine.Model.Name.FixDefineName()}_{state.Model.Name.FixDefineName()} {state.Index}");
+                    headerFile.AppendLine($"#define EFSM_STATE_NAME");
                 }
 
                 headerFile.AppendLine();

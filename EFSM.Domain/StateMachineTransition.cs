@@ -68,5 +68,26 @@ namespace EFSM.Domain
 
             return _inputsForTransition;
         }
+
+        public List<StateMachineOutputAction> GetAllAssociatedActions(StateMachine parent)
+        {
+            var associatedActions = new List<StateMachineOutputAction>();
+
+            /*Get a list of actions associated with the transition.*/
+            /*First, get the exit actions for this transitions source state.*/
+            var sourceState = parent.GetState(SourceStateId);
+
+            foreach (var actionItem in sourceState.ExitActions)
+            {
+                
+            }
+
+
+            /*Second, get the actions for this transition itself.*/
+            /*Finally, get the entry actions for this transitions' target state.*/
+
+
+            return associatedActions;
+        }
     }
 }

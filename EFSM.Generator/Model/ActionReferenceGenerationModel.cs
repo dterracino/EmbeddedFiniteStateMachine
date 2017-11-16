@@ -2,13 +2,17 @@
 
 namespace EFSM.Generator.Model
 {
-    internal class ActionReferenceGenerationModel : IndexedBase<OutputGenerationModel>
+    internal class ActionReferenceGenerationModel 
     {
-        public ActionReferenceGenerationModel(OutputGenerationModel model, int index) 
-            : base(model, index)
+        public ActionReferenceGenerationModel(Guid id, int functionReferenceIndex, string name)            
         {
+            Id = id;
+            FunctionReferenceIndex = functionReferenceIndex;
+            Name = name;
         }
 
-        public override string IndexDefineName => throw new NotSupportedException();
+        public Guid Id { get; }
+        public int FunctionReferenceIndex { get; }
+        public string Name { get; }
     }
 }

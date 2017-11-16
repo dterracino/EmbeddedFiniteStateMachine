@@ -52,8 +52,8 @@ namespace EFSM.Generator
             //rootElementList2.Add(bitConverter, (UInt16)stateMachine.States[0].Index, $"Initial state ({stateMachine.States[0].Index})");
 
             /*Create an array of DelayedResolutionElementUshort2's based on each state in stateMachine.*/
-            var statesTocEntries = stateMachine.States.Select(s => new DelayedResolutionElementUshort2(bitConverter, "EFSM index of state'" + s.Model.Name + "' [{0}]")).ToArray();
-            rootElementList2.AddRange(statesTocEntries);           
+            //var statesTocEntries = stateMachine.States.Select(s => new DelayedResolutionElementUshort2(bitConverter, "EFSM index of state'" + s.Model.Name + "' [{0}]")).ToArray();
+            //rootElementList2.AddRange(statesTocEntries);           
 
             /*Get */
 

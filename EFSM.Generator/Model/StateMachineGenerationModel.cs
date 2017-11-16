@@ -7,7 +7,8 @@ namespace EFSM.Generator.Model
     {
         public StateMachineGenerationModel(StateMachine model, int index):base(model, index)
         {
-
+            List<StateGenerationModel> states = new List<StateGenerationModel>();
+            States = states;
         }
 
         public override string IndexDefineName =>  $"not initialized";
@@ -33,24 +34,24 @@ namespace EFSM.Generator.Model
         ///// </summary>
         //public StateGenerationModel[] States { get; }
 
-        //public InputGenerationModel[] Inputs { get; }
+        public InputGenerationModel[] Inputs { get; }
 
-        //public OutputGenerationModel[] Outputs { get; }
+        public OutputGenerationModel[] Outputs { get; }
 
         //public override string IndexDefineName => $"EFSM_{Model.Name.FixDefineName()}_INDEX";
 
-        //public string NumStatesDefineName => $"EFSM_{Model.Name.FixDefineName()}_NUM_STATES";
+        public string NumStatesDefineName => $"EFSM_{Model.Name.FixDefineName()}_NUM_STATES";
 
-        //public string NumStatesDefine => $"#define {NumStatesDefineName} {States.Length}";
+        public string NumStatesDefine => $"#define {NumStatesDefineName} {States.Count}";
 
-        //public string NumInputsDefineName => $"EFSM_{Model.Name.FixDefineName()}_NUM_INPUTS";
+        public string NumInputsDefineName => $"EFSM_{Model.Name.FixDefineName()}_NUM_INPUTS";
 
-        //public string NumInputsDefine => $"#define {NumInputsDefineName} {Inputs.Length}";
+        public string NumInputsDefine => $"#define {NumInputsDefineName} {Inputs.Length}";
 
-        //public string NumOutputsDefineName => $"EFSM_{Model.Name.FixDefineName()}_NUM_OUTPUTS";
+        public string NumOutputsDefineName => $"EFSM_{Model.Name.FixDefineName()}_NUM_OUTPUTS";
 
-        //public string NumOutputsDefine => $"#define {NumOutputsDefineName} {Outputs.Length}";
+        public string NumOutputsDefine => $"#define {NumOutputsDefineName} {Outputs.Length}";
 
-        //public string LocalBinaryVariableName => $"efsm_stateMachineDefinition_{Index}";
+        public string LocalBinaryVariableName => $"efsm_stateMachineDefinition_{Index}";
     }
 }

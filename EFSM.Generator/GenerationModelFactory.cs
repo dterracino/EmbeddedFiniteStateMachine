@@ -14,15 +14,15 @@ namespace EFSM.Generator
             //var stateMachines = project.StateMachines.Select(GenerateStateMachine).ToArray();
             List<StateMachineGenerationModel> localStateMachineList = new List<StateMachineGenerationModel>();
 
-            for(int i = 0; i < project.StateMachines.Length; i++)
+            for (int i = 0; i < project.StateMachines.Length; i++)
             {
                 localStateMachineList.Add(GenerateStateMachine(project.StateMachines[i], i));
-            }            
+            }
 
             return new ProjectGenerationModel(project, localStateMachineList.ToArray());
         }
 
-        private List <InputGenerationModel>GetListOfInputsForState(State state, StateMachine stateMachine)
+        private List<InputGenerationModel> GetListOfInputsForState(State state, StateMachine stateMachine)
         {
             var stateInputList = new List<StateMachineInput>();
             var generationModelInputList = new List<InputGenerationModel>();
@@ -51,7 +51,32 @@ namespace EFSM.Generator
             foreach (var transition in stateMachine.Transitions)
             {
                 if (transition.SourceStateId == state.Id)
-                    transitionList.Add(new TransitionGenerationModel(state.Id, transition.TargetStateId, transition.Name));
+                {
+                    /*On a given transition in a StateMachine object.*/
+                    /*Know the source state, know the transition.*/
+                    /*Need to concatenate the exit actions for the source state, the actions for the current transition, and the entry actions for the target state.*/
+                    /*Need to obtain the relevant indices (in the StateMachine.StateMachineOutputActions[] array) for the actions now referred to in the list of TransitionGenerationModel objects.*/
+
+                    var actionList = new List<ActionReferenceGenerationModel>();
+
+                    /*Add the exit actions from the source state.*/
+                    foreach (var exitAction in state.ExitActions)
+                        actionList.Add(new ActionReferenceGenerationModel(exitAction, (int)stateMachine.GetActionReferenceIndex(exitAction), stateMachine.GetActionName(exitAction)));
+
+                    /*Add the actions associated with the transition.*/
+                    foreach (var trnAction in transition.TransitionActions)
+                        actionList.Add(new ActionReferenceGenerationModel(trnAction, (int)stateMachine.GetActionReferenceIndex(trnAction), stateMachine.GetActionName(trnAction)));
+
+                    /*Add the entry actions for the target state.*/
+                    /*Need a reference to the target state.*/
+                    var targetState = stateMachine.GetState(transition.TargetStateId);
+
+                    foreach (var entryAction in targetState.EntryActions)
+                        actionList.Add(new ActionReferenceGenerationModel(entryAction, (int)stateMachine.GetActionReferenceIndex(entryAction), stateMachine.GetActionName(entryAction)));
+
+                    /*Create and add TransitionGenerationModel.*/
+                    transitionList.Add(new TransitionGenerationModel(state.Id, transition.TargetStateId, transition.Name, actionList));
+                }                
             }
 
             return transitionList;
@@ -69,18 +94,24 @@ namespace EFSM.Generator
 
                 /*Initialize the model.*/
                 stateGenerationModel.inputList = GetListOfInputsForState(state, stateMachine);
-                stateGenerationModel.transitionList = GetListOfTransitionsForState(state, stateMachine);
-                
+
+                /*Have gotten the inputs for the state. Now, update their indices.*/
+                foreach (var input in stateGenerationModel.inputList)
+                {
+                    /*Search the state machine inputs for a matching GUID.*/
+                    input.FunctionReferenceIndex = stateMachine.GetInputIndex(input.Id);
+                }
+
+                stateGenerationModel.transitionList = GetListOfTransitionsForState(state, stateMachine);     
 
                 /*Add the model.*/
-                stateMachineGenerationModel.States.Add();
+                stateMachineGenerationModel.States.Add(stateGenerationModel);
             }
 
             return stateMachineGenerationModel;
         }
-
-
-
+    }
+}
         //private StateMachineGenerationModel GenerateStateMachine(StateMachine stateMachine, int stateMachineIndex)
         //{
         //    //Ensure that the idle state is first
