@@ -87,6 +87,6 @@ namespace EFSM.Generator
             }
 
             return 0;
-        }
+        }    
     }
 }
