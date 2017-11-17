@@ -14,7 +14,7 @@ namespace EFSM.Generator.Model
         /*General information about the state.*/     
         public List<InputGenerationModel> inputList;
         public List<TransitionGenerationModel> transitionList;
-
+        public string Name { get; set; }
         
 
         /*Inputs relevant to state.*/

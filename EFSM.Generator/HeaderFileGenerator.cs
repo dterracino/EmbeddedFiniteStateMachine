@@ -27,36 +27,36 @@ namespace EFSM.Generator
                 headerFile.AppendLine();
 
                 // ----------- Input Functions --------------------
-                headerFile.AppendLine("/* Input functions */");
-                foreach (var input in stateMachine.Inputs)
-                {
-                    headerFile.AppendLine(input.FunctionPrototype);
-                }
+                //headerFile.AppendLine("/* Input functions */");
+                //foreach (var input in stateMachine.Inputs)
+                //{
+                //    headerFile.AppendLine(input.FunctionPrototype);
+                //}
 
-                headerFile.AppendLine();
+                //headerFile.AppendLine();
 
-                foreach (var input in stateMachine.Inputs)
-                {
-                    headerFile.AppendLine(input.IndexDefine);
-                }
+                //foreach (var input in stateMachine.Inputs)
+                //{
+                //    headerFile.AppendLine(input.IndexDefine);
+                //}
 
-                headerFile.AppendLine();
+                //headerFile.AppendLine();
 
                 // ----------- Output Functions --------------------
-                headerFile.AppendLine("/* Output functions */");
-                foreach (var output in stateMachine.Outputs)
-                {
-                    headerFile.AppendLine(output.FunctionPrototype);
-                }
+                //headerFile.AppendLine("/* Output functions */");
+                //foreach (var output in stateMachine.Outputs)
+                //{
+                //    headerFile.AppendLine(output.FunctionPrototype);
+                //}
 
-                headerFile.AppendLine();
+                //headerFile.AppendLine();
 
-                foreach (var output in stateMachine.Outputs)
-                {
-                    headerFile.AppendLine(output.IndexDefine);
-                }
+                //foreach (var output in stateMachine.Outputs)
+                //{
+                //    headerFile.AppendLine(output.IndexDefine);
+                //}
 
-                headerFile.AppendLine();
+                //headerFile.AppendLine();
 
                 //---- States ---------------
                 headerFile.AppendLine($"/* States */");

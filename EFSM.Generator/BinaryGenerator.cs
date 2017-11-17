@@ -42,7 +42,69 @@ namespace EFSM.Generator
 
             var rootElementList = new ElementList();
             var rootElementList2 = new ElementList2();
+                        
+            rootElementList2.Add(bitConverter, (UInt16)stateMachine.States.Count, "Number of states");
+            rootElementList2.Add(bitConverter, (UInt16)stateMachine.Model.Inputs.Length, "Total number of inputs.");
+            rootElementList2.Add(bitConverter, (UInt16)0, "Initial state identifier.");                 
 
+            var stateMachineBaseIndices = new List<DelayedResolutionElementUshort2>();
+
+            foreach (var state in stateMachine.States)
+            {
+                stateMachineBaseIndices.Add(new DelayedResolutionElementUshort2(bitConverter, $"EFSM binary index of state {state.Name}"));                
+            }
+
+            foreach (var del in stateMachineBaseIndices)
+            {
+                rootElementList2.Add(del);
+            }            
+
+            for (var stateIndex = 0; stateIndex < stateMachine.States.Count; stateIndex++)
+            {
+                var state = stateMachine.States[stateIndex];
+
+                rootElementList2.Add(new MarkerElement2(stateMachineBaseIndices[stateIndex], $"State {state.Name} base index."));
+                rootElementList2.Add(bitConverter, (UInt16)state.inputList.Count, "Number of inputs.");
+                rootElementList2.Add(bitConverter, (UInt16)state.transitionList.Count, "Number of transitions.");
+
+                /*The base index of IQFN data.*/
+                var binIndexOfIqfnData = new DelayedResolutionElementUshort2(bitConverter, $"EFSM binary index of IQFN data for state {state.Name}");
+                rootElementList2.Add(binIndexOfIqfnData);
+
+                var tocForTransitionData = new List<DelayedResolutionElementUshort2>();
+
+                foreach (var t in state.transitionList)
+                {
+                    tocForTransitionData.Add(new DelayedResolutionElementUshort2(bitConverter, $"EFSM binary index of transition {t.Name} data."));
+                    rootElementList2.Add(tocForTransitionData.Last());
+                }
+
+                rootElementList2.Add(new MarkerElement2(binIndexOfIqfnData, $"State {state.Name} start of IQFN data."));
+
+                /*Add the IQFN function reference indices.*/
+                foreach (var iqfn in state.inputList)
+                {                
+                    rootElementList2.Add(bitConverter, (UInt16)iqfn.FunctionReferenceIndex, $"IQFN function reference index for prototype {iqfn.Name}");
+                }
+
+                /*Add the transition data.*/
+                for (int i = 0; i < state.transitionList.Count; i++)
+                {
+                    /*Resolve the tocForTransitionData DelayedResolution elements.*/
+                    rootElementList2.Add(new MarkerElement2(tocForTransitionData[i], $"Transition {state.transitionList[i].Name} data."));
+
+                    var binIndexForTrnActionsData = new DelayedResolutionElementUshort2(bitConverter, $"EFSM binary index of transition {state.transitionList[i].Name} actions data.");
+                    rootElementList2.Add(binIndexForTrnActionsData);
+
+                    rootElementList2.Add(bitConverter, state.transitionList[i].TargetStateIndex, $"Next state after transition.");
+                    rootElementList2.Add(bitConverter, (UInt16)state.transitionList[i].Opcodes.Length, $"Number of opcodes.");
+                    /*Add the opcodes.*/
+                    for (int j = 0; j < state.transitionList[j].Opcodes.Length; j++)
+                    {
+
+                    }
+                }
+            }
             //Number of states
             //rootElementList.Add(bitConverter, (ushort) stateMachine.States.Length, $"# of states ({stateMachine.States.Length})");
             //rootElementList.Add(bitConverter, 0x4356, "An item value");

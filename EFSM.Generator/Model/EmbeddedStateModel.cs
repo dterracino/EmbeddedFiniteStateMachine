@@ -9,7 +9,7 @@ namespace EFSM.Generator.Model
     class EmbeddedStateModel
     {
         /*A state index.*/
-        UInt16 stateIndex;
+        //UInt16 stateIndex;
                 
         /*A list of transitions.*/
 

@@ -29,7 +29,7 @@ namespace EFSM.Generator
                 code.AppendLine();
 
                 code.AppendLine($"/* {stateMachine.StateMachine.Model.Name} */");
-                //code.AppendLine($"unsigned char {stateMachine.StateMachine.LocalBinaryVariableName}[] = {{");
+                code.AppendLine($"unsigned char {stateMachine.StateMachine.LocalBinaryVariableName}[] = {{");
                 code.AppendLine();
 
                 using (code.Indent())
@@ -42,7 +42,17 @@ namespace EFSM.Generator
                         {
                             foreach (var b in segment.Content)
                             {
-                                code.Append($"0x{Convert.ToString(b, 16).PadLeft(2, '0')}, ");
+                                //code.Append($"0x{Convert.ToString(b, 16).PadLeft(2, '0')}, ");
+
+                                if (segment == stateMachine.Segments.Last())
+                                {
+                                    code.Append($"{Convert.ToString(b, 10).PadLeft(0, '0')} ");
+                                }
+                                else
+                                {
+                                    code.Append($"{Convert.ToString(b, 10).PadLeft(0, '0')}, ");
+                                }
+                                
                             }
 
                             code.AppendLine();

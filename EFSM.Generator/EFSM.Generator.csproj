@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\ConditionHelpers.cs" />
     <Compile Include="Model\DelayedResolutionElementUshort.cs" />
     <Compile Include="Model\DelayedResolutionElementUshort2.cs" />
     <Compile Include="Model\EmbeddedStateModel.cs" />
@@ -74,6 +75,8 @@
     <Compile Include="Model\StateMachineGenerationModel.cs" />
     <Compile Include="Model\TransitionGenerationModel.cs" />
     <Compile Include="GenerationExtensions.cs" />
+    <Compile Include="Helpers\StateMachineExtensions.cs" />
+    <Compile Include="Helpers\StateMachineTransitionsExtensions.cs" />
     <Compile Include="TextGeneration\Indenter.cs" />
     <Compile Include="TextGeneration\TextGenerator.cs" />
     <Compile Include="TextGeneration\TextGeneratorExtensions.cs" />

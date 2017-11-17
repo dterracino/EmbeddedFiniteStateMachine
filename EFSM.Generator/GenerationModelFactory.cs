@@ -32,13 +32,16 @@ namespace EFSM.Generator
             {
                 if (transition.SourceStateId == state.Id)
                 {
-                    StateMachineConditionOps.AddInputsForTransition(transition, stateMachine, stateInputList);
+                    ConditionHelpers.AddInputsForTransition(transition, stateMachine, stateInputList);
                 }
             }
 
             foreach (var stateInput in stateInputList)
             {
-                generationModelInputList.Add(new InputGenerationModel(stateMachine, stateInput.Id, stateInput.Name));
+                if (!generationModelInputList.Any(item => item.Id == stateInput.Id))
+                {
+                    generationModelInputList.Add(new InputGenerationModel(stateMachine, stateInput.Id, stateInput.Name));
+                }                
             }
 
             return generationModelInputList;
@@ -74,8 +77,22 @@ namespace EFSM.Generator
                     foreach (var entryAction in targetState.EntryActions)
                         actionList.Add(new ActionReferenceGenerationModel(entryAction, (int)stateMachine.GetActionReferenceIndex(entryAction), stateMachine.GetActionName(entryAction)));
 
+                    /*Get the opcodes for the transition.*/
+
+                    InstructionFactory opcodeSource = new InstructionFactory();
+
+                    var opcodeInstructions = opcodeSource.GetInstructions(transition.Condition, stateMachine.Inputs);
+
+                    List<byte> opcodeList = new List<byte>();
+
+                    foreach (var instruction in opcodeInstructions)
+                    {
+                        /*Interpret and cast the opcode itself to a byte, and apply to a list of bytes.*/
+                        opcodeList.Add(instruction.ToByte());
+                    }
+
                     /*Create and add TransitionGenerationModel.*/
-                    transitionList.Add(new TransitionGenerationModel(state.Id, transition.TargetStateId, transition.Name, actionList));
+                    transitionList.Add(new TransitionGenerationModel(stateMachine, state.Id, transition.TargetStateId, transition.Name, actionList, opcodeList.ToArray()));
                 }                
             }
 
@@ -93,6 +110,8 @@ namespace EFSM.Generator
                 var stateGenerationModel = new StateGenerationModel();
 
                 /*Initialize the model.*/
+                stateGenerationModel.Name = state.Name;
+
                 stateGenerationModel.inputList = GetListOfInputsForState(state, stateMachine);
 
                 /*Have gotten the inputs for the state. Now, update their indices.*/

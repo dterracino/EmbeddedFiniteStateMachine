@@ -8,5 +8,6 @@ namespace EFSM.Generator.Model
 {
     class OpcodeGenerationModel
     {
+        public byte[] Opcodes { get; set; }
     }
 }
