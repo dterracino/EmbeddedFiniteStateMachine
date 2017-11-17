@@ -64,7 +64,7 @@ namespace EFSM.Designer.ViewModel
 
                 if (!string.IsNullOrWhiteSpace(GenerationOptions.DocumentationFolder))
                 {
-                    var directory = Path.Combine(projectPath, GenerationOptions.DocumentationFolder);
+                    var directory = Path.Combine(projectPath, GenerationOptions.DocumentationFolder ?? string.Empty);
 
                     Directory.CreateDirectory(directory);
 

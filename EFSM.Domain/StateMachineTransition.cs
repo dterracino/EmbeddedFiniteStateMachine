@@ -13,5 +13,7 @@ namespace EFSM.Domain
         public Guid[] TransitionActions { get; set; }
 
         public StateMachineCondition Condition { get; set; }
+
+        public double PullLength { get; set; }
     }
 }

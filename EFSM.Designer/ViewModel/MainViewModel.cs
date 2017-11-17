@@ -70,12 +70,12 @@ namespace EFSM.Designer.ViewModel
                 _filename = value;
                 RaisePropertyChanged();
                 RaisePropertyChanged(() => Title);
-                RaisePropertyChanged(nameof(ProjectFilePath));
+                RaisePropertyChanged(nameof(ProjectDirectory));
             }
         }
 
 
-        public string ProjectFilePath => Path.GetDirectoryName(Filename);
+        public string ProjectDirectory => Path.GetDirectoryName(Filename);
 
         public string Title
         {
@@ -149,7 +149,7 @@ namespace EFSM.Designer.ViewModel
             _persistor.SaveProject(Project.GetModel(), Filename);
             _dirtyService.MarkClean();
 
-            Project.GenerateProjectCCodeAndDocumentation(ProjectFilePath);
+            Project.GenerateProjectCCodeAndDocumentation(ProjectDirectory);
 
             return true;
         }
@@ -169,7 +169,7 @@ namespace EFSM.Designer.ViewModel
                 _persistor.SaveProject(Project.GetModel(), dialog.FileName);
                 _dirtyService.MarkClean();
 
-                Project.GenerateProjectCCodeAndDocumentation(ProjectFilePath);
+                Project.GenerateProjectCCodeAndDocumentation(ProjectDirectory);
 
                 return true;
             }

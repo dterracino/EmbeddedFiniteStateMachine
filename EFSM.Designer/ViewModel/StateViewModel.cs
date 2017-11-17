@@ -221,7 +221,7 @@ namespace EFSM.Designer.ViewModel
         {
             foreach (var transition in _transitions.ToArray())
             {
-                Parent.RemoveTransition(transition);
+                Parent.RemoveTransitionWithoutSavingUndoState(transition);
                 _transitions.Remove(transition);
             }
 

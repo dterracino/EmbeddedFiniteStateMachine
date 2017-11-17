@@ -1,5 +1,6 @@
 ﻿using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
+using EFSM.Designer.Const;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -20,28 +21,44 @@ namespace EFSM.Designer.ViewModel
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _dirtyService = dirtyService ?? throw new ArgumentNullException(nameof(dirtyService));
-            HeaderFilePathDialogCommand = new RelayCommand(OpenHeaderFilePathDialog);
-            CodeFilePathDialogCommand = new RelayCommand(OpenCodeFilePathDialog);
+            HeaderFilePathDialogCommand = new RelayCommand<string>(OpenHeaderFilePathDialog);
+            CodeFilePathDialogCommand = new RelayCommand<string>(OpenCodeFilePathDialog);
         }
 
-        private void OpenCodeFilePathDialog()
+        private void OpenCodeFilePathDialog(string projectFilePath)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
+            SaveFileDialog openFileDialog = new SaveFileDialog
+            {
+                Filter = DesignerConstants.CodeFileFilter
+            };
 
             if (openFileDialog.ShowDialog() == true)
             {
-                CodeFilePath = openFileDialog.FileName;
+                CodeFilePath = GetRelativePathToProject(projectFilePath, openFileDialog.FileName);
             }
         }
 
-        private void OpenHeaderFilePathDialog()
+        private void OpenHeaderFilePathDialog(string projectFilePath)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
+            SaveFileDialog openFileDialog = new SaveFileDialog
+            {
+                Filter = DesignerConstants.HeaderFileFilter
+            };
 
             if (openFileDialog.ShowDialog() == true)
             {
-                HeaderFilePath = openFileDialog.FileName;
+                HeaderFilePath = GetRelativePathToProject(projectFilePath, openFileDialog.FileName);
             }
+        }
+
+        private string GetRelativePathToProject(string projectFilePath, string filePath)
+        {
+            if (!string.IsNullOrWhiteSpace(projectFilePath) && filePath.Contains(projectFilePath))
+            {
+                filePath = filePath.Replace(projectFilePath, string.Empty);
+            }
+
+            return filePath;
         }
 
         public string CodeFilePath

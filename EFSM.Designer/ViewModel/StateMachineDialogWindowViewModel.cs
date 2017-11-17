@@ -29,6 +29,7 @@ namespace EFSM.Designer.ViewModel
         public ICommand SimulationCommand { get; private set; }
         public ICommand CreateDocumentationCommand { get; private set; }
         public ICommand SelectAllCommand { get; private set; }
+        public ICommand SaveCommand { get; private set; }
 
         private StateMachineViewModel _stateMachineViewModel;
 
@@ -36,10 +37,15 @@ namespace EFSM.Designer.ViewModel
         private OrderedListDesigner<StateMachineOutputActionViewModel> _outputs;
 
         private Action<StateMachine> _updateParentModel;
+        private Action _saveProject;
 
         public event EventHandler<CloseEventArgs> Close;
 
-        public StateMachineDialogWindowViewModel(StateMachine stateMachine, IViewService viewService, IDirtyService parentDirtyService, Action<StateMachine> updateParentModel)
+        public StateMachineDialogWindowViewModel(
+            StateMachine stateMachine,
+            IViewService viewService,
+            IDirtyService parentDirtyService,
+            Action<StateMachine> updateParentModel)
         {
             _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
             _parentDirtyService = parentDirtyService ?? throw new ArgumentNullException(nameof(parentDirtyService));
@@ -91,6 +97,12 @@ namespace EFSM.Designer.ViewModel
             RedoCommand = new RelayCommand(Redo, CanRedo);
             SimulationCommand = new RelayCommand(Simulate);
             SelectAllCommand = new RelayCommand(SelectAll);
+            SaveCommand = new RelayCommand(SaveProject);
+        }
+
+        private void SaveProject()
+        {
+            _saveProject();
         }
 
         private void SelectAll()
