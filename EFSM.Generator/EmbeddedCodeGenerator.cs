@@ -39,7 +39,5 @@ namespace EFSM.Generator
                 File.WriteAllText(path, code);
             }
         }
-
-
     }
 }

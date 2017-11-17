@@ -51,7 +51,16 @@ namespace EFSM.Generator.Model
                     break;
 
                 case ConditionType.Not:
+
+                    if (condition.Conditions.Count != 1)
+                        throw new InvalidOperationException($"NOT conditions must have one and only one child conditions. This had {condition.Conditions.Count}.");
+
+                    //Add the child instructions
+                    AddInstruction(instructions, condition.Conditions[0], inputs);
+
+                    //Now add the note instruction
                     instructions.Add(new Instruction(OpCode.Not));
+
                     break;
 
                 default:

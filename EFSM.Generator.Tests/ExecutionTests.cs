@@ -96,5 +96,44 @@ namespace EFSM.Generator.Tests
             
             Assert.Equal(expected, instructions.Evalutate(inputValues));
         }
+
+        [Theory]
+        [InlineData(true, false)]
+        [InlineData(false, true)]
+        public void NotInput(bool value, bool expected)
+        {
+            Guid inputId = new Guid("A916E57F-A5C7-4426-AC9F-44396E4427E6");
+
+            StateMachineInput[] inputs = {
+                new StateMachineInput
+                {
+                    Id = inputId
+                },
+            };
+
+            var rootCondition = new StateMachineCondition()
+            {
+                ConditionType = ConditionType.Not,
+                Conditions = new List<StateMachineCondition>(1)
+                {
+                    new StateMachineCondition
+                    {
+                        ConditionType = ConditionType.Input,
+                        SourceInputId = inputId
+                    }
+                }
+            };
+
+            //Generate the instructions
+            var instructions = _instructionFactory.GetInstructions(rootCondition, inputs);
+
+            bool[] inputValues = new bool[]
+            {
+                value
+            };
+
+            Assert.Equal(expected, instructions.Evalutate(inputValues));
+
+        }
     }
 }

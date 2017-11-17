@@ -29,7 +29,7 @@ namespace EFSM.Generator
                 code.AppendLine();
 
                 code.AppendLine($"/* {stateMachine.StateMachine.Model.Name} */");
-                code.AppendLine($"unsigned char {stateMachine.StateMachine.LocalBinaryVariableName}[] = {{");
+                //code.AppendLine($"unsigned char {stateMachine.StateMachine.LocalBinaryVariableName}[] = {{");
                 code.AppendLine();
 
                 using (code.Indent())

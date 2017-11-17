@@ -3,6 +3,8 @@ using System.Linq;
 using EFSM.Generator.Model;
 using EFSM.OffsetWriter;
 using MiscUtil.Conversion;
+using System.Collections.Generic;
+using EFSM.Domain;
 
 namespace EFSM.Generator
 {
@@ -24,6 +26,7 @@ namespace EFSM.Generator
                 bitConverter = EndianBitConverter.Big;
             }
 
+            /*stateMachineResults is an array of StateMachineBinaryGenerationResults.*/
             var stateMachineResults = project.StateMachinesGenerationModel
                 .Select(s => Generate(s, bitConverter))
                 .ToArray();
@@ -33,120 +36,185 @@ namespace EFSM.Generator
 
         private StateMachineBinaryGenerationResult Generate(StateMachineGenerationModel stateMachine, EndianBitConverter bitConverter)
         {
-            var inputs = stateMachine
-                .Inputs.Select(i => i.Model)
-                .ToArray();
+            //var inputs = stateMachine
+            //    .Inputs.Select(i => i.Model)
+            //    .ToArray();
 
             var rootElementList = new ElementList();
+            var rootElementList2 = new ElementList2();
 
             //Number of states
-            rootElementList.Add(bitConverter, (ushort) stateMachine.States.Length, $"# of states ({stateMachine.States.Length})");
+            //rootElementList.Add(bitConverter, (ushort) stateMachine.States.Length, $"# of states ({stateMachine.States.Length})");
+            //rootElementList.Add(bitConverter, 0x4356, "An item value");
+            //rootElementList2.Add(bitConverter, 0x4356, "Version 2");
+            //rootElementList2.Add(bitConverter, (UInt16)stateMachine.States.Length, $"# of states ({stateMachine.States.Length})");
+            //rootElementList2.Add(bitConverter, (UInt16)stateMachine.Inputs.Length, $"# of inputs ({stateMachine.Inputs.Length})");
+            //rootElementList2.Add(bitConverter, (UInt16)stateMachine.States[0].Index, $"Initial state ({stateMachine.States[0].Index})");
+
+            /*Create an array of DelayedResolutionElementUshort2's based on each state in stateMachine.*/
+            //var statesTocEntries = stateMachine.States.Select(s => new DelayedResolutionElementUshort2(bitConverter, "EFSM index of state'" + s.Model.Name + "' [{0}]")).ToArray();
+            //rootElementList2.AddRange(statesTocEntries);           
+
+            /*Get */
+
+            //for (var stateIndex = 0; stateIndex < stateMachine.States.Length; stateIndex++)
+            //{
+            //    var state = stateMachine.States[stateIndex];
+                
+            //    /*Get the number of transitions for the current state.*/
+            //    //var numberOfTransitionsForState = state.Transitions.Count;
+
+            //    ///*Build a list of inputs relevant to the current state.*/
+            //    //var stateInputList = new List<EmbeddedInputModel>();
+
+            //    //foreach (var transition in state.Parent.Transitions)
+            //    //{
+            //    //    /*Get a list of the inputs for that transition.*/
+            //    //    var transitionInputList = transition.GetTransitionInputs();
+
+            //    //    foreach (var transitionInput in transitionInputList)
+            //    //    {
+            //    //        if (!StateMachineTransition.IsInputInList(transitionInput.Id, stateInputList))
+            //    //        {
+            //    //            stateInputList.Add(new EmbeddedInputModel(transitionInput.Id));
+            //    //        }
+            //    //    }
+            //    //}
+
+            //    /*Get the number of inputs for the state.*/
+            //    //var numberOfInputsForState = stateInputList.Count;
+
+               
+                
+            //    //stateMachine.States[0].Parent.Transitions[0].
+
+            //    ///*Create a marker element which correspondes to the previously created DelayedResolutionElementUshort2 by submitting the respective DelayedResolutionElementUshort2 as an argument for its reference.*/
+            //    //rootElementList2.Add(new MarkerElement2(statesTocEntries[stateIndex], $"State '{state.Model.Name}'"));
+                
+
+            //    //rootElementList2.Add(bitConverter, (UInt16)numberOfInputsForState, "Number of inputs.");
+            //    //rootElementList2.Add(bitConverter, (UInt16)numberOfTransitionsForState, "Number of transitions");
+            //}
+
+
+            /*Pack the number of states.*/
+            //rootElementList2.Add(bitConverter, stateMachine.States.Length, $"# of states ({stateMachine.States.Length})");
+
 
             //Number of inputs (do we care about this?)
             //rootElementList.Add(bitConverter, (ushort) stateMachine.Inputs.Length, $"# of inputs ({stateMachine.Inputs.Length})");
 
             //States TOC
-            var statesTocEntries = stateMachine.States
-                .Select(s => new DelayedResolutionElementUshort(bitConverter, "Address of '" + s.Model.Name  + "' [{0}]"))
-                .ToArray();
+            //var statesTocEntries = stateMachine.States
+            //    .Select(s => new DelayedResolutionElementUshort(bitConverter, "Address of '" + s.Model.Name  + "' [{0}]"))
+            //    .ToArray();
 
-            //Add them 
-            rootElementList.AddRange(statesTocEntries);
-            foreach (var stateTocEntry in statesTocEntries)
-            {
-                rootElementList.Add(stateTocEntry);
-            }
+            ////Add them 
+            ////rootElementList.AddRange(statesTocEntries);
 
-            //Add the actual states
-            for (var stateIndex = 0; stateIndex < stateMachine.States.Length; stateIndex++)
-            {
-                var state = stateMachine.States[stateIndex];
+            //foreach (var stateTocEntry in statesTocEntries)
+            //{
+            //    rootElementList.Add(stateTocEntry);
+            //}
 
-                //Add this so the beginning of the state gets resolved
-                rootElementList.Add(new MarkerElement(statesTocEntries[stateIndex], $"State '{state.Model.Name}'"));
+            ////Add the actual states
+            //for (var stateIndex = 0; stateIndex < stateMachine.States.Length; stateIndex++)
+            //{
+            //    var state = stateMachine.States[stateIndex];
 
-                //Number of entry actions
-                rootElementList.Add(bitConverter, (ushort) state.EntryActions.Length, $"# of entry actions: {state.EntryActions.Length}");
 
-                //Number of exit actions
-                rootElementList.Add(bitConverter, (ushort) state.ExitActions.Length, $"# of exit actions: {state.ExitActions.Length}");
-               
-                //Number of transitions
-                rootElementList.Add(bitConverter, (ushort) state.Transitions.Count, $"# of transitions ({state.Transitions.Count}) ");
+            //    //Add this so the beginning of the state gets resolved
+            //    rootElementList.Add(new MarkerElement(statesTocEntries[stateIndex], $"State '{state.Model.Name}'"));
 
-                //Transition TOC
-                var transitionsTocEntries = state.Transitions
-                    .Select(t => new DelayedResolutionElementUshort(bitConverter, $"Address of Transition '{t.Model.Name}': {{0}}"))
-                    .ToArray();
+            //    //Number of entry actions
+            //    rootElementList.Add(bitConverter, (ushort) state.EntryActions.Length, $"# of entry actions: {state.EntryActions.Length}");
 
-                rootElementList.AddRange(transitionsTocEntries);
+            //    //Number of exit actions
+            //    rootElementList.Add(bitConverter, (ushort) state.ExitActions.Length, $"# of exit actions: {state.ExitActions.Length}");
 
-                for (var transitionIndex = 0; transitionIndex < transitionsTocEntries.Length; transitionIndex++)
-                {
-                    var transition = state.Transitions[transitionIndex];
-                    var transitionToc = transitionsTocEntries[transitionIndex];
+            //    //Number of transitions
+            //    rootElementList.Add(bitConverter, (ushort) state.Transitions.Count, $"# of transitions ({state.Transitions.Count}) ");
 
-                    rootElementList.Add(new MarkerElement(transitionToc, $"Transition '{transition.Model.Name}'"));
+            //    //Transition TOC
+            //    var transitionsTocEntries = state.Transitions
+            //        .Select(t => new DelayedResolutionElementUshort(bitConverter, $"Address of Transition '{t.Model.Name}': {{0}}"))
+            //        .ToArray();
 
-                    //Add the target state index
-                    rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)transition.Target.Index), $"Target state index: {transition.Target.Index}"));
+            //    rootElementList.AddRange(transitionsTocEntries);
 
-                    var instructionFactory = new InstructionFactory();
+            //    for (var transitionIndex = 0; transitionIndex < transitionsTocEntries.Length; transitionIndex++)
+            //    {
+            //        var transition = state.Transitions[transitionIndex];
+            //        var transitionToc = transitionsTocEntries[transitionIndex];
 
-                    //Get the instructions
-                    Instruction[] instructions = instructionFactory.GetInstructions(transition.Model.Condition, inputs);
-                    
-                    //Add the number of instructions
-                    rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)instructions.Length), $"# of instructions: {instructions.Length}"));
+            //        rootElementList.Add(new MarkerElement(transitionToc, $"Transition '{transition.Model.Name}'"));
 
-                    //Add the instructions
-                    foreach (var instruction in instructions)
-                    {
-                        rootElementList.Add(new SimpleElement(new byte[] {instruction.ToByte()}, instruction.ToString()));
-                    }
+            //        //Add the target state index
+            //        rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)transition.Target.Index), $"Target state index: {transition.Target.Index}"));
 
-                    //Pad the list of instructions
-                    if (instructions.Length % 2 != 0)
-                    {
-                        rootElementList.Add(new SimpleElement(new byte[] { 0 }, "Padding"));
-                    }
+            //        var instructionFactory = new InstructionFactory();
 
-                    //Add the number of actions
-                    rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)transition.Actions.Length), $"# of transition actions: {transition.Actions.Length}"));
+            //        //Get the instructions
+            //        Instruction[] instructions = instructionFactory.GetInstructions(transition.Model.Condition, inputs);
 
-                    foreach (var action in transition.Actions)
-                    {
-                        rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort) action.Index), $"Action [{action.Index}]"));
-                    }
-                }
+            //        //Add the number of instructions
+            //        rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)instructions.Length), $"# of instructions: {instructions.Length}"));
 
-                //Entry actions
-                foreach (var action in state.EntryActions)
-                {
-                    rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)action.Index), $"Entry Action [{action.Index}]"));
-                }
+            //        //Add the instructions
+            //        foreach (var instruction in instructions)
+            //        {
+            //            rootElementList.Add(new SimpleElement(new byte[] {instruction.ToByte()}, instruction.ToString()));
+            //        }
 
-                //Exit actions
-                foreach (var action in state.ExitActions)
-                {
-                    rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)action.Index), $"Exit Action [{action.Index}]"));
-                }
-            }
+            //        //Pad the list of instructions
+            //        if (instructions.Length % 2 != 0)
+            //        {
+            //            rootElementList.Add(new SimpleElement(new byte[] { 0 }, "Padding"));
+            //        }
+
+            //        //Add the number of actions
+            //        rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)transition.Actions.Length), $"# of transition actions: {transition.Actions.Length}"));
+
+            //        foreach (var action in transition.Actions)
+            //        {
+            //            rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort) action.Index), $"Action [{action.Index}]"));
+            //        }
+            //    }
+
+            //    //Entry actions
+            //    foreach (var action in state.EntryActions)
+            //    {
+            //        rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)action.Index), $"Entry Action [{action.Index}]"));
+            //    }
+
+            //    //Exit actions
+            //    foreach (var action in state.ExitActions)
+            //    {
+            //        rootElementList.Add(new SimpleElement(bitConverter.GetBytes((ushort)action.Index), $"Exit Action [{action.Index}]"));
+            //    }
+            //}
 
             //Resolve
-            int size = rootElementList.Resolve(0);
+            //int size = rootElementList.Resolve(0);
+            int size2 = rootElementList2.Resolve(0);
 
             //Create the element write target
-            var elementWriteTarget = new ElementWriteTarget(size);
+            //var elementWriteTarget = new ElementWriteTarget(size);
+            var elementWriteTarget2 = new ElementWriteTarget2(size2);
 
             //Write it
-            rootElementList.Write(elementWriteTarget);
+            //rootElementList.Write(elementWriteTarget);
+            rootElementList2.Write(elementWriteTarget2);
 
             //Get the bytes
-            var segments = elementWriteTarget.GetSegments();
+            //BinarySegment[] segments = elementWriteTarget.GetSegments();
+            BinarySegment2[] segments2 = elementWriteTarget2.GetSegments();
+            //BinarySegment2[] segments2 = elementWriteTarget2.GetSegments();
+
+            //BinarySegment[] segments = elementWriteTarget2.GetSegments();
 
             //We're done here
-            return new StateMachineBinaryGenerationResult(stateMachine, segments);
+            return new StateMachineBinaryGenerationResult(stateMachine, segments2);
         }
     }
 }

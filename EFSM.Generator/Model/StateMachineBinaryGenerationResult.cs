@@ -16,7 +16,7 @@ namespace EFSM.Generator.Model
 
     internal class StateMachineBinaryGenerationResult
     {
-        public StateMachineBinaryGenerationResult(StateMachineGenerationModel stateMachine, BinarySegment[] segments)
+        public StateMachineBinaryGenerationResult(StateMachineGenerationModel stateMachine, BinarySegment2[] segments)
         {
             StateMachine = stateMachine ?? throw new ArgumentNullException(nameof(stateMachine));
             Segments = segments ?? throw new ArgumentNullException(nameof(segments));
@@ -24,7 +24,7 @@ namespace EFSM.Generator.Model
 
         public StateMachineGenerationModel StateMachine { get; }
 
-        public BinarySegment[] Segments { get; }
+        public BinarySegment2[] Segments { get; }
 
     }
 }

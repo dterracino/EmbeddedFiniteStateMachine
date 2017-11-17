@@ -1,35 +1,48 @@
 ﻿using EFSM.Domain;
+using System.Collections.Generic;
 
 namespace EFSM.Generator.Model
 {
     internal class StateMachineGenerationModel : IndexedBase<StateMachine>
     {
-        public StateMachineGenerationModel(
-            StateMachine model, 
-            StateGenerationModel[] states, 
-            InputGenerationModel[] inputs, 
-            OutputGenerationModel[] outputs,
-            int index) : base(model, index)
+        public StateMachineGenerationModel(StateMachine model, int index):base(model, index)
         {
+            List<StateGenerationModel> states = new List<StateGenerationModel>();
             States = states;
-            Inputs = inputs;
-            Outputs = outputs;
         }
 
-        /// <summary>
-        /// The states
-        /// </summary>
-        public StateGenerationModel[] States { get; }
+        public override string IndexDefineName =>  $"not initialized";
+
+        /**/
+        public List<StateGenerationModel> States { get; }
+
+
+        //public StateMachineGenerationModel(
+        //    StateMachine model, 
+        //    StateGenerationModel[] states, 
+        //    InputGenerationModel[] inputs, 
+        //    OutputGenerationModel[] outputs,
+        //    int index) : base(model, index)
+        //{
+        //    States = states;
+        //    Inputs = inputs;
+        //    Outputs = outputs;
+        //}
+
+        ///// <summary>
+        ///// The states
+        ///// </summary>
+        //public StateGenerationModel[] States { get; }
 
         public InputGenerationModel[] Inputs { get; }
 
         public OutputGenerationModel[] Outputs { get; }
 
-        public override string IndexDefineName => $"EFSM_{Model.Name.FixDefineName()}_INDEX";
+        //public override string IndexDefineName => $"EFSM_{Model.Name.FixDefineName()}_INDEX";
 
         public string NumStatesDefineName => $"EFSM_{Model.Name.FixDefineName()}_NUM_STATES";
 
-        public string NumStatesDefine => $"#define {NumStatesDefineName} {States.Length}";
+        public string NumStatesDefine => $"#define {NumStatesDefineName} {States.Count}";
 
         public string NumInputsDefineName => $"EFSM_{Model.Name.FixDefineName()}_NUM_INPUTS";
 
