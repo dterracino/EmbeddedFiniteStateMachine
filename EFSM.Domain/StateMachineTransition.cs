@@ -25,7 +25,9 @@ namespace EFSM.Domain
 
         public StateMachineCondition Condition { get; set; }
 
-       public static bool IsInputInList(Guid? id, List<EmbeddedInputModel> inputList)
+        public double PullLength { get; set; }
+
+        public static bool IsInputInList(Guid? id, List<EmbeddedInputModel> inputList)
         {
             foreach (var input in inputList)
             {
@@ -45,7 +47,7 @@ namespace EFSM.Domain
             {
                 /*Check the conditions of the transition and assemble a list of the relevant inputs.*/
                 if (Condition.ConditionType == ConditionType.Input)
-                {               
+                {
                     _inputsForTransition.Add(new EmbeddedInputModel(Condition.SourceInputId));
                     moreToEvaluate = false;
                 }
@@ -79,7 +81,7 @@ namespace EFSM.Domain
 
             foreach (var actionItem in sourceState.ExitActions)
             {
-                
+
             }
 
 

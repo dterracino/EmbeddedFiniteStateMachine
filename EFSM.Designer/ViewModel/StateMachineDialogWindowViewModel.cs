@@ -4,6 +4,7 @@ using Cas.Common.WPF.Behaviors;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
 using EFSM.Designer.Interfaces;
+using EFSM.Designer.Messages;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -19,7 +20,6 @@ namespace EFSM.Designer.ViewModel
     {
         private readonly IUndoService<StateMachine> _undoService;
         private readonly IViewService _viewService;
-
         private readonly IDirtyService _parentDirtyService;
 
         public ICommand DeleteCommand { get; private set; }
@@ -37,7 +37,6 @@ namespace EFSM.Designer.ViewModel
         private OrderedListDesigner<StateMachineOutputActionViewModel> _outputs;
 
         private Action<StateMachine> _updateParentModel;
-        private Action _saveProject;
 
         public event EventHandler<CloseEventArgs> Close;
 
@@ -97,12 +96,15 @@ namespace EFSM.Designer.ViewModel
             RedoCommand = new RelayCommand(Redo, CanRedo);
             SimulationCommand = new RelayCommand(Simulate);
             SelectAllCommand = new RelayCommand(SelectAll);
-            SaveCommand = new RelayCommand(SaveProject);
+            SaveCommand = new RelayCommand(SaveProject, CanSave);
         }
+
+        private bool CanSave() => DirtyService.IsDirty;
 
         private void SaveProject()
         {
-            _saveProject();
+            Save();
+            MessengerInstance.Send(new SaveMessage());
         }
 
         private void SelectAll()
@@ -261,9 +263,12 @@ namespace EFSM.Designer.ViewModel
 
         private void Save()
         {
-            DirtyService.MarkClean();
-            _parentDirtyService.MarkDirty();
-            _updateParentModel(GetModel());
+            if (DirtyService.IsDirty)
+            {
+                DirtyService.MarkClean();
+                _parentDirtyService.MarkDirty();
+                _updateParentModel(GetModel());
+            }
         }
 
         public void Closed()

@@ -3,6 +3,7 @@ using Cas.Common.WPF.Behaviors;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Const;
 using EFSM.Designer.Interfaces;
+using EFSM.Designer.Messages;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -39,6 +40,7 @@ namespace EFSM.Designer.ViewModel
             _dirtyService.PropertyChanged += DirtyService_PropertyChanged;
 
             New();
+            MessengerInstance.Register<SaveMessage>(this, Save);
         }
 
         private void DirtyService_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -133,7 +135,15 @@ namespace EFSM.Designer.ViewModel
         private void AddStateMachineProject(string fileName)
         {
             StateMachineProject stateMachineProject = _persistor.LoadProject(fileName);
-            Project = ApplicationContainer.Container.Resolve<ProjectViewModel>(new TypedParameter(typeof(StateMachineProject), stateMachineProject));
+            Project = ApplicationContainer.Container.Resolve<ProjectViewModel>
+                (
+                    new TypedParameter(typeof(StateMachineProject), stateMachineProject)
+                );
+        }
+
+        private void Save(SaveMessage saveMessage)
+        {
+            Save();
         }
 
         private bool Save()
@@ -146,11 +156,7 @@ namespace EFSM.Designer.ViewModel
                 return SaveAs();
             }
 
-            _persistor.SaveProject(Project.GetModel(), Filename);
-            _dirtyService.MarkClean();
-
-            Project.GenerateProjectCCodeAndDocumentation(ProjectDirectory);
-
+            SaveAndGenerate();
             return true;
         }
 
@@ -166,15 +172,18 @@ namespace EFSM.Designer.ViewModel
             if (dialog.ShowDialog() == true)
             {
                 Filename = dialog.FileName;
-                _persistor.SaveProject(Project.GetModel(), dialog.FileName);
-                _dirtyService.MarkClean();
-
-                Project.GenerateProjectCCodeAndDocumentation(ProjectDirectory);
-
+                SaveAndGenerate();
                 return true;
             }
 
             return false;
+        }
+
+        private void SaveAndGenerate()
+        {
+            _persistor.SaveProject(Project.GetModel(), Filename);
+            _dirtyService.MarkClean();
+            Project.GenerateProjectCCodeAndDocumentation(ProjectDirectory);
         }
 
         public bool CanClose()
@@ -205,7 +214,6 @@ namespace EFSM.Designer.ViewModel
         {
         }
 
-#pragma warning disable CS0067
         public event EventHandler<CloseEventArgs> Close;
     }
 }

@@ -8,7 +8,6 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -212,25 +211,7 @@ namespace EFSM.Designer.ViewModel
             Point center = GraphicsUtil.FindCenter(source.Location, target.Location);
 
             //Get the perpindicular line
-
-
-            //if (!isInitializated && myPoint != null)
-            //{
-            //    center = myPoint;
-            //    isInitializated = true;
-            //}
-            //else
-            //{
-            //    center = GraphicsUtil.FindCenter(source.Location, target.Location); ;
-            //}
-
             Point perpindicularPoint = GraphicsUtil.GetPerpindicularPoint(center, target.Location, PullLength);
-
-            //if (!isInitializated)
-            //{
-            //    perpindicularPoint = new Point(205.338585655672, 189.015214245747);
-            //    isInitializated = true;
-            //}
 
             Center = center;
             PerpindicularPoint = perpindicularPoint;
@@ -270,16 +251,6 @@ namespace EFSM.Designer.ViewModel
 
                 ArrowAngle = GraphicsUtil.GetAngle(new Point(0, 0), intersection.Value.Tangent) - 90;
             }
-
-            Debug.WriteLine($"Center: {Center.X}, {Center.Y}");
-            Debug.WriteLine($"PerpindicularPoint: {PerpindicularPoint.X}, {PerpindicularPoint.Y}");
-            Debug.WriteLine($"POINTS:");
-            foreach (var point in Points)
-            {
-                Debug.WriteLine($"{point.X}, {point.Y}");
-            }
-            Debug.WriteLine($"ArrowLocation: {ArrowLocation.X}, {ArrowLocation.Y}");
-            Debug.WriteLine($"ArrowAngle:{ArrowAngle}");
         }
 
         public PointCollection Points

@@ -21,6 +21,7 @@ namespace EFSM.Designer.ViewModel
     {
         private readonly StateMachineProject _project;
         private readonly IMarkDirty _dirtyService;
+
         private const string DocumentationFileName = "doc.md";
 
         private readonly ObservableCollection<StateMachineReferenceViewModel> _stateMachines = new ObservableCollection<StateMachineReferenceViewModel>();
@@ -62,26 +63,46 @@ namespace EFSM.Designer.ViewModel
                 //Get the project model
                 var project = GetModel();
 
+                string documentationFullPath = string.Empty;
+
                 if (!string.IsNullOrWhiteSpace(GenerationOptions.DocumentationFolder))
                 {
                     var directory = Path.Combine(projectPath, GenerationOptions.DocumentationFolder ?? string.Empty);
 
                     Directory.CreateDirectory(directory);
 
-                    var path = Path.Combine(directory, DocumentationFileName);
+                    documentationFullPath = Path.Combine(directory, DocumentationFileName);
 
-                    new MarkdownGenerator().Generate(project.StateMachines.ToList(), path);
+                    new MarkdownGenerator().Generate(project.StateMachines.ToList(), documentationFullPath);
                 }
 
                 //Massage it real nice like
                 project.Massage();
 
-                //Generate. Do it now.
-                generator.Generate(project, projectPath);
+                try
+                {
+                    //Generate. Do it now.
+                    generator.Generate(project, projectPath);
+                }
+                catch (Exception ex)
+                {
+                    if (!string.IsNullOrWhiteSpace(documentationFullPath))
+                    {
+                        AppendTextToFile(documentationFullPath, "Exception during code generation: " + ex.Message);
+                    }
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void AppendTextToFile(string fileFullPath, string text)
+        {
+            using (var streamWriter = File.AppendText(fileFullPath))
+            {
+                streamWriter.WriteLine(text);
             }
         }
 
