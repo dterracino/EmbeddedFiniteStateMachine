@@ -25,7 +25,7 @@ namespace EFSM.Designer.ViewModel
         private Point _offset;
         private Point _center;
         private PointCollection _points;
-        private double _pullLength = 40.0;
+        private const double DefaultPullLength = 40.0;
         private Point _arrowLocation;
         private Geometry _lineGeometry;
         private double _arrowAngle;
@@ -68,6 +68,7 @@ namespace EFSM.Designer.ViewModel
 
         private void ModelInitialize()
         {
+            PullLength = _model.PullLength == default(double) ? DefaultPullLength : _model.PullLength;
             Actions = _model.TransitionActions == null ? new List<Guid>() : _model.TransitionActions.ToList();
 
             if (_model.Condition != null)
@@ -207,10 +208,10 @@ namespace EFSM.Designer.ViewModel
                 return;
 
             //Determine the centerpoint of the line
-            var center = GraphicsUtil.FindCenter(source.Location, target.Location);
+            Point center = GraphicsUtil.FindCenter(source.Location, target.Location);
 
             //Get the perpindicular line
-            var perpindicularPoint = GraphicsUtil.GetPerpindicularPoint(center, target.Location, PullLength);
+            Point perpindicularPoint = GraphicsUtil.GetPerpindicularPoint(center, target.Location, PullLength);
 
             Center = center;
             PerpindicularPoint = perpindicularPoint;
@@ -307,10 +308,10 @@ namespace EFSM.Designer.ViewModel
 
         public double PullLength
         {
-            get { return _pullLength; }
+            get { return _model.PullLength; }
             set
             {
-                _pullLength = value;
+                _model.PullLength = value;
                 RaisePropertyChanged();
                 RefreshGeometry();
                 //Parent.DirtyService.MarkDirty();
@@ -352,6 +353,7 @@ namespace EFSM.Designer.ViewModel
 
         #region IMoveable
 
+        private bool isInitializated = false;
         public Point Location
         {
             get { return PerpindicularPoint; }
@@ -364,7 +366,7 @@ namespace EFSM.Designer.ViewModel
                     return;
 
                 //Get a perpindicular point along this line
-                var perpindicularPoint = GraphicsUtil.GetPerpindicularPoint(Center, target.Location, 100);
+                Point perpindicularPoint = GraphicsUtil.GetPerpindicularPoint(Center, target.Location, 100);
 
                 //Find the point on that line that is closest to the location
                 var closestPoint = GraphicsUtil.FindClosestPointOnSegment(value, perpindicularPoint, Center, false);
@@ -444,6 +446,7 @@ namespace EFSM.Designer.ViewModel
         void IMoveable.CompleteMove(Vector vector)
         {
             Location = _startLocation + vector;
+            Parent.SaveUndoState();
         }
     }
 }

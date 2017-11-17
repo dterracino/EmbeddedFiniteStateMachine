@@ -24,7 +24,7 @@
     </Window.Resources>
     <Window.InputBindings>
         <KeyBinding Key="A" Modifiers="Control" Command="{Binding SelectAllCommand}"/>
-        <KeyBinding Key="U" Modifiers="Control" Command="{Binding UndoCommand}" />
+        <KeyBinding Key="Z" Modifiers="Control" Command="{Binding UndoCommand}" />
         <KeyBinding Key="Y" Modifiers="Control" Command="{Binding RedoCommand}"/>
         <KeyBinding Key="Delete" Command="{Binding DeleteCommand}"/>
     </Window.InputBindings>
@@ -43,6 +43,9 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <ToolBar Grid.Row="0">
+                        <Button Command="{Binding SaveCommand}">
+                            <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/Save_16x.png" ></controls:AutoGreyableImage>
+                        </Button>
                         <Button Command="{Binding Path=DeleteCommand}">
                             <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/Delete.gif" ></controls:AutoGreyableImage>
                         </Button>
@@ -50,10 +53,10 @@
                         <RadioButton IsChecked="{Binding Path=StateMachine.IsPointerMode}" GroupName="Mode" Content="Pointer"/>
                         <RadioButton IsChecked="{Binding Path=StateMachine.IsConnectorMode}"  GroupName="Mode" Content="Connections"/>
                         <Separator/>
-                        <Button ToolTip="Undo (Ctrl+U)" Command="{Binding Path=UndoCommand}">
+                        <Button ToolTip="Undo (Ctrl+Z)" ToolTipService.ShowOnDisabled="True" Command="{Binding Path=UndoCommand}">
                             <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/Arrow_UndoRevertRestore_16xLG_color.png" Width="16"/>
                         </Button>
-                        <Button ToolTip="Redo (Ctrl+Y)" Command="{Binding Path=RedoCommand}">
+                        <Button ToolTip="Redo (Ctrl+Y)" ToolTipService.ShowOnDisabled="True" Command="{Binding Path=RedoCommand}">
                             <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/Arrow_RedoRetry_16xLG_color.png" Width="16"/>
                         </Button>
                         <Button Command="{Binding Path=SimulationCommand}">

@@ -28,7 +28,7 @@
     <UpdateUrl>https://raw.githubusercontent.com/CaptiveAire/EmbeddedFiniteStateMachine/master/EFSM.Designer/clickonce/</UpdateUrl>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>13</ApplicationRevision>
+    <ApplicationRevision>14</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -213,6 +213,7 @@
     <Compile Include="Interfaces\ITransitionCreator.cs" />
     <Compile Include="Interfaces\IUndoProvider.cs" />
     <Compile Include="Interfaces\IUndoService.cs" />
+    <Compile Include="Messages\SaveMessage.cs" />
     <Compile Include="Metadata\StateType.cs" />
     <Compile Include="Model\StateFactory.cs" />
     <Compile Include="Model\StateMachinePropertyGridSource.cs" />

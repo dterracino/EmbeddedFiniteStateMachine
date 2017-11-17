@@ -1,6 +1,4 @@
-﻿using EFSM.Designer.ViewModel;
-using EFSM.Designer.ViewModel.TransitionEditor;
-using EFSM.Domain;
+﻿using EFSM.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,16 +22,14 @@ namespace EFSM.Designer.Common
 
             return s;
         }
-              
 
         private StringBuilder AddCondition(StateMachineCondition condition, StateMachineInput[] inputs)
         {
             StringBuilder s = new StringBuilder();
 
-            if ((condition.ConditionType == ConditionType.Input || condition.ConditionType == ConditionType.Not)
-                && inputs != null)
+            if ((condition.ConditionType == ConditionType.Input) && inputs != null)
             {
-                Guid conditionGuid = condition.ConditionType == ConditionType.Input ? condition.SourceInputId.Value : condition.Conditions[0].SourceInputId.Value;
+                Guid conditionGuid = condition.SourceInputId.Value;
                 StateMachineInput input = inputs.FirstOrDefault(i => i.Id == conditionGuid);
 
                 if (input != null)
@@ -43,9 +39,13 @@ namespace EFSM.Designer.Common
                         _conditionGuids.Add(conditionGuid);
                     }
 
-                    string equalityOperator = condition.ConditionType == ConditionType.Input ? string.Empty : "!";
-                    s.Append($" {equalityOperator}{input.Name}");
+                    s.Append($" {input.Name}");
                 }
+            }
+            else if ((condition.ConditionType == ConditionType.Not) && inputs != null)
+            {
+                s.Append("!");
+                s.Append(AddCondition(condition.Conditions.First(), inputs));
             }
             else if (condition.ConditionType == ConditionType.And || condition.ConditionType == ConditionType.Or)
             {

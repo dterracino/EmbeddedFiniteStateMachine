@@ -41,6 +41,7 @@ namespace EFSM.Designer.ViewModel
         private bool _isPointerMode = true;
         public override bool IsReadOnly => _isReadOnly;
         private Point _newTransitionStart;
+        private bool _isInitialized = false;
 
         private ObservableCollection<StateMachineInputViewModel> _inputs = new ObservableCollection<StateMachineInputViewModel>();
         private ObservableCollection<StateMachineOutputActionViewModel> _outputs = new ObservableCollection<StateMachineOutputActionViewModel>();
@@ -94,6 +95,7 @@ namespace EFSM.Designer.ViewModel
             AddTransitionViewModel();
             InitializeInputViewModel();
             InitializeOutputViewModel();
+            _isInitialized = true;
         }
 
         public void AddNewState(StateFactory factory, Point location)
@@ -191,7 +193,7 @@ namespace EFSM.Designer.ViewModel
                 {
                     var source = States.First(s => s.Id == item.SourceStateId);
                     var target = States.First(s => s.Id == item.TargetStateId);
-                    var transition = AddTransition(source, target, item.Name, item.Condition, item.TransitionActions);
+                    var transition = AddTransition(source, target, item.Name, item.Condition, item.TransitionActions, item.PullLength);
                 }
             }
         }
@@ -377,10 +379,15 @@ namespace EFSM.Designer.ViewModel
 
         internal void RemoveTransition(TransitionViewModel transition)
         {
+            RemoveTransitionWithoutSavingUndoState(transition);
+            SaveUndoState();
+        }
+
+        internal void RemoveTransitionWithoutSavingUndoState(TransitionViewModel transition)
+        {
             if (_transitions.Contains(transition))
             {
                 _transitions.Remove(transition);
-                SaveUndoState();
             }
         }
 
@@ -389,7 +396,14 @@ namespace EFSM.Designer.ViewModel
             IsCreatingTransition = false;
         }
 
-        public TransitionViewModel AddTransition(StateViewModel source, StateViewModel target, string transitionName, StateMachineCondition condition = null, Guid[] actionGuids = null)
+        public TransitionViewModel AddTransition(
+            StateViewModel source,
+            StateViewModel target,
+            string transitionName,
+            StateMachineCondition condition = null,
+            Guid[] actionGuids = null,
+            double pullLength = 0
+            )
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (target == null) throw new ArgumentNullException(nameof(target));
@@ -400,7 +414,8 @@ namespace EFSM.Designer.ViewModel
                 SourceStateId = source.Id,
                 TargetStateId = target.Id,
                 Condition = condition, //?? new StateMachineCondition(),
-                TransitionActions = actionGuids
+                TransitionActions = actionGuids,
+                PullLength = pullLength
             };
 
             var transitionViewModel = ApplicationContainer.Container.Resolve<TransitionViewModel>(
@@ -411,13 +426,18 @@ namespace EFSM.Designer.ViewModel
             transitionViewModel.Target = target;
 
             Transitions.Add(transitionViewModel);
+            SaveUndoState();
+
             return transitionViewModel;
         }
 
         public void SaveUndoState()
         {
-            _undoProvider?.SaveUndoState();
-            _dirtyService?.MarkDirty();
+            if (_isInitialized)
+            {
+                _undoProvider?.SaveUndoState();
+                _dirtyService?.MarkDirty();
+            }
         }
 
         public override void SelectBox(Rect rec)

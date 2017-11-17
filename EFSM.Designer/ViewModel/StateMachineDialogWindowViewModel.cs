@@ -4,6 +4,7 @@ using Cas.Common.WPF.Behaviors;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
 using EFSM.Designer.Interfaces;
+using EFSM.Designer.Messages;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -19,7 +20,6 @@ namespace EFSM.Designer.ViewModel
     {
         private readonly IUndoService<StateMachine> _undoService;
         private readonly IViewService _viewService;
-
         private readonly IDirtyService _parentDirtyService;
 
         public ICommand DeleteCommand { get; private set; }
@@ -29,6 +29,7 @@ namespace EFSM.Designer.ViewModel
         public ICommand SimulationCommand { get; private set; }
         public ICommand CreateDocumentationCommand { get; private set; }
         public ICommand SelectAllCommand { get; private set; }
+        public ICommand SaveCommand { get; private set; }
 
         private StateMachineViewModel _stateMachineViewModel;
 
@@ -39,7 +40,11 @@ namespace EFSM.Designer.ViewModel
 
         public event EventHandler<CloseEventArgs> Close;
 
-        public StateMachineDialogWindowViewModel(StateMachine stateMachine, IViewService viewService, IDirtyService parentDirtyService, Action<StateMachine> updateParentModel)
+        public StateMachineDialogWindowViewModel(
+            StateMachine stateMachine,
+            IViewService viewService,
+            IDirtyService parentDirtyService,
+            Action<StateMachine> updateParentModel)
         {
             _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
             _parentDirtyService = parentDirtyService ?? throw new ArgumentNullException(nameof(parentDirtyService));
@@ -91,6 +96,15 @@ namespace EFSM.Designer.ViewModel
             RedoCommand = new RelayCommand(Redo, CanRedo);
             SimulationCommand = new RelayCommand(Simulate);
             SelectAllCommand = new RelayCommand(SelectAll);
+            SaveCommand = new RelayCommand(SaveProject, CanSave);
+        }
+
+        private bool CanSave() => DirtyService.IsDirty;
+
+        private void SaveProject()
+        {
+            Save();
+            MessengerInstance.Send(new SaveMessage());
         }
 
         private void SelectAll()
@@ -249,9 +263,12 @@ namespace EFSM.Designer.ViewModel
 
         private void Save()
         {
-            DirtyService.MarkClean();
-            _parentDirtyService.MarkDirty();
-            _updateParentModel(GetModel());
+            if (DirtyService.IsDirty)
+            {
+                DirtyService.MarkClean();
+                _parentDirtyService.MarkDirty();
+                _updateParentModel(GetModel());
+            }
         }
 
         public void Closed()

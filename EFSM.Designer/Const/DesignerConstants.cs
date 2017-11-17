@@ -4,6 +4,10 @@
     {
         public const string FileFilter = "State Machine Files (*.efsm)|*.efsm|All Files (*.*)|*.*";
 
+        public const string HeaderFileFilter = "Header Files (*.h)|*.h|All Files (*.*)|*.*";
+
+        public const string CodeFileFilter = "Header Files (*.c)|*.c|All Files (*.*)|*.*";
+
         /// <summary>
         /// The default design width of a system.
         /// </summary>
