@@ -1,5 +1,7 @@
 ﻿using EFSM.Domain;
 using System.Collections.Generic;
+using System.Linq;
+
 
 namespace EFSM.Generator.Model
 {
@@ -12,32 +14,62 @@ namespace EFSM.Generator.Model
             SourceStateMachine = model;
         }
 
-        public override string IndexDefineName =>  $"not initialized";
+        public override string IndexDefineName { get { return SourceStateMachine.Name; } }
 
         /**/
         public List<StateGenerationModel> States { get; }
 
         private StateMachine SourceStateMachine { get; }
-        //public StateMachineGenerationModel(
-        //    StateMachine model, 
-        //    StateGenerationModel[] states, 
-        //    InputGenerationModel[] inputs, 
-        //    OutputGenerationModel[] outputs,
-        //    int index) : base(model, index)
-        //{
-        //    States = states;
-        //    Inputs = inputs;
-        //    Outputs = outputs;
-        //}
+        
+        public InputGenerationModel[] Inputs
+        {
+            get
+            {
+                /*Aggregate inputs from states and return.*/
+                var inputList = new List<InputGenerationModel>();
 
-        ///// <summary>
-        ///// The states
-        ///// </summary>
-        //public StateGenerationModel[] States { get; }
+                foreach (var state in States)
+                {
+                    foreach (var input in state.inputList)
+                    {
+                        if (inputList.Exists(i => i.Id == input.Id) == false)
+                            inputList.Add(input);
+                    }
+                }
 
-        public InputGenerationModel[] Inputs { get; }
+                var returnValue = inputList.OrderBy(i => i.FunctionReferenceIndex).ToArray();
 
-        public OutputGenerationModel[] Outputs { get; }
+                return returnValue;
+            }
+        }
+
+
+
+        public ActionReferenceGenerationModel[] Actions
+        {
+            get
+            {
+                var actionList = new List<ActionReferenceGenerationModel>();
+
+                foreach (var st in States)
+                {
+                    foreach (var transition in st.transitionList)
+                    {
+                        foreach (var action in transition.Actions)
+                        {
+                            if (actionList.Exists(a => a.Id == action.Id) == false)
+                            {
+                                actionList.Add(action);
+                            }
+                        }
+                    }
+                }
+
+                var returnValue = actionList.OrderBy(a => a.FunctionReferenceIndex).ToArray();
+
+                return returnValue;
+            }
+        }
 
         //public override string IndexDefineName => $"EFSM_{Model.Name.FixDefineName()}_INDEX";
 
