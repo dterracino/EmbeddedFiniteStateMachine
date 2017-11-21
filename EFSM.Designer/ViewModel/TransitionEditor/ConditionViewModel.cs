@@ -26,10 +26,10 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         private string _errorMessage;
         private bool _areChildrenValid = true;
 
-        //TODO: Inject this so there is a single global instance
-        private readonly ConditionEditServiceManager _serviceManager = new ConditionEditServiceManager();
+        ////TODO: Inject this so there is a single global instance
+        //private readonly ConditionEditServiceManager _serviceManager = new ConditionEditServiceManager();
 
-        private IConditionEditService _editService;
+        //private IConditionEditService _editService;
 
         public ConditionViewModel(StateMachineCondition model, TransitionEditorViewModel owner)
         {
@@ -47,7 +47,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             }
 
             //Get the current editor
-            _editService = _serviceManager[model.ConditionType];
+            //_editService = _serviceManager[model.ConditionType];
 
             Fix();
 
@@ -294,7 +294,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             set
             {
                 //Get the current editor
-                _editService = _serviceManager[value];
+                //_editService = _serviceManager[value];
 
                 _model.ConditionType = value;
                 RaisePropertyChanged();
