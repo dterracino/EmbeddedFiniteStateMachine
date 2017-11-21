@@ -140,6 +140,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="efsm.h" />
+    <ClInclude Include="efsm6.h" />
     <ClInclude Include="efsm_binary_protocol.h" />
     <ClInclude Include="efsm_core.h" />
     <ClInclude Include="efsm_options.h" />
@@ -148,6 +149,7 @@
     <ClInclude Include="test.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="efsm6.c" />
     <ClCompile Include="eval.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="efsm_core.c" />

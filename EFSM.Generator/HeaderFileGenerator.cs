@@ -10,29 +10,71 @@ namespace EFSM.Generator
         {
             StringBuilder headerFile = new StringBuilder();
 
-            headerFile.Append(project.Model.GenerationOptions.HeaderFileHeader);
-            headerFile.AppendLine();
+            //headerFile.Append(project.Model.GenerationOptions.HeaderFileHeader);
 
-            var stateMachineName = project.StateMachinesGenerationModel[0].IndexDefineName.ToUpper();
-            var numberOfInputs = project.StateMachinesGenerationModel[0].Inputs.Length;
-            var numberOfActions = project.StateMachinesGenerationModel[0].Actions.Length;
+            var headerNameOnly = project.HeaderFileName.Split('.')[0];
 
-            headerFile.AppendLine($"#define EFSM_{stateMachineName}_NUMBER_OF_INPUTS     {numberOfInputs}");
-            headerFile.AppendLine($"#define EFSM_{stateMachineName}_NUMBER_OF_ACTIONS       {numberOfActions}");
+            headerFile.AppendLine($"#ifndef {project.Model.GenerationOptions.HeaderFileHeader}_H");
+            headerFile.AppendLine($"#define {project.Model.GenerationOptions.HeaderFileHeader}_H");
 
             headerFile.AppendLine();
+            headerFile.AppendLine("#include <stdint.h>");
+            headerFile.AppendLine("#include \"efsm_core.h\"");
+            headerFile.AppendLine();
 
-            headerFile.AppendLine($"extern uint8_t (*EFSM_{stateMachineName}_Inputs[EFSM_{stateMachineName}_NUMBER_OF_INPUTS])();");
-            headerFile.AppendLine($"extern void (*EFSM_{stateMachineName}_Actions[EFSM_{stateMachineName}_NUMBER_OF_ACTIONS])();");
 
-            /*Get the inputs.*/
-            var inputArray = project.StateMachinesGenerationModel[0].Inputs;
-
-            /*Prototype generation.*/
-            foreach (var input in inputArray)
+            for (int stateMachineIndex = 0; stateMachineIndex < project.StateMachinesGenerationModel.Length; stateMachineIndex++)
             {
-                headerFile.AppendLine($"uint8_t EFSM_{stateMachineName}_{input.Name}();");
+                var currentStateMachine = project.StateMachinesGenerationModel[stateMachineIndex];
+                var stateMachineName = project.StateMachinesGenerationModel[stateMachineIndex].IndexDefineName;
+                var numberOfInputs = project.StateMachinesGenerationModel[stateMachineIndex].Inputs.Length;
+                var numberOfActions = project.StateMachinesGenerationModel[stateMachineIndex].Actions.Length;
+
+                headerFile.AppendLine($"/*State machine {stateMachineName} (at index {stateMachineIndex}) information.*/\n");               
+
+                headerFile.AppendLine($"#define {currentStateMachine.NumberOfInputsDefineString}      {numberOfInputs}");
+                headerFile.AppendLine($"#define {currentStateMachine.NumberOfActionsDefineString}      {numberOfActions}");
+
+                headerFile.AppendLine();
+              
+                headerFile.AppendLine($"extern uint8_t {currentStateMachine.InputReferenceArrayString};");
+                headerFile.AppendLine($"extern void {currentStateMachine.ActionReferenceArrayString};");
+
+                headerFile.AppendLine($"extern EFSM_BINARY {currentStateMachine.BinaryContainerName};");
+                headerFile.Append("\n");
+
+                /* code.AppendLine($"void EFSM_{stateMachine.StateMachine.IndexDefineName}_Init()\n{{\n");*/
+                headerFile.AppendLine($"void EFSM_{project.StateMachinesGenerationModel[stateMachineIndex].IndexDefineName}_Init();");
+                headerFile.AppendLine();                
+                headerFile.AppendLine("/*Input function prototypes.*/\n");
+
+                /*Get the inputs.*/
+                var inputArray = project.StateMachinesGenerationModel[stateMachineIndex].Inputs;
+
+                /*Prototype generation.*/
+                foreach (var input in inputArray)
+                {
+                    headerFile.AppendLine($"uint8_t EFSM_{stateMachineName}_{input.Name}();");
+                }
+
+                headerFile.Append("\n");
+                headerFile.AppendLine("/*Action function prototypes.*/\n");
+
+                /*Get the actions.*/
+                var actionArray = project.StateMachinesGenerationModel[stateMachineIndex].Actions;
+
+                foreach (var act in actionArray)
+                {
+                    headerFile.AppendLine($"void EFSM_{stateMachineName}_{act.Name}();");
+                }
             }
+
+            headerFile.AppendLine();
+            headerFile.AppendLine("#endif");
+
+            
+
+            
 
             return headerFile.ToString();
 

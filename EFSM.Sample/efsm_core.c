@@ -3,6 +3,7 @@
 #include "efsm_core.h"
 #include "efsm_binary_protocol.h"
 #include "test.h"
+#include "efsm6.h"
 
 void(*Actions0[EFSM_NUM_ACTIONS_FOR_ID_0])();
 uint8_t(*InputQueries0[EFSM_NUM_INPUTS_FOR_ID_0])();
@@ -10,6 +11,7 @@ uint8_t(*InputQueries0[EFSM_NUM_INPUTS_FOR_ID_0])();
 EFSM_INSTANCE * efsmInstanceArray[EFSM_NUM_STATE_MACHINES];
 
 EFSM_INSTANCE efsm0;
+EFSM_INSTANCE efsm6;
 
 /*
 Returns the number of states administered by the EFSM binary. References off of index 0
@@ -215,12 +217,15 @@ Gets things ready for calls to EFSM_Process().
 void EFSM_InitializeProcess()
 {
 	/*Load the instance pointer array.*/
-	efsmInstanceArray[0] = &efsm0;	
+	//efsmInstanceArray[0] = &efsm0;	
+	efsmInstanceArray[0] = &efsm6;
 
-	Test0Init();
+	//Test0Init();
+	EFSM_efsm6_Init();
 
 	/*Initialize instances.*/
-	EFSM_InitializeInstance(&efsm0, &test0Binary, Test0Actions, Test0Inputs);	
+	//EFSM_InitializeInstance(&efsm0, &test0Binary, Test0Actions, Test0Inputs);	
+	EFSM_InitializeInstance(&efsm6, &efsm6Binary, efsm6_OutputActions, efsm6_Inputs);
 }
 
 EFSM_EVAL_TRANSITIONS_RESULT EFSM_EvaluateTransitions(EFSM_INSTANCE * efsmInstance)

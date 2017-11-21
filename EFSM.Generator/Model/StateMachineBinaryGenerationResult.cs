@@ -25,6 +25,5 @@ namespace EFSM.Generator.Model
         public StateMachineGenerationModel StateMachine { get; }
 
         public BinarySegment2[] Segments { get; }
-
     }
 }

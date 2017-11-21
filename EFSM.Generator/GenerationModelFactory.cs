@@ -64,18 +64,18 @@ namespace EFSM.Generator
 
                     /*Add the exit actions from the source state.*/
                     foreach (var exitAction in state.ExitActions)
-                        actionList.Add(new ActionReferenceGenerationModel(exitAction, (int)stateMachine.GetActionReferenceIndex(exitAction), stateMachine.GetActionName(exitAction)));
+                        actionList.Add(new ActionReferenceGenerationModel(exitAction, (int)stateMachine.GetActionReferenceIndex(exitAction), stateMachine.GetActionName(exitAction), stateMachine.Name));
 
                     /*Add the actions associated with the transition.*/
                     foreach (var trnAction in transition.TransitionActions)
-                        actionList.Add(new ActionReferenceGenerationModel(trnAction, (int)stateMachine.GetActionReferenceIndex(trnAction), stateMachine.GetActionName(trnAction)));
+                        actionList.Add(new ActionReferenceGenerationModel(trnAction, (int)stateMachine.GetActionReferenceIndex(trnAction), stateMachine.GetActionName(trnAction), stateMachine.Name));
 
                     /*Add the entry actions for the target state.*/
                     /*Need a reference to the target state.*/
                     var targetState = stateMachine.GetState(transition.TargetStateId);
 
                     foreach (var entryAction in targetState.EntryActions)
-                        actionList.Add(new ActionReferenceGenerationModel(entryAction, (int)stateMachine.GetActionReferenceIndex(entryAction), stateMachine.GetActionName(entryAction)));
+                        actionList.Add(new ActionReferenceGenerationModel(entryAction, (int)stateMachine.GetActionReferenceIndex(entryAction), stateMachine.GetActionName(entryAction), stateMachine.Name));
 
                     /*Get the opcodes for the transition.*/
 

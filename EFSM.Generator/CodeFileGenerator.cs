@@ -22,14 +22,56 @@ namespace EFSM.Generator
         {
             var code = new TextGenerator();
 
+            code.AppendLine($"#include \"{project.HeaderFileName}\"");
+            code.AppendLine($"#include <stdint.h>");
+            code.AppendLine("#include \"efsm_core.h\"");
+            code.AppendLine();
+
             foreach (var stateMachine in binaryGenerationResult.StateMachines)
             {
+                /*Declare the input function reference array.*/
+                code.AppendLine($"uint8_t {stateMachine.StateMachine.InputReferenceArrayString};");
+
+                /*Declare the output action function reference array.*/
+                code.AppendLine($"void {stateMachine.StateMachine.ActionReferenceArrayString};");
+                
+                code.AppendLine();
+
+                /*Create the input function bodies.*/
+                code.AppendLine("/*Input query functions.*/\n");
+
+                foreach (var input in stateMachine.StateMachine.Inputs)
+                {                   
+                    var textToPrint = $"\"{input.Name}\"";
+                    var defaultDebugFunctionString = $"printf({textToPrint});";                    
+                    code.AppendLine($"uint8_t {input.FunctionName}()\n{{");
+                    code.Indent();
+                    code.AppendLine($"{defaultDebugFunctionString}");
+                    code.AppendLine("return 0;");
+                    code.RemoveIndent();
+                    code.AppendLine("}\n");
+                }
+
+                /*Create the output function bodies.*/
+                code.AppendLine("/*Output action functions.*/\n");
+
+                foreach (var act in stateMachine.StateMachine.Actions)
+                {
+                    var defaultDebugFunctionString = $"printf(\"Executing {act.Name}\");";
+                    code.AppendLine($"void {act.FunctionName}()\n{{");
+                    code.Indent();
+                    code.AppendLine($"{defaultDebugFunctionString}");
+                    code.RemoveIndent();
+                    code.AppendLine("}\n");
+                }                
+
+                /*Create the state machine binary array.*/
                 int currentAddress = 0;
 
                 code.AppendLine();
-
+                
                 code.AppendLine($"/* {stateMachine.StateMachine.Model.Name} */");
-                code.AppendLine($"unsigned char {stateMachine.StateMachine.LocalBinaryVariableName}[] = {{");
+                code.AppendLine($"uint16_t {stateMachine.StateMachine.LocalBinaryVariableName}[] = {{");
                 code.AppendLine();
 
                 using (code.Indent())
@@ -51,8 +93,7 @@ namespace EFSM.Generator
                                 else
                                 {
                                     code.Append($"{Convert.ToString(b, 10).PadLeft(0, '0')}, ");
-                                }
-                                
+                                }                                
                             }
 
                             code.AppendLine();
@@ -65,22 +106,64 @@ namespace EFSM.Generator
                         }
                     }
                 }
+
                 code.AppendLine("};");
-            }
+                code.AppendLine();
 
-            code.AppendLine("/* All state machines  */");
-            code.AppendLine("unsigned char * efsm_stateMachineDefinitions[] = {");
+                /*Declare the containing binary.*/
+                code.AppendLine($"EFSM_BINARY {stateMachine.StateMachine.BinaryContainerName};");
 
-            using (code.Indent())
-            {
-                foreach (var stateMachine in binaryGenerationResult.StateMachines)
+                /*Create the initialization routine.*/
+                code.AppendLine();
+
+                code.AppendLine($"void EFSM_{stateMachine.StateMachine.IndexDefineName}_Init()\n{{\n");
+                code.Indent();
+
+                /*Set up the binary.*/
+                code.AppendLine("/*Associate the raw binary with the binary container.*/");
+                code.AppendLine($"{stateMachine.StateMachine.BinaryContainerName}.id = {stateMachine.StateMachine.BinaryContainerId};");
+                code.AppendLine($"{stateMachine.StateMachine.BinaryContainerName}.data = {stateMachine.StateMachine.LocalBinaryVariableName};");
+                code.AppendLine();
+
+                /*Set up the input reference array.*/
+                var numberOfInputs = stateMachine.StateMachine.Inputs.Length;
+
+                for (int inputIndex = 0; inputIndex < numberOfInputs; inputIndex++)
                 {
-                    code.AppendLine($"{stateMachine.StateMachine.LocalBinaryVariableName},");
+                    code.AppendLine($"{stateMachine.StateMachine.InputReferenceArrayName}[{inputIndex}] = &{stateMachine.StateMachine.Inputs[inputIndex].FunctionName};");
                 }
+
+                code.AppendLine();
+
+                /*Set up the action reference array.*/
+                var numberOfActions = stateMachine.StateMachine.Actions.Length;
+
+                for (int actionIndex = 0; actionIndex < numberOfActions; actionIndex++)
+                {
+                    code.AppendLine($"{stateMachine.StateMachine.ActionReferenceArrayName}[{actionIndex}] = &{stateMachine.StateMachine.Actions[actionIndex].FunctionName};");
+                }
+
+                code.RemoveIndent();
+                code.AppendLine("}\n");
+
+
             }
-            code.AppendLine("};");
+
+            //code.AppendLine("/* All state machines  */");
+            //code.AppendLine("unsigned char * efsm_stateMachineDefinitions[] = {");
+
+            //using (code.Indent())
+            //{
+            //    foreach (var stateMachine in binaryGenerationResult.StateMachines)
+            //    {
+            //        code.AppendLine($"{stateMachine.StateMachine.LocalBinaryVariableName},");
+            //    }
+            //}
+            //code.AppendLine("};");
             code.AppendLine();
 
+            
+            
             //foreach (var stateMachine in project.StateMachinesGenerationModel)
             //{
             //    code.AppendLine($"/* [{stateMachine.Index}]State Machine: {stateMachine.Model.Name} */");

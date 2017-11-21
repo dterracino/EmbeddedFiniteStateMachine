@@ -6,6 +6,9 @@
 
 /******************************		General Material			******************************/
 
+/*Input values.*/
+uint8_t InputValues[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
 void SetInput(EFSM_INSTANCE * efsmInstance, uint8_t efsmInputNumber, uint8_t value)
 {
 	printf("Setting input %d to %s\n", efsmInputNumber, GetTrueOrFalseString(value));
@@ -13,7 +16,27 @@ void SetInput(EFSM_INSTANCE * efsmInstance, uint8_t efsmInputNumber, uint8_t val
 	switch (efsmInputNumber)
 	{
 	case 0:
-		test0InputA = value != 0 ? 1 : 0;
+		//test0InputA = value != 0 ? 1 : 0;
+		InputValues[efsmInputNumber] = value != 0 ? 1 : 0;
+		break;
+	case 1: 
+		InputValues[efsmInputNumber] = value != 0 ? 1 : 0;
+		break;
+
+	case 2:
+		InputValues[efsmInputNumber] = value != 0 ? 1 : 0;
+		break;
+		
+	case 3:
+		InputValues[efsmInputNumber] = value != 0 ? 1 : 0;
+		break;
+
+	case 4:
+		InputValues[efsmInputNumber] = value != 0 ? 1 : 0;
+		break;
+
+	case 5:
+		InputValues[efsmInputNumber] = value != 0 ? 1 : 0;
 		break;
 
 	default:

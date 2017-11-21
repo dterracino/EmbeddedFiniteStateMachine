@@ -1,7 +1,7 @@
 ﻿using EFSM.Domain;
 using System.Collections.Generic;
 using System.Linq;
-
+using System;
 
 namespace EFSM.Generator.Model
 {
@@ -87,6 +87,15 @@ namespace EFSM.Generator.Model
         //public string NumOutputsDefine => $"#define {NumOutputsDefineName} {Outputs.Length}";
         public string NumOutputsDefine => $"#define TEST_NAME 6";
 
-        public string LocalBinaryVariableName => $"efsm_{SourceStateMachine.Name}_binary_{Index}";
+        public string LocalBinaryVariableName => $"efsm_{SourceStateMachine.Name}_binaryData";
+        public string BinaryContainerName => $"{SourceStateMachine.Name}Binary";
+        public UInt16 BinaryContainerId => 0xabcd;
+        public string NumberOfInputsDefineString => $"EFSM_{IndexDefineName.ToUpper()}_NUMBER_OF_INPUTS";
+
+        public string NumberOfActionsDefineString => $"EFSM_{IndexDefineName.ToUpper()}_NUMBER_OF_OUTPUTS";
+        public string InputReferenceArrayName => $"{IndexDefineName}_Inputs";
+        public string InputReferenceArrayString => $"(*{IndexDefineName}_Inputs[{NumberOfInputsDefineString}])()";
+        public string ActionReferenceArrayName => $"{IndexDefineName}_OutputActions";
+        public string ActionReferenceArrayString => $"(*{IndexDefineName}_OutputActions[{NumberOfActionsDefineString}])()";
     }
 }
