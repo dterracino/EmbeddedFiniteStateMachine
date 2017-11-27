@@ -1,5 +1,6 @@
 ﻿//using Cas.Common.WPF.Interfaces;
 //using EFSM.Designer.Common;
+//using EFSM.Designer.ViewModel.TransitionEditor;
 //using EFSM.Domain;
 //using GalaSoft.MvvmLight;
 //using GalaSoft.MvvmLight.CommandWpf;
@@ -8,33 +9,28 @@
 //using System.Linq;
 //using System.Windows.Input;
 
-//namespace EFSM.Designer.ViewModel.TransitionEditor
+//namespace EFSM.Designer.ViewModel.TransitionEditor2
 //{
-//    public class ConditionViewModel : ViewModelBase
+//    public abstract class ConditionViewModel2 : ViewModelBase
 //    {
-//        private const string InputErrorMessage = "Cannot have any children";
-//        private const string AndErrorMessage = "Has to have at least one child";
-//        private const string OrErrorMessage = "Has to have at least one child";
-//        private const string NotErrorMessage = "Has to have one and only one child";
-
 //        public event EventHandler ConditionChanged;
 
 //        private bool _isValid = true;
 //        private readonly StateMachineCondition _model;
-//        private readonly TransitionEditorViewModel _owner;
+//        protected readonly TransitionEditorViewModel _owner;
 
-//        public ConditionViewModel(StateMachineCondition model, TransitionEditorViewModel owner)
+//        public ConditionViewModel2(StateMachineCondition model, TransitionEditorViewModel owner)
 //        {
 //            _model = model;
 //            _owner = owner ?? throw new ArgumentNullException(nameof(owner));
 
-//            Conditions = new ConditionsViewModel(this);
+//            Conditions = new ConditionsViewModel2(this);
 
 //            if (model.Conditions != null)
 //            {
 //                foreach (var childCondition in model.Conditions)
 //                {
-//                    Conditions.Add(new ConditionViewModel(childCondition, owner));
+//                    Conditions.Add(ConditionFactory.Create(childCondition, owner));
 //                }
 //            }
 
@@ -64,24 +60,12 @@
 
 //        private void Validate()
 //        {
-//            switch (ConditionType)
-//            {
-//                case ConditionType.Input:
-//                    IsValid = !Conditions.Any();
-//                    break;
-//                case ConditionType.And:
-//                    IsValid = (Conditions.Count >= 1);
-//                    break;
-//                case ConditionType.Or:
-//                    IsValid = (Conditions.Count >= 1);
-//                    break;
-//                case ConditionType.Not:
-//                    IsValid = (Conditions.Count == 1);
-//                    break;
-//            }
+//            IsValid = IsConditionValid();
 
 //            ValidateChildren();
 //        }
+
+//        protected abstract bool IsConditionValid();
 
 //        private void ItemConditionChanged(object sender, EventArgs e)
 //        {
@@ -107,21 +91,7 @@
 
 //        private void SetErrorMessage()
 //        {
-//            switch (ConditionType)
-//            {
-//                case ConditionType.Input:
-//                    ErrorMessage = InputErrorMessage;
-//                    break;
-//                case ConditionType.And:
-//                    ErrorMessage = AndErrorMessage;
-//                    break;
-//                case ConditionType.Or:
-//                    ErrorMessage = OrErrorMessage;
-//                    break;
-//                case ConditionType.Not:
-//                    ErrorMessage = NotErrorMessage;
-//                    break;
-//            }
+//            ErrorMessage = ConditionErrorMessage;
 //        }
 
 //        private string _errorMessage;
@@ -130,6 +100,8 @@
 //            get { return _errorMessage; }
 //            set { _errorMessage = value; RaisePropertyChanged(); }
 //        }
+
+//        public abstract string ConditionErrorMessage { get; }
 
 //        public void ValidateChildren()
 //        {
@@ -168,35 +140,14 @@
 //                ConditionType = ConditionType.Input
 //            };
 
-//            var condition = new ConditionViewModel(model, _owner);
+//            var condition = ConditionFactory.Create(model, _owner);
 
 //            Conditions.Add(condition);
 //        }
 
-//        public bool CanSelectInput
-//        {
-//            get { return ConditionType == ConditionType.Input; }
-//        }
+//        public abstract bool CanSelectInput { get; }
 
-//        public bool CanAddCondition
-//        {
-//            get
-//            {
-//                switch (_model.ConditionType)
-//                {
-//                    case ConditionType.Or:
-//                    case ConditionType.And:
-//                        return true;
-
-//                    case ConditionType.Not:
-
-//                        return Conditions.Count == 0;
-
-//                    default:
-//                        return false;
-//                }
-//            }
-//        }
+//        public abstract bool CanAddCondition { get; }
 
 //        private void Delete()
 //        {
@@ -213,58 +164,24 @@
 //        /// <summary>
 //        /// Ensures that the number of sub conditions / the input is correct given its 
 //        /// </summary>
-//        private void Fix()
-//        {
-//            switch (ConditionType)
-//            {
-//                case ConditionType.Input:
-//                    Conditions.Clear();
+//        protected abstract void Fix();
 
-//                    if (InputId == null)
-//                    {
+//        //public ConditionType ConditionType
+//        //{
+//        //    get => _model.ConditionType;
+//        //    set
+//        //    {
+//        //        _model.ConditionType = value;
+//        //        RaisePropertyChanged();
+//        //        RaisePropertyChanged(() => CanSelectInput);
+//        //        RaisePropertyChanged(() => CanAddCondition);
+//        //        Fix();
+//        //        _owner.DirtyService.MarkDirty();
+//        //        OnConditionChanged(this);
+//        //    }
+//        //}
 
-//                        //Select the first item
-//                        InputId = _owner.Inputs
-//                            .FirstOrDefault()?.Id;
-//                    }
-
-//                    break;
-
-//                case ConditionType.Or:
-//                case ConditionType.And:
-//                    InputId = null;
-//                    break;
-
-//                case ConditionType.Not:
-
-//                    InputId = null;
-
-//                    while (Conditions.Count > 1)
-//                    {
-//                        Conditions.RemoveAt(Conditions.Count - 1);
-//                    }
-
-//                    break;
-
-//                default:
-//                    throw new NotSupportedException($"Unexpected value '{ConditionType}'.");
-//            }
-//        }
-
-//        public ConditionType ConditionType
-//        {
-//            get => _model.ConditionType;
-//            set
-//            {
-//                _model.ConditionType = value;
-//                RaisePropertyChanged();
-//                RaisePropertyChanged(() => CanSelectInput);
-//                RaisePropertyChanged(() => CanAddCondition);
-//                Fix();
-//                _owner.DirtyService.MarkDirty();
-//                OnConditionChanged(this);
-//            }
-//        }
+//        public abstract ConditionType ConditionType { get; }
 
 //        public Guid? InputId
 //        {
@@ -287,9 +204,9 @@
 //            ConditionChanged?.Invoke(sender, EventArgs.Empty);
 //        }
 
-//        public ConditionsViewModel ParentCollection { get; internal set; }
+//        public ConditionsViewModel2 ParentCollection { get; internal set; }
 
-//        public ConditionsViewModel Conditions { get; }
+//        public ConditionsViewModel2 Conditions { get; }
 
 //        public IDirtyService DirtyService => _owner.DirtyService;
 

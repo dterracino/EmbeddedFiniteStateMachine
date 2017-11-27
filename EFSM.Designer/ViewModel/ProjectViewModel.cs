@@ -90,6 +90,8 @@ namespace EFSM.Designer.ViewModel
                     {
                         AppendTextToFile(documentationFullPath, "Exception during code generation: " + ex.Message);
                     }
+
+                    throw;
                 }
             }
             catch (Exception ex)

@@ -2,7 +2,6 @@
 using EFSM.Designer.ViewModel.TransitionEditor;
 using EFSM.Domain;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace EFSM.Designer.Extensions
 {
@@ -13,9 +12,9 @@ namespace EFSM.Designer.Extensions
             if (conditionMetadata == null)
                 return null;
 
-            return  new ConditionViewModel(conditionMetadata, owner);
+            return ConditionFactory.Create(conditionMetadata, owner);
 
-            
+
 
             ////Treat this as a compound condition
             //if (conditionMetadata.ConditionType.HasValue)

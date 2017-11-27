@@ -59,7 +59,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
         private void AddCondition()
         {
-            RootCondition = new ConditionViewModel(new StateMachineCondition(), _owner);
+            RootCondition = ConditionFactory.Create(new StateMachineCondition(), _owner);
         }
 
         private bool CanAddCondition()

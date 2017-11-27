@@ -237,8 +237,16 @@
     <Compile Include="ViewModel\ToolCategoryViewModel.cs" />
     <Compile Include="ViewModel\ToolsViewModel.cs" />
     <Compile Include="ViewModel\ToolViewModel.cs" />
+    <Compile Include="ViewModel\TransitionEditor\AndConditionViewModel.cs" />
+    <Compile Include="ViewModel\TransitionEditor\ConditionFactory.cs" />
+    <Compile Include="ViewModel\TransitionEditor\ConditionsViewModel2.cs" />
+    <Compile Include="ViewModel\TransitionEditor2\ConditionViewModel2.cs" />
+    <Compile Include="ViewModel\TransitionEditor\InputConditionViewModel.cs" />
+    <Compile Include="ViewModel\TransitionEditor\NotConditionViewModel.cs" />
+    <Compile Include="ViewModel\TransitionEditor\OrConditionViewModel.cs" />
     <Compile Include="ViewModel\TransitionEditor\ConditionsViewModel.cs" />
     <Compile Include="ViewModel\TransitionEditor\ConditionViewModel.cs" />
+    <Compile Include="ViewModel\TransitionEditor\ConditionViewModel2.cs" />
     <Compile Include="ViewModel\TransitionEditor\CriteriaTransitionViewModel.cs" />
     <Compile Include="ViewModel\TransitionEditor\TransitionEditorViewModel.cs" />
     <Compile Include="ViewModel\TransitionToolTipViewModel.cs" />
@@ -402,9 +410,7 @@
     <Resource Include="Images\CompoundCondition.png" />
     <Resource Include="Images\SimpleCondition.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Enums\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Images\InsertAbove.png" />
     <Resource Include="Images\InsertBelow.png" />

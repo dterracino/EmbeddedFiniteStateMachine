@@ -19,7 +19,7 @@ namespace EFSM.Generator
 
         public static void AccumulateInputsFromConditionList(List<StateMachineCondition> conditionList, List<StateMachineInput> inputList, StateMachine parentStateMachine)
         {
-            foreach (var condition in conditionList)
+            foreach (var condition in conditionList.Where(c=>c != null))
             {
                 if (condition.ConditionType == ConditionType.Input)
                 {
