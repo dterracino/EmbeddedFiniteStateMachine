@@ -86,12 +86,14 @@ namespace EFSM.Designer.ViewModel
                 }
                 catch (Exception ex)
                 {
+                    string errorMessage = "Exception during code generation: " + ex.Message;
+
                     if (!string.IsNullOrWhiteSpace(documentationFullPath))
                     {
-                        AppendTextToFile(documentationFullPath, "Exception during code generation: " + ex.Message);
+                        AppendTextToFile(documentationFullPath, errorMessage);
                     }
 
-                    throw;
+                    MessageBox.Show(errorMessage);
                 }
             }
             catch (Exception ex)

@@ -8,8 +8,10 @@ using EFSM.Designer.View;
 using EFSM.Designer.ViewModel;
 using EFSM.Designer.ViewModel.StateEditor;
 using EFSM.Designer.ViewModel.TransitionEditor;
+using EFSM.Designer.ViewModel.TransitionEditor.Conditions;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
+using System.Reflection;
 
 namespace EFSM.Designer
 {
@@ -39,6 +41,15 @@ namespace EFSM.Designer
             builder.RegisterType<FilePersistor>().As<IPersistor>();
             builder.RegisterType<SelectionService>().As<ISelectionService>();
             builder.RegisterType<UndoService<StateMachine>>().As<IUndoService<StateMachine>>();
+
+            builder.RegisterAssemblyTypes(Assembly.Load(typeof(IConditionEditService).Assembly.ToString()))
+                .Where(t => typeof(IConditionEditService)
+                .IsAssignableFrom(t))
+                .InstancePerLifetimeScope()
+                .AsImplementedInterfaces();
+
+            builder.RegisterType<ConditionEditServiceManager>().AsSelf().SingleInstance();
+
 
             builder.RegisterType<DirtyService>()
                 .As<IDirtyService>()

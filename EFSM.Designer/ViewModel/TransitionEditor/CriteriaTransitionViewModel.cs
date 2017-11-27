@@ -1,4 +1,6 @@
-﻿using EFSM.Designer.Extensions;
+﻿using Autofac;
+using EFSM.Designer.Extensions;
+using EFSM.Designer.ViewModel.TransitionEditor.Conditions;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -59,7 +61,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
         private void AddCondition()
         {
-            RootCondition = ConditionFactory.Create(new StateMachineCondition(), _owner);
+            RootCondition = new ConditionViewModel(new StateMachineCondition(), _owner, ApplicationContainer.Container.Resolve<ConditionEditServiceManager>());
         }
 
         private bool CanAddCondition()

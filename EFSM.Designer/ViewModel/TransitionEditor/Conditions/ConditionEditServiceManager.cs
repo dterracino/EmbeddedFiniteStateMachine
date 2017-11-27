@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using EFSM.Domain;
+using System.Collections.Generic;
 using System.Linq;
-using EFSM.Domain;
 
 namespace EFSM.Designer.ViewModel.TransitionEditor.Conditions
 {
@@ -8,15 +8,8 @@ namespace EFSM.Designer.ViewModel.TransitionEditor.Conditions
     {
         private readonly Dictionary<ConditionType, IConditionEditService> _services;
 
-        //TODO: Inject IEnumerable<IConditionEditService>
-        public ConditionEditServiceManager()
+        public ConditionEditServiceManager(IEnumerable<IConditionEditService> services)
         {
-            var services = new IConditionEditService[]
-            {
-                //TODO: Add other condition edit types
-                new InputConditonEditService(), 
-            };
-
             _services = services
                 .ToDictionary(s => s.Type, s => s);
         }
@@ -25,18 +18,5 @@ namespace EFSM.Designer.ViewModel.TransitionEditor.Conditions
         {
             get { return _services[key]; }
         }
-    }
-
-    public class InputConditonEditService : IConditionEditService
-    {
-        public ConditionType Type => ConditionType.Input;
-
-        public int? MaximumNumberOfChildren => 0;
-
-        public int? MinimumNumberOfChildren => null;
-
-        public bool CanSelectInput => true;
-
-        public string ErrorMessage => "Cannot have any children";
     }
 }

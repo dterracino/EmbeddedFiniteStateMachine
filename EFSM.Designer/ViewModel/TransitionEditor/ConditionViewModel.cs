@@ -1,5 +1,6 @@
 ﻿using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
+using EFSM.Designer.ViewModel.TransitionEditor.Conditions;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -7,7 +8,6 @@ using System;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Windows.Input;
-using EFSM.Designer.ViewModel.TransitionEditor.Conditions;
 
 namespace EFSM.Designer.ViewModel.TransitionEditor
 {
@@ -26,15 +26,15 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         private string _errorMessage;
         private bool _areChildrenValid = true;
 
-        ////TODO: Inject this so there is a single global instance
-        //private readonly ConditionEditServiceManager _serviceManager = new ConditionEditServiceManager();
+        private readonly ConditionEditServiceManager _serviceManager;
 
-        //private IConditionEditService _editService;
+        private IConditionEditService _editService;
 
-        public ConditionViewModel(StateMachineCondition model, TransitionEditorViewModel owner)
+        public ConditionViewModel(StateMachineCondition model, TransitionEditorViewModel owner, ConditionEditServiceManager serviceManager)
         {
             _model = model;
             _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+            _serviceManager = serviceManager ?? throw new ArgumentNullException(nameof(serviceManager));
 
             Conditions = new ConditionsViewModel(this);
 
@@ -42,12 +42,12 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             {
                 foreach (var childCondition in model.Conditions)
                 {
-                    Conditions.Add(new ConditionViewModel(childCondition, owner));
+                    Conditions.Add(new ConditionViewModel(childCondition, owner, serviceManager));
                 }
             }
 
             //Get the current editor
-            //_editService = _serviceManager[model.ConditionType];
+            _editService = _serviceManager[model.ConditionType];
 
             Fix();
 
@@ -76,36 +76,20 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         private void Validate()
         {
             ////Check the minimum number of children
-            //if (_editService.MinimumNumberOfChildren != null &&
-            //    Conditions.Count < _editService.MinimumNumberOfChildren.Value)
-            //{
-            //    IsValid = false;
-            //}
-            ////Check the maximum number of children
-            //else if (_editService.MaximumNumberOfChildren != null &&
-            //    Conditions.Count > _editService.MaximumNumberOfChildren.Value)
-            //{
-            //    IsValid = false;
-            //}
-            //else
-            //{
-            //    IsValid = true;
-            //}
-
-            switch (ConditionType)
+            if (_editService.MinimumNumberOfChildren != null &&
+                Conditions.Count < _editService.MinimumNumberOfChildren.Value)
             {
-                case ConditionType.Input:
-                    IsValid = !Conditions.Any();
-                    break;
-                case ConditionType.And:
-                    IsValid = (Conditions.Count >= 1);
-                    break;
-                case ConditionType.Or:
-                    IsValid = (Conditions.Count >= 1);
-                    break;
-                case ConditionType.Not:
-                    IsValid = (Conditions.Count == 1);
-                    break;
+                IsValid = false;
+            }
+            //Check the maximum number of children
+            else if (_editService.MaximumNumberOfChildren != null &&
+                Conditions.Count > _editService.MaximumNumberOfChildren.Value)
+            {
+                IsValid = false;
+            }
+            else
+            {
+                IsValid = true;
             }
 
             ValidateChildren();
@@ -135,26 +119,10 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
         private void SetErrorMessage()
         {
-            //ErrorMessage = _editService.ErrorMessage;
-
-            switch (ConditionType)
-            {
-                case ConditionType.Input:
-                    ErrorMessage = InputErrorMessage;
-                    break;
-                case ConditionType.And:
-                    ErrorMessage = AndErrorMessage;
-                    break;
-                case ConditionType.Or:
-                    ErrorMessage = OrErrorMessage;
-                    break;
-                case ConditionType.Not:
-                    ErrorMessage = NotErrorMessage;
-                    break;
-            }
+            ErrorMessage = _editService.ErrorMessage;
         }
 
-        
+
         public string ErrorMessage
         {
             get { return _errorMessage; }
@@ -177,7 +145,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             }
         }
 
-        
+
         public bool AreChildrenValid
         {
             get { return _areChildrenValid; }
@@ -202,7 +170,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
                 ConditionType = ConditionType.Input
             };
 
-            var condition = new ConditionViewModel(model, _owner);
+            var condition = new ConditionViewModel(model, _owner, _serviceManager);
 
             Conditions.Add(condition);
         }
@@ -216,22 +184,8 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         {
             get
             {
-                //return _editService.MaximumNumberOfChildren != null &&
-                //       _editService.MaximumNumberOfChildren.Value < Conditions.Count;
-
-                switch (_model.ConditionType)
-                {
-                    case ConditionType.Or:
-                    case ConditionType.And:
-                        return true;
-
-                    case ConditionType.Not:
-
-                        return Conditions.Count == 0;
-
-                    default:
-                        return false;
-                }
+                return _editService.MaximumNumberOfChildren != null &&
+                       _editService.MaximumNumberOfChildren.Value > Conditions.Count;
             }
         }
 
@@ -252,41 +206,10 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         /// </summary>
         private void Fix()
         {
-            switch (ConditionType)
-            {
-                case ConditionType.Input:
-                    Conditions.Clear();
-
-                    if (InputId == null)
-                    {
-
-                        //Select the first item
-                        InputId = _owner.Inputs
-                            .FirstOrDefault()?.Id;
-                    }
-
-                    break;
-
-                case ConditionType.Or:
-                case ConditionType.And:
-                    InputId = null;
-                    break;
-
-                case ConditionType.Not:
-
-                    InputId = null;
-
-                    while (Conditions.Count > 1)
-                    {
-                        Conditions.RemoveAt(Conditions.Count - 1);
-                    }
-
-                    break;
-
-                default:
-                    throw new NotSupportedException($"Unexpected value '{ConditionType}'.");
-            }
+            _editService.Fix(this);
         }
+
+        public TransitionEditorViewModel Owner => _owner;
 
         public ConditionType ConditionType
         {
@@ -294,7 +217,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             set
             {
                 //Get the current editor
-                //_editService = _serviceManager[value];
+                _editService = _serviceManager[value];
 
                 _model.ConditionType = value;
                 RaisePropertyChanged();

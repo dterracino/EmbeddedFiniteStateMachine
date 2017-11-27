@@ -14,6 +14,6 @@ namespace EFSM.Designer.ViewModel.TransitionEditor.Conditions
 
         string ErrorMessage { get; }
 
-        //TODO: Add Fix(), etc
+        void Fix(ConditionViewModel conditionViewModel);
     }
 }
