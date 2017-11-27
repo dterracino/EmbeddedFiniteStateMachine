@@ -245,6 +245,8 @@
     <Compile Include="ViewModel\TransitionEditor\NotConditionViewModel.cs" />
     <Compile Include="ViewModel\TransitionEditor\OrConditionViewModel.cs" />
     <Compile Include="ViewModel\TransitionEditor\ConditionsViewModel.cs" />
+    <Compile Include="ViewModel\TransitionEditor\Conditions\ConditionEditServiceManager.cs" />
+    <Compile Include="ViewModel\TransitionEditor\Conditions\IConditionEditService.cs" />
     <Compile Include="ViewModel\TransitionEditor\ConditionViewModel.cs" />
     <Compile Include="ViewModel\TransitionEditor\ConditionViewModel2.cs" />
     <Compile Include="ViewModel\TransitionEditor\CriteriaTransitionViewModel.cs" />

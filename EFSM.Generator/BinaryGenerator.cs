@@ -90,21 +90,67 @@ namespace EFSM.Generator
                 /*Add the transition data.*/
                 for (int i = 0; i < state.transitionList.Count; i++)
                 {
-                    /*Resolve the tocForTransitionData DelayedResolution elements.*/
-                    rootElementList2.Add(new MarkerElement2(tocForTransitionData[i], $"Transition {state.transitionList[i].Name} data."));
+                    var currentTransition = state.transitionList[i];
 
-                    var binIndexForTrnActionsData = new DelayedResolutionElementUshort2(bitConverter, $"EFSM binary index of transition {state.transitionList[i].Name} actions data.");
+                    /*Resolve the tocForTransitionData DelayedResolution elements.*/
+                    rootElementList2.Add(new MarkerElement2(tocForTransitionData[i], $"Transition {currentTransition.Name} data."));
+
+                    var binIndexForTrnActionsData = new DelayedResolutionElementUshort2(bitConverter, $"EFSM binary index of transition {currentTransition.Name} actions data.");
                     rootElementList2.Add(binIndexForTrnActionsData);
 
-                    rootElementList2.Add(bitConverter, state.transitionList[i].TargetStateIndex, $"Next state after transition.");
-                    rootElementList2.Add(bitConverter, (UInt16)state.transitionList[i].Opcodes.Length, $"Number of opcodes.");
-                    /*Add the opcodes.*/
-                    for (int j = 0; j < state.transitionList[j].Opcodes.Length; j++)
-                    {
+                    rootElementList2.Add(bitConverter, currentTransition.TargetStateIndex, $"Next state after transition.");
+                    rootElementList2.Add(bitConverter, (UInt16)currentTransition.Opcodes.Length, $"Number of opcodes.");
 
+                    var evenNumberOfOpcodes = false;
+
+                    if ((currentTransition.Opcodes.Length % 2) == 0)
+                    {
+                        evenNumberOfOpcodes = true;
+                    }
+
+                    var numberOfElementsRequired = (currentTransition.Opcodes.Length + 1) / 2;
+                    UInt16 temp = 0;
+                    UInt16 opcodeBase = 0;
+                    var opcodes = currentTransition.Opcodes;
+
+                    for (UInt16 elementIndex = 0; elementIndex < numberOfElementsRequired; elementIndex++)
+                    {
+                        /*Iterate through the opcodes and pack them into the elements.*/
+                        /*Pack the 0th and 1st opcodes.*/
+                        opcodeBase = (UInt16)(elementIndex * 2);
+
+                        /*If on the last element...*/
+                        if (elementIndex == (numberOfElementsRequired - 1))
+                        {
+                            if (evenNumberOfOpcodes)
+                            {
+                                temp = (UInt16)(((opcodes[opcodeBase + 1]) << 8) | (opcodes[opcodeBase]));
+                            }
+                            else
+                            {
+                                temp = (UInt16)((0x00 << 8) | (opcodes[opcodeBase]));
+                            }                            
+                        }
+                        else/*Otherwise...*/
+                        {
+                            temp = (UInt16)(((opcodes[opcodeBase + 1]) << 8) | (opcodes[opcodeBase]));
+                        }
+                        
+                        rootElementList2.Add(bitConverter, temp, $"Opcodes {opcodeBase} and {opcodeBase + 1}");
+                        rootElementList2.Add(new MarkerElement2(binIndexForTrnActionsData, "Transition Actions data."));
+                    }
+
+                    /*Add in the number of transition action function reference indices.*/
+                    rootElementList2.Add(bitConverter, (UInt16)currentTransition.Actions.Count, $"Number of transition actions for transition {currentTransition.Name}");
+
+                    /*Add the transition actions.*/
+                    foreach (var action in currentTransition.Actions)
+                    {
+                        rootElementList2.Add(bitConverter, (UInt16)action.FunctionReferenceIndex, $"Action {action.Name} function reference index.");
                     }
                 }
             }
+
             //Number of states
             //rootElementList.Add(bitConverter, (ushort) stateMachine.States.Length, $"# of states ({stateMachine.States.Length})");
             //rootElementList.Add(bitConverter, 0x4356, "An item value");

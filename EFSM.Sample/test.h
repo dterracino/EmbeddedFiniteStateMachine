@@ -6,6 +6,8 @@
 /******************************		General Material			******************************/
 #define VALUE_UNKNOWN													0xff
 
+extern uint8_t InputValues[10];
+
 void SetInput(EFSM_INSTANCE * efsmInstance, uint8_t efsmInputNumber, uint8_t value);
 void DisplayEfsmCondtion(EFSM_INSTANCE * efsmInstance);
 void DisplayInstanceData(EFSM_INSTANCE * efsmInstance);

@@ -10,6 +10,8 @@ namespace EFSM.Generator.Model
             Parent = parent;
             Id = id;
             Name = name;
+            FunctionNamePrefix = "EFSM";
+            ParentStateMachineName = parent.Name;
         }
 
         public StateMachine Parent { get; }
@@ -20,6 +22,15 @@ namespace EFSM.Generator.Model
 
         public string Name { get; }
 
+        public string FunctionNamePrefix { get; }
+        public string ParentStateMachineName { get; }
+        public string FunctionName
+        {
+            get
+            {
+                return $"{FunctionNamePrefix}_{ParentStateMachineName}_{Name}";
+            }
+        }
         //public string FunctionName => $"EFSM_{Parent.Name.FixFunctionName()}_Input_{Model.Name.FixFunctionName()}";
 
         public string FunctionPrototype => $"extern unsigned char {Name}();";

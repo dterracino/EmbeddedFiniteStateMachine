@@ -1,307 +1,347 @@
-﻿//using Cas.Common.WPF.Interfaces;
-//using EFSM.Designer.Common;
-//using EFSM.Domain;
-//using GalaSoft.MvvmLight;
-//using GalaSoft.MvvmLight.CommandWpf;
-//using System;
-//using System.Collections.Specialized;
-//using System.Linq;
-//using System.Windows.Input;
+﻿using Cas.Common.WPF.Interfaces;
+using EFSM.Designer.Common;
+using EFSM.Domain;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.CommandWpf;
+using System;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Windows.Input;
+using EFSM.Designer.ViewModel.TransitionEditor.Conditions;
 
-//namespace EFSM.Designer.ViewModel.TransitionEditor
-//{
-//    public class ConditionViewModel : ViewModelBase
-//    {
-//        private const string InputErrorMessage = "Cannot have any children";
-//        private const string AndErrorMessage = "Has to have at least one child";
-//        private const string OrErrorMessage = "Has to have at least one child";
-//        private const string NotErrorMessage = "Has to have one and only one child";
+namespace EFSM.Designer.ViewModel.TransitionEditor
+{
+    public class ConditionViewModel : ViewModelBase
+    {
+        private const string InputErrorMessage = "Cannot have any children";
+        private const string AndErrorMessage = "Has to have at least one child";
+        private const string OrErrorMessage = "Has to have at least one child";
+        private const string NotErrorMessage = "Has to have one and only one child";
 
-//        public event EventHandler ConditionChanged;
+        public event EventHandler ConditionChanged;
 
-//        private bool _isValid = true;
-//        private readonly StateMachineCondition _model;
-//        private readonly TransitionEditorViewModel _owner;
+        private bool _isValid = true;
+        private readonly StateMachineCondition _model;
+        private readonly TransitionEditorViewModel _owner;
+        private string _errorMessage;
+        private bool _areChildrenValid = true;
 
-//        public ConditionViewModel(StateMachineCondition model, TransitionEditorViewModel owner)
-//        {
-//            _model = model;
-//            _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+        ////TODO: Inject this so there is a single global instance
+        //private readonly ConditionEditServiceManager _serviceManager = new ConditionEditServiceManager();
 
-//            Conditions = new ConditionsViewModel(this);
+        //private IConditionEditService _editService;
 
-//            if (model.Conditions != null)
-//            {
-//                foreach (var childCondition in model.Conditions)
-//                {
-//                    Conditions.Add(new ConditionViewModel(childCondition, owner));
-//                }
-//            }
+        public ConditionViewModel(StateMachineCondition model, TransitionEditorViewModel owner)
+        {
+            _model = model;
+            _owner = owner ?? throw new ArgumentNullException(nameof(owner));
 
-//            Fix();
+            Conditions = new ConditionsViewModel(this);
 
-//            AddConditionCommand = new RelayCommand(AddCondition, () => CanAddCondition);
-//            DeleteCommand = new RelayCommand(Delete);
-//            Conditions.CollectionChanged += ConditionsCollectionChanged;
-//        }
+            if (model.Conditions != null)
+            {
+                foreach (var childCondition in model.Conditions)
+                {
+                    Conditions.Add(new ConditionViewModel(childCondition, owner));
+                }
+            }
 
-//        private void ConditionsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-//        {
-//            if (e.Action == NotifyCollectionChangedAction.Remove)
-//            {
-//                OnConditionChanged(this);
-//            }
-//            else if (e.Action == NotifyCollectionChangedAction.Add)
-//            {
-//                foreach (var item in e.NewItems.OfType<ConditionViewModel>())
-//                {
-//                    item.ConditionChanged += ItemConditionChanged;
-//                }
+            //Get the current editor
+            //_editService = _serviceManager[model.ConditionType];
 
-//                OnConditionChanged(this);
-//            }
-//        }
+            Fix();
 
-//        private void Validate()
-//        {
-//            switch (ConditionType)
-//            {
-//                case ConditionType.Input:
-//                    IsValid = !Conditions.Any();
-//                    break;
-//                case ConditionType.And:
-//                    IsValid = (Conditions.Count >= 1);
-//                    break;
-//                case ConditionType.Or:
-//                    IsValid = (Conditions.Count >= 1);
-//                    break;
-//                case ConditionType.Not:
-//                    IsValid = (Conditions.Count == 1);
-//                    break;
-//            }
+            AddConditionCommand = new RelayCommand(AddCondition, () => CanAddCondition);
+            DeleteCommand = new RelayCommand(Delete);
+            Conditions.CollectionChanged += ConditionsCollectionChanged;
+        }
 
-//            ValidateChildren();
-//        }
+        private void ConditionsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                OnConditionChanged(this);
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                foreach (var item in e.NewItems.OfType<ConditionViewModel>())
+                {
+                    item.ConditionChanged += ItemConditionChanged;
+                }
 
-//        private void ItemConditionChanged(object sender, EventArgs e)
-//        {
-//            OnConditionChanged(sender);
-//        }
+                OnConditionChanged(this);
+            }
+        }
 
-//        public ICommand AddConditionCommand { get; }
-//        public ICommand DeleteCommand { get; }
+        private void Validate()
+        {
+            ////Check the minimum number of children
+            //if (_editService.MinimumNumberOfChildren != null &&
+            //    Conditions.Count < _editService.MinimumNumberOfChildren.Value)
+            //{
+            //    IsValid = false;
+            //}
+            ////Check the maximum number of children
+            //else if (_editService.MaximumNumberOfChildren != null &&
+            //    Conditions.Count > _editService.MaximumNumberOfChildren.Value)
+            //{
+            //    IsValid = false;
+            //}
+            //else
+            //{
+            //    IsValid = true;
+            //}
 
-//        public bool IsValid
-//        {
-//            get { return _isValid; }
-//            set
-//            {
-//                if (_isValid != value)
-//                {
-//                    _isValid = value;
-//                    RaisePropertyChanged();
-//                    ValidateChildren();
-//                }
-//            }
-//        }
+            switch (ConditionType)
+            {
+                case ConditionType.Input:
+                    IsValid = !Conditions.Any();
+                    break;
+                case ConditionType.And:
+                    IsValid = (Conditions.Count >= 1);
+                    break;
+                case ConditionType.Or:
+                    IsValid = (Conditions.Count >= 1);
+                    break;
+                case ConditionType.Not:
+                    IsValid = (Conditions.Count == 1);
+                    break;
+            }
 
-//        private void SetErrorMessage()
-//        {
-//            switch (ConditionType)
-//            {
-//                case ConditionType.Input:
-//                    ErrorMessage = InputErrorMessage;
-//                    break;
-//                case ConditionType.And:
-//                    ErrorMessage = AndErrorMessage;
-//                    break;
-//                case ConditionType.Or:
-//                    ErrorMessage = OrErrorMessage;
-//                    break;
-//                case ConditionType.Not:
-//                    ErrorMessage = NotErrorMessage;
-//                    break;
-//            }
-//        }
+            ValidateChildren();
+        }
 
-//        private string _errorMessage;
-//        public string ErrorMessage
-//        {
-//            get { return _errorMessage; }
-//            set { _errorMessage = value; RaisePropertyChanged(); }
-//        }
+        private void ItemConditionChanged(object sender, EventArgs e)
+        {
+            OnConditionChanged(sender);
+        }
 
-//        public void ValidateChildren()
-//        {
-//            if (Conditions.Any(c => c.IsValid == false) || IsValid == false)
-//            {
-//                AreChildrenValid = false;
-//            }
-//            else
-//            {
-//                AreChildrenValid = true;
-//            }
-//        }
+        public ICommand AddConditionCommand { get; }
+        public ICommand DeleteCommand { get; }
 
-//        private bool _areChildrenValid = true;
-//        public bool AreChildrenValid
-//        {
-//            get { return _areChildrenValid; }
-//            set
-//            {
-//                if (_areChildrenValid != value)
-//                {
-//                    _areChildrenValid = value;
-//                    SetErrorMessage();
-//                    RaisePropertyChanged();
-//                }
-//            }
-//        }
+        public bool IsValid
+        {
+            get { return _isValid; }
+            set
+            {
+                if (_isValid != value)
+                {
+                    _isValid = value;
+                    RaisePropertyChanged();
+                    ValidateChildren();
+                }
+            }
+        }
 
-//        private void AddCondition()
-//        {
-//            if (!CanAddCondition)
-//                return;
+        private void SetErrorMessage()
+        {
+            //ErrorMessage = _editService.ErrorMessage;
 
-//            var model = new StateMachineCondition()
-//            {
-//                ConditionType = ConditionType.Input
-//            };
+            switch (ConditionType)
+            {
+                case ConditionType.Input:
+                    ErrorMessage = InputErrorMessage;
+                    break;
+                case ConditionType.And:
+                    ErrorMessage = AndErrorMessage;
+                    break;
+                case ConditionType.Or:
+                    ErrorMessage = OrErrorMessage;
+                    break;
+                case ConditionType.Not:
+                    ErrorMessage = NotErrorMessage;
+                    break;
+            }
+        }
 
-//            var condition = new ConditionViewModel(model, _owner);
+        
+        public string ErrorMessage
+        {
+            get { return _errorMessage; }
+            set
+            {
+                _errorMessage = value;
+                RaisePropertyChanged();
+            }
+        }
 
-//            Conditions.Add(condition);
-//        }
+        public void ValidateChildren()
+        {
+            if (Conditions.Any(c => c.IsValid == false) || IsValid == false)
+            {
+                AreChildrenValid = false;
+            }
+            else
+            {
+                AreChildrenValid = true;
+            }
+        }
 
-//        public bool CanSelectInput
-//        {
-//            get { return ConditionType == ConditionType.Input; }
-//        }
+        
+        public bool AreChildrenValid
+        {
+            get { return _areChildrenValid; }
+            set
+            {
+                if (_areChildrenValid != value)
+                {
+                    _areChildrenValid = value;
+                    SetErrorMessage();
+                    RaisePropertyChanged();
+                }
+            }
+        }
 
-//        public bool CanAddCondition
-//        {
-//            get
-//            {
-//                switch (_model.ConditionType)
-//                {
-//                    case ConditionType.Or:
-//                    case ConditionType.And:
-//                        return true;
+        private void AddCondition()
+        {
+            if (!CanAddCondition)
+                return;
 
-//                    case ConditionType.Not:
+            var model = new StateMachineCondition()
+            {
+                ConditionType = ConditionType.Input
+            };
 
-//                        return Conditions.Count == 0;
+            var condition = new ConditionViewModel(model, _owner);
 
-//                    default:
-//                        return false;
-//                }
-//            }
-//        }
+            Conditions.Add(condition);
+        }
 
-//        private void Delete()
-//        {
-//            if (ParentCollection?.Parent == null)
-//            {
-//                _owner.Criteria.RootCondition = null;
-//            }
-//            else
-//            {
-//                ParentCollection.Remove(this);
-//            }
-//        }
+        public bool CanSelectInput
+        {
+            get { return ConditionType == ConditionType.Input; }
+        }
 
-//        /// <summary>
-//        /// Ensures that the number of sub conditions / the input is correct given its 
-//        /// </summary>
-//        private void Fix()
-//        {
-//            switch (ConditionType)
-//            {
-//                case ConditionType.Input:
-//                    Conditions.Clear();
+        public bool CanAddCondition
+        {
+            get
+            {
+                //return _editService.MaximumNumberOfChildren != null &&
+                //       _editService.MaximumNumberOfChildren.Value < Conditions.Count;
 
-//                    if (InputId == null)
-//                    {
+                switch (_model.ConditionType)
+                {
+                    case ConditionType.Or:
+                    case ConditionType.And:
+                        return true;
 
-//                        //Select the first item
-//                        InputId = _owner.Inputs
-//                            .FirstOrDefault()?.Id;
-//                    }
+                    case ConditionType.Not:
 
-//                    break;
+                        return Conditions.Count == 0;
 
-//                case ConditionType.Or:
-//                case ConditionType.And:
-//                    InputId = null;
-//                    break;
+                    default:
+                        return false;
+                }
+            }
+        }
 
-//                case ConditionType.Not:
+        private void Delete()
+        {
+            if (ParentCollection?.Parent == null)
+            {
+                _owner.Criteria.RootCondition = null;
+            }
+            else
+            {
+                ParentCollection.Remove(this);
+            }
+        }
 
-//                    InputId = null;
+        /// <summary>
+        /// Ensures that the number of sub conditions / the input is correct given its 
+        /// </summary>
+        private void Fix()
+        {
+            switch (ConditionType)
+            {
+                case ConditionType.Input:
+                    Conditions.Clear();
 
-//                    while (Conditions.Count > 1)
-//                    {
-//                        Conditions.RemoveAt(Conditions.Count - 1);
-//                    }
+                    if (InputId == null)
+                    {
 
-//                    break;
+                        //Select the first item
+                        InputId = _owner.Inputs
+                            .FirstOrDefault()?.Id;
+                    }
 
-//                default:
-//                    throw new NotSupportedException($"Unexpected value '{ConditionType}'.");
-//            }
-//        }
+                    break;
 
-//        public ConditionType ConditionType
-//        {
-//            get => _model.ConditionType;
-//            set
-//            {
-//                _model.ConditionType = value;
-//                RaisePropertyChanged();
-//                RaisePropertyChanged(() => CanSelectInput);
-//                RaisePropertyChanged(() => CanAddCondition);
-//                Fix();
-//                _owner.DirtyService.MarkDirty();
-//                OnConditionChanged(this);
-//            }
-//        }
+                case ConditionType.Or:
+                case ConditionType.And:
+                    InputId = null;
+                    break;
 
-//        public Guid? InputId
-//        {
-//            get { return _model.SourceInputId; }
-//            set
-//            {
-//                if (_model.SourceInputId != value)
-//                {
-//                    _model.SourceInputId = value;
-//                    RaisePropertyChanged();
-//                    _owner.DirtyService.MarkDirty();
-//                    OnConditionChanged(this);
-//                }
-//            }
-//        }
+                case ConditionType.Not:
 
-//        protected virtual void OnConditionChanged(object sender)
-//        {
-//            Validate();
-//            ConditionChanged?.Invoke(sender, EventArgs.Empty);
-//        }
+                    InputId = null;
 
-//        public ConditionsViewModel ParentCollection { get; internal set; }
+                    while (Conditions.Count > 1)
+                    {
+                        Conditions.RemoveAt(Conditions.Count - 1);
+                    }
 
-//        public ConditionsViewModel Conditions { get; }
+                    break;
 
-//        public IDirtyService DirtyService => _owner.DirtyService;
+                default:
+                    throw new NotSupportedException($"Unexpected value '{ConditionType}'.");
+            }
+        }
 
-//        internal StateMachineCondition GetModel()
-//        {
-//            Fix();
+        public ConditionType ConditionType
+        {
+            get => _model.ConditionType;
+            set
+            {
+                //Get the current editor
+                //_editService = _serviceManager[value];
 
-//            _model.Conditions = Conditions
-//                .Select(c => c.GetModel())
-//                .ToList();
+                _model.ConditionType = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(() => CanSelectInput);
+                RaisePropertyChanged(() => CanAddCondition);
+                Fix();
+                _owner.DirtyService.MarkDirty();
+                OnConditionChanged(this);
+            }
+        }
 
-//            return _model.Clone();
-//        }
-//    }
-//}
+        public Guid? InputId
+        {
+            get { return _model.SourceInputId; }
+            set
+            {
+                if (_model.SourceInputId != value)
+                {
+                    _model.SourceInputId = value;
+                    RaisePropertyChanged();
+                    _owner.DirtyService.MarkDirty();
+                    OnConditionChanged(this);
+                }
+            }
+        }
+
+        protected virtual void OnConditionChanged(object sender)
+        {
+            Validate();
+            ConditionChanged?.Invoke(sender, EventArgs.Empty);
+        }
+
+        public ConditionsViewModel ParentCollection { get; internal set; }
+
+        public ConditionsViewModel Conditions { get; }
+
+        public IDirtyService DirtyService => _owner.DirtyService;
+
+        internal StateMachineCondition GetModel()
+        {
+            Fix();
+
+            _model.Conditions = Conditions
+                .Select(c => c.GetModel())
+                .ToList();
+
+            return _model.Clone();
+        }
+    }
+}
