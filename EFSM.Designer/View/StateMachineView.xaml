@@ -13,7 +13,7 @@
              Background="Transparent"
              d:DesignHeight="300" d:DesignWidth="300" x:Name="DesignRoot">
     <UserControl.Resources>
-        <converters:CollapsedWhenFalseConverter x:Key="CollapsedWhenFalseConverter"/>
+        <converters:CollapsedWhenFalseConverter x:Key="CollapsedWhenFalseConverter"/>        
     </UserControl.Resources>
 
     <i:Interaction.Triggers>

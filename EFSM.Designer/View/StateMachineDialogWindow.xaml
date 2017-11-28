@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:EFSM.Designer.View"
         xmlns:viewModel="clr-namespace:EFSM.Designer.ViewModel"
         xmlns:controls="clr-namespace:Cas.Common.WPF.Controls;assembly=Cas.Common.WPF"
@@ -65,6 +66,9 @@
                         <Button ToolTip="Select All (Ctrl+A)" Command="{Binding SelectAllCommand}">
                             <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/Select.png" Width="16"/>
                         </Button>
+                        <Label Content="Number of instances:"/>
+                        <TextBox Width="20" Text="{Binding Path=StateMachine.NumberOfInstances, Mode=TwoWay, 
+                            TargetNullValue={x:Static sys:String.Empty}, NotifyOnSourceUpdated=True,  UpdateSourceTrigger=PropertyChanged}" />
                     </ToolBar>
 
                     <Grid Grid.Row="1">

@@ -27,6 +27,12 @@
     <UserControl.Resources>
         <converters:CenterConverter x:Key="CenterConverter"/>
     </UserControl.Resources>
+
+    <UserControl.InputBindings>
+        <MouseBinding MouseAction="RightClick" Command="{Binding Path=EditCommand}"/>
+        <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding Path=EditCommand}"/>
+    </UserControl.InputBindings>
+    
     <Grid>
 
         <!-- The "IsSelected" indicator -->
@@ -34,9 +40,6 @@
             <i:Interaction.Behaviors>
                 <behavior:SelectableBehavior IsEnabled="{Binding Path=Parent.IsPointerMode}" SelectionService="{Binding Path=Parent.SelectionService}"/>
             </i:Interaction.Behaviors>
-            <Path.InputBindings>
-                <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding Path=EditCommand}"/>
-            </Path.InputBindings>
         </Path>
 
         <!-- The main line -->

@@ -353,7 +353,6 @@ namespace EFSM.Designer.ViewModel
 
         #region IMoveable
 
-        private bool isInitializated = false;
         public Point Location
         {
             get { return PerpindicularPoint; }

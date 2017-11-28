@@ -57,6 +57,22 @@ namespace EFSM.Designer.ViewModel
             InitiateModel();
         }
 
+        public int NumberOfInstances
+        {
+            get => _model.NumberOfInstances;
+            set
+            {
+                if (value < 1)
+                {
+                    value = 1;
+                }
+
+                _model.NumberOfInstances = value;
+                RaisePropertyChanged();
+                SaveUndoState();
+            }
+        }
+
         public ObservableCollection<StateMachineInputViewModel> Inputs
         {
             get { return _inputs; }

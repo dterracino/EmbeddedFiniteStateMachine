@@ -1,5 +1,3 @@
-using System;
-
 namespace EFSM.Domain
 {
     public class StateMachine
@@ -15,6 +13,8 @@ namespace EFSM.Domain
         /// <summary>
         /// The available actions
         /// </summary>
-        public StateMachineOutputAction[] Actions { get; set; }        
+        public StateMachineOutputAction[] Actions { get; set; }
+
+        public int NumberOfInstances { get; set; }
     }
 }

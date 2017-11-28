@@ -17,7 +17,7 @@ namespace EFSM.Generator.Model
             {
                 var temp = Model.GenerationOptions.HeaderFilePath.Split('\\');
 
-                return temp[temp.Length - 1]; ;
+                return temp[temp.Length - 1];
             }
         }
 
