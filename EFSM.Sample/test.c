@@ -39,6 +39,10 @@ void SetInput(EFSM_INSTANCE * efsmInstance, uint8_t efsmInputNumber, uint8_t val
 		InputValues[efsmInputNumber] = value != 0 ? 1 : 0;
 		break;
 
+	case 6:
+		InputValues[efsmInputNumber] = value != 0 ? 1 : 0;
+		break;
+
 	default:
 		break;
 	}

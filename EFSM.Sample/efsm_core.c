@@ -4,7 +4,7 @@
 #include "efsm_binary_protocol.h"
 #include "test.h"
 #include "efsm6.h"
-#include "fanControlEfsm.h"
+#include "fanControl.h"
 
 void(*Actions0[EFSM_NUM_ACTIONS_FOR_ID_0])();
 uint8_t(*InputQueries0[EFSM_NUM_INPUTS_FOR_ID_0])();
@@ -125,7 +125,9 @@ void EFSM_EvaluateInputs(EFSM_INSTANCE * efsmInstance)
 		frarrInputIndex = efsmInstance->efsmBinary->data[efsmInstance->baseIndexIqfnData + i];
 
 		/*Run the input query and buffer the result.*/
-		efsmInstance->inputBuffer[i] = efsmInstance->InputQueries[frarrInputIndex]();
+		//efsmInstance->inputBuffer[i] = efsmInstance->InputQueries[frarrInputIndex]();
+		//efsmInstance->inputBuffer[i] = efsmInstance->InputQueries[frarrInputIndex](efsmInstance->indexOnEfsmType);
+		efsmInstance->inputBuffer[frarrInputIndex] = efsmInstance->InputQueries[frarrInputIndex](efsmInstance->indexOnEfsmType);
 	}
 }
 
@@ -196,12 +198,21 @@ struct with an EFSM binary, and the EFSM binarys' corresponding function referen
 arrays (for Actions and InputQueries). It also initializes all other members of the struct
 instance.
 */
-void EFSM_InitializeInstance(EFSM_INSTANCE * efsmInstance, EFSM_BINARY * efsmBinary, void(**Actions)(), uint8_t(**InputQueries)())
+void EFSM_InitializeInstance(EFSM_INSTANCE * efsmInstance, EFSM_BINARY * efsmBinary, void(**Actions)(uint8_t i), uint8_t(**InputQueries)(uint8_t i), uint8_t indexOnEfsmType)
 {
 	/*Pair the state machine instance with binary instructions and function reference arrays.*/
 	efsmInstance->efsmBinary = efsmBinary;
 	efsmInstance->Actions = Actions;
 	efsmInstance->InputQueries = InputQueries;
+
+	/*
+	To accommodate the possibility of having multiple instances running off the same state machine definition, the "indexOnEfsmType"
+	parameter is used to allow the execution engine to discern which instance it is operating on. Further, during calls to the 
+	input query and action functions, referred to in the Actions and InputQueries function pointer arrays, the index of the instance
+	for which they are being called is submitted as an argument. It is up to the developer to provide the logic within the actual
+	functions which will use the indexOnEfsmType value to ultimately determine what to retrieve / do. 
+	*/
+	efsmInstance->indexOnEfsmType = indexOnEfsmType;
 
 	/*Start reading the EFSM binary and initializing parameters.*/
 	efsmInstance->numberOfStates = EFSM_GetNumberOfStates(efsmBinary);
@@ -213,23 +224,21 @@ void EFSM_InitializeInstance(EFSM_INSTANCE * efsmInstance, EFSM_BINARY * efsmBin
 	efsmInstance->numberOfTransitions = EFSM_GetNumberOfTransitions(efsmInstance->baseIndexStateHeader, efsmBinary);
 }
 
+EFSM_INSTANCE efsm6;
+
 /*
 Gets things ready for calls to EFSM_Process().
 */
 void EFSM_InitializeProcess()
 {
-	/*Load the instance pointer array.*/
-	//efsmInstanceArray[0] = &efsm0;	
-	efsmInstanceArray[0] = &fanControlEfsm;
+	/*Load the instance pointer array.*/	
+	/*efsmInstanceArray[0] = &fanControlEfsm;	
+	EFSM_FanController_Init();	
+	EFSM_InitializeInstance(&fanControlEfsm, &FanControllerBinary, FanController_OutputActions, FanController_Inputs, 0);*/
 
-	//Test0Init();
-	//EFSM_efsm6_Init();
-	EFSM_FanController_Init();
-
-	/*Initialize instances.*/
-	//EFSM_InitializeInstance(&efsm0, &test0Binary, Test0Actions, Test0Inputs);	
-	//EFSM_InitializeInstance(&efsm6, &efsm6Binary, efsm6_OutputActions, efsm6_Inputs);
-	EFSM_InitializeInstance(&fanControlEfsm, &FanControllerBinary, FanController_OutputActions, FanController_Inputs);
+	efsmInstanceArray[0] = &efsm6;
+	EFSM_efsm6_Init();
+	EFSM_InitializeInstance(&efsm6, &efsm6Binary, efsm6_OutputActions, efsm6_Inputs, 0);
 }
 
 EFSM_EVAL_TRANSITIONS_RESULT EFSM_EvaluateTransitions(EFSM_INSTANCE * efsmInstance)
@@ -308,7 +317,7 @@ void EFSM_PeformTransition(EFSM_INSTANCE * efsmInstance, uint16_t transitionInde
 		actionsArrayIndex = binary[baseIndexForTrnActions + EFSM_TRN_ACTIONS_DATA_OFFSET_TRANSITION_ACTIONS_ARRAY_INDICES + actionIndex];
 		printf("actionsArrayIndex was %d\n", actionsArrayIndex);
 		printf("running action\n");
-		efsmInstance->Actions[actionsArrayIndex]();
+		efsmInstance->Actions[actionsArrayIndex](efsmInstance->indexOnEfsmType);
 	}
 
 	printf("initializing instance parameters for next state.");
@@ -324,6 +333,7 @@ void EFSM_Execute(EFSM_INSTANCE * efsmInstance)
 {	
 	EFSM_EVAL_TRANSITIONS_RESULT evalTransitionsResult;
 
+	printf("state was %d\n", efsmInstance->state);
 	printf("executing instance with binary ID: %d\n", efsmInstance->efsmBinary->id);
 	printf("baseIndexCurrentState was %d\n", efsmInstance->baseIndexCurrentState);
 	printf("baseIndexStateHeader was %d\n", efsmInstance->baseIndexStateHeader);
@@ -331,11 +341,12 @@ void EFSM_Execute(EFSM_INSTANCE * efsmInstance)
 
 	DisplayBufferContentsUint8(efsmInstance->inputBuffer, 5, "input buffer");
 	printf("evaluating inputs.\n");
+
 	/*Runs the input query functions (IQFNS's), as required by the current state, and buffers the results.*/
 	EFSM_EvaluateInputs(efsmInstance);
 	DisplayBufferContentsUint8(efsmInstance->inputBuffer, 5, "input buffer");
 
-	printf("evalauting transition conditions\n");
+	printf("evaluating transition conditions\n");
 	evalTransitionsResult = EFSM_EvaluateTransitions(efsmInstance);
 
 	/*If a set of input conditions required for a transition have been met...*/

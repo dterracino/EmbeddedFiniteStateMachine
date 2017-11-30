@@ -42,7 +42,7 @@
     <ClInclude Include="efsm6.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="fanControlEfsm.h">
+    <ClInclude Include="fanControl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -65,7 +65,7 @@
     <ClCompile Include="efsm6.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="fanControlEfsm.c">
+    <ClCompile Include="fanControl.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -16,6 +16,7 @@ namespace EFSM.Generator.Model
         public Guid Id { get; }
         public int FunctionReferenceIndex { get; }
         public string Name { get; }
+        public string FunctionPrototype => $"void EFSM_{ParentStateMachineName}_{Name}(uint8_t indexOnEfsmType);";
         public string ParentStateMachineName { get; }
         public string FunctionNamePrefix { get; }
         public string FunctionName

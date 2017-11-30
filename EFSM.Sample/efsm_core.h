@@ -63,6 +63,7 @@ typedef struct
 	EFSM_BINARY * efsmBinary;
 	void(**Actions)();
 	uint8_t(**InputQueries)();
+	uint8_t indexOnEfsmType;
 	uint16_t numberOfStates;
 	uint8_t totalNumberOfInputs;
 
@@ -70,11 +71,12 @@ typedef struct
 	These parameters are subject to change during operation, as they are
 	dependent on the current state.
 	*/
+
 	uint16_t state;
 	uint16_t numberOfInputs;
 	uint16_t numberOfTransitions;
 	uint16_t baseIndexCurrentState;			/*Holds the index in the EFSM binary where the current states' data begins.*/
-	uint16_t baseIndexStateHeader;	/*Holds the index in the EFSM binary of the current states' header data.*/
+	uint16_t baseIndexStateHeader;			/*Holds the index in the EFSM binary of the current states' header data.*/
 	uint16_t baseIndexIqfnData;				/*Holds the index in the EFSM binary of the current state's Input Query Function (IQFN) data.*/
 
 	uint8_t inputBuffer[EFSM_INPUT_BUFFER_NUMBER_OF_ELEMENTS];
@@ -105,7 +107,7 @@ extern EFSM_INSTANCE efsm0;
 extern EFSM_INSTANCE efsm1;
 
 void EFSM_InitializeProcess();
-void EFSM_InitializeInstance(EFSM_INSTANCE * efsmInstance, EFSM_BINARY * efsmBinary, void(**Actions)(), uint8_t(**InputQueries)());
+void EFSM_InitializeInstance(EFSM_INSTANCE * efsmInstance, EFSM_BINARY * efsmBinary, void(**Actions)(uint8_t i), uint8_t(**InputQueries)(uint8_t i), uint8_t indexOnEfsmType);
 void EFSM_Process();
 
 #endif
