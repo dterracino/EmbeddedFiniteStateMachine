@@ -29,6 +29,9 @@ namespace EFSM.Generator
 
             foreach (var stateMachine in binaryGenerationResult.StateMachines)
             {
+                /*Opening annotation for state machine.*/
+                code.AppendLine($"/*State machine \"{stateMachine.StateMachine.Model.Name}\" source code.*/\n\n");
+
                 /*Declare the input function reference array.*/
                 code.AppendLine($"uint8_t {stateMachine.StateMachine.InputReferenceArrayString};");
 
@@ -36,34 +39,6 @@ namespace EFSM.Generator
                 code.AppendLine($"void {stateMachine.StateMachine.ActionReferenceArrayString};");
                 
                 code.AppendLine();
-
-                /*Create the input function bodies.*/
-                code.AppendLine("/*Input query functions.*/\n");
-
-                foreach (var input in stateMachine.StateMachine.Inputs)
-                {                   
-                    var textToPrint = $"\"{input.Name}\"";
-                    var defaultDebugFunctionString = $"printf({textToPrint});";                    
-                    code.AppendLine($"uint8_t {input.FunctionName}()\n{{");
-                    code.Indent();
-                    code.AppendLine($"{defaultDebugFunctionString}");
-                    code.AppendLine("return 0;");
-                    code.RemoveIndent();
-                    code.AppendLine("}\n");
-                }
-
-                /*Create the output function bodies.*/
-                code.AppendLine("/*Output action functions.*/\n");
-
-                foreach (var act in stateMachine.StateMachine.Actions)
-                {
-                    var defaultDebugFunctionString = $"printf(\"Executing {act.Name}\");";
-                    code.AppendLine($"void {act.FunctionName}()\n{{");
-                    code.Indent();
-                    code.AppendLine($"{defaultDebugFunctionString}");
-                    code.RemoveIndent();
-                    code.AppendLine("}\n");
-                }                
 
                 /*Create the state machine binary array.*/
                 int currentAddress = 0;
@@ -145,176 +120,10 @@ namespace EFSM.Generator
 
                 code.RemoveIndent();
                 code.AppendLine("}\n");
-
-
             }
-
-            //code.AppendLine("/* All state machines  */");
-            //code.AppendLine("unsigned char * efsm_stateMachineDefinitions[] = {");
-
-            //using (code.Indent())
-            //{
-            //    foreach (var stateMachine in binaryGenerationResult.StateMachines)
-            //    {
-            //        code.AppendLine($"{stateMachine.StateMachine.LocalBinaryVariableName},");
-            //    }
-            //}
-            //code.AppendLine("};");
+            
             code.AppendLine();
-
-            
-            
-            //foreach (var stateMachine in project.StateMachinesGenerationModel)
-            //{
-            //    code.AppendLine($"/* [{stateMachine.Index}]State Machine: {stateMachine.Model.Name} */");
-
-            //    using (code.Indent())
-            //    {
-            //        code.AppendLine($"/* Inputs:  */");
-
-            //        using (code.Indent())
-            //        {
-            //            foreach (var input in stateMachine.Inputs)
-            //            {
-            //                code.AppendLine($"/*[{input.Index}]{input.Model.Name} */");
-            //            }
-            //        }
-
-            //        code.AppendLine($"/* Outputs: */");
-
-            //        using (code.Indent())
-            //        {
-            //            foreach (var output in stateMachine.Outputs)
-            //            {
-            //                code.AppendLine($"/*[{output.Index}]{output.Model.Name} */");
-            //            }
-            //        }
-
-            //        code.AppendLine($"/* States: */");
-
-            //        using (code.Indent())
-            //        {
-            //            foreach (var state in stateMachine.States)
-            //            {
-            //                code.AppendLine($"/* [{state.Index}]{state.Model.Name} */");
-
-            //                using (code.Indent())
-            //                {
-            //                    code.AppendLine("/* Transitions: */");
-
-            //                    using (code.Indent())
-            //                    {
-            //                        foreach (var transition in state.Transitions)
-            //                        {
-            //                            code.AppendLine($"/* {transition.Model.Name} */");
-
-            //                            using (code.Indent())
-            //                            {
-            //                                code.AppendLine("/* Actions: */");
-
-            //                                using (code.Indent())
-            //                                {
-            //                                    foreach (var action in transition.Actions)
-            //                                    {
-            //                                        code.AppendLine($"/* [{action.Index}]{action.Model.Model.Name}  */");
-            //                                    }
-            //                                }
-
-            //                                code.AppendLine("/* Condition */");
-
-            //                                if (transition.Model.Condition != null)
-            //                                {
-            //                                    using (code.Indent())
-            //                                    {
-            //                                        AppendCondition(transition.Model.Condition, code, stateMachine.Inputs);
-            //                                    }
-            //                                }
-            //                            }
-            //                        }
-            //                    }
-
-            //                    code.AppendLine($"/* Entry Actions */");
-
-            //                    using (code.Indent())
-            //                    {
-            //                        foreach (var action in state.EntryActions)
-            //                        {
-            //                            code.AppendLine($"/* [{action.Index}]{action.Model.Model.Name} */");
-            //                        }
-            //                    }
-
-            //                    code.AppendLine($"/* Exit Actions */");
-
-            //                    using (code.Indent())
-            //                    {
-            //                        foreach (var action in state.ExitActions)
-            //                        {
-            //                            code.AppendLine($"/* [{action.Index}]{action.Model.Model.Name} */");
-            //                        }
-            //                    }
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-
             return code.ToString();
-        }
-
-        //private static void AppendCondition(StateMachineCondition condition, TextGenerator code, InputGenerationModel[] inputs)
-        //{
-
-        //    if (condition.ConditionType == null && condition.Conditions == null &&
-        //        condition.SourceInputId == null)
-        //    {
-        //        code.AppendLine("/* None */");
-
-        //        return;
-        //    }
-
-        //    if (condition.ConditionType == null)
-        //    {
-        //        if (condition.SourceInputId == null)
-        //            throw new ApplicationException($"No source input was specified in a non-compound condition.");
-
-        //        var input = inputs.FirstOrDefault(i => i.Model.Id == condition.SourceInputId.Value);
-
-        //        if (input == null)
-        //            throw new ApplicationException($"Unabe to find input {condition.SourceInputId}.");
-
-        //        string prefix = (condition.Value == true) ? "" : "!";
-
-        //        code.AppendLine($"/* {prefix}{input.Model.Name} */");
-        //    }
-        //    else
-        //    {
-        //        switch (condition.ConditionType.Value)
-        //        {
-        //            case ConditionType.And:
-
-        //                code.AppendLine("/* And */");
-
-        //                break;
-
-        //            case ConditionType.Or:
-        //                code.AppendLine("/* Or */");
-        //                break;
-
-        //            default:
-        //                throw new InvalidOperationException($"Unexpected enum value '{condition.ConditionType.Value}'");
-        //        }
-
-        //        using (code.Indent())
-        //        {
-        //            if (condition.Conditions == null || condition.Conditions.Count == 0)
-        //                throw new ApplicationException($"A condition was marked as compound, but had no child conditions.");
-
-        //            foreach (var childCondition in condition.Conditions)
-        //            {
-        //                AppendCondition(childCondition, code, inputs);
-        //            }
-        //        }
-        //    }
-        //}
+        }    
     }
 }

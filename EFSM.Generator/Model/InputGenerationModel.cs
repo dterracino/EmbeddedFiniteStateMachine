@@ -20,8 +20,7 @@ namespace EFSM.Generator.Model
 
         public int? FunctionReferenceIndex { get; set; }
 
-        public string Name { get; }
-
+        public string Name { get; }        
         public string FunctionNamePrefix { get; }
         public string ParentStateMachineName { get; }
         public string FunctionName
@@ -33,7 +32,7 @@ namespace EFSM.Generator.Model
         }
         //public string FunctionName => $"EFSM_{Parent.Name.FixFunctionName()}_Input_{Model.Name.FixFunctionName()}";
 
-        public string FunctionPrototype => $"extern unsigned char {Name}();";
+        public string FunctionPrototype => $"uint8_t EFSM_{Parent.Name}_{Name}(uint8_t indexOnEfsmType);";
 
         //public override string IndexDefineName => $"EFSM_{Parent.Name.FixDefineName()}_INPUT_{Model.Name.FixDefineName()}_INDEX";
 

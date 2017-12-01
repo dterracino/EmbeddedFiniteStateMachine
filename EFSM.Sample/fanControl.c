@@ -1,47 +1,95 @@
-#include "fanControlEfsm.h"
+#include "fanControl.h"
 #include <stdint.h>
 #include "efsm_core.h"
 #include "test.h"
 
-uint8_t (*FanController_Inputs[EFSM_FANCONTROLLER_NUMBER_OF_INPUTS])();
-void (*FanController_OutputActions[EFSM_FANCONTROLLER_NUMBER_OF_OUTPUTS])();
+/*State machine "FanController" source code.*/
 
-/*Input query functions.*/
 
-uint8_t EFSM_FanController_IsTempAboveThreshold()
+uint8_t (*FanController_Inputs[EFSM_FANCONTROLLER_NUMBER_OF_INPUTS])(uint8_t indexOnEfsmType);
+void (*FanController_OutputActions[EFSM_FANCONTROLLER_NUMBER_OF_OUTPUTS])(uint8_t indexOnEfsmType);
+
+/*Implement the input functions.*/
+uint8_t EFSM_FanController_IsTempAboveThreshold(uint8_t indexOnEfsmType)
 {
-    printf("IsTempAboveThreshold");
-    return InputValues[0];
+	switch (indexOnEfsmType)
+	{
+	case 0:
+		return InputValues[0];
+		break;
+
+	default:
+		return 0;
+		break;
+	}
 }
 
-uint8_t EFSM_FanController_IsTimerExpired()
+uint8_t EFSM_FanController_IsTimerExpired(uint8_t indexOnEfsmType)
 {
-    printf("IsTimerExpired");
-    return InputValues[1];
+	switch (indexOnEfsmType)
+	{
+	case 0:
+		return InputValues[1];
+		break;
+
+	default:
+		return 0;
+		break;
+	}
 }
 
-/*Output action functions.*/
-
-void EFSM_FanController_StartTimer()
+/*Implement the action functions.*/
+EFSM_FanController_StartTimer(uint8_t indexOnEfsmType)
 {
-    printf("Executing StartTimer");
+	switch (indexOnEfsmType)
+	{
+	case 0:
+		printf("starting timer\n");
+		break;
+
+	default:
+		break;
+	}
 }
 
-void EFSM_FanController_TurnFanOn()
+EFSM_FanController_TurnFanOn(uint8_t indexOnEfsmType)
 {
-    printf("Executing TurnFanOn");
+	switch (indexOnEfsmType)
+	{
+	case 0:
+		printf("turning fan on\n");
+		break;
+
+	default:
+		break;
+	}
 }
 
-void EFSM_FanController_TurnFanOff()
+EFSM_FanController_TurnFanOff(uint8_t indexOnEfsmType)
 {
-    printf("Executing TurnFanOff");
+	switch (indexOnEfsmType)
+	{
+	case 0:
+		printf("turning fan off\n");
+		break;
+
+	default:
+		break;
+	}
 }
 
-void EFSM_FanController_ResetTimer()
+EFSM_FanController_ResetTimer(uint8_t indexOnEfsmType)
 {
-    printf("Executing ResetTimer");
-}
+	switch (indexOnEfsmType)
+	{
+	case 0:
+		printf("resetting timer\n");
+		break;
 
+	default:
+		break;
+	}
+}
 
 /* FanController */
 uint16_t efsm_FanController_binaryData[] = {

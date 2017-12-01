@@ -94,8 +94,8 @@ namespace EFSM.Generator.Model
 
         public string NumberOfActionsDefineString => $"EFSM_{IndexDefineName.ToUpper()}_NUMBER_OF_OUTPUTS";
         public string InputReferenceArrayName => $"{IndexDefineName}_Inputs";
-        public string InputReferenceArrayString => $"(*{IndexDefineName}_Inputs[{NumberOfInputsDefineString}])()";
+        public string InputReferenceArrayString => $"(*{IndexDefineName}_Inputs[{NumberOfInputsDefineString}])(uint8_t indexOnEfsmType)";
         public string ActionReferenceArrayName => $"{IndexDefineName}_OutputActions";
-        public string ActionReferenceArrayString => $"(*{IndexDefineName}_OutputActions[{NumberOfActionsDefineString}])()";
+        public string ActionReferenceArrayString => $"(*{IndexDefineName}_OutputActions[{NumberOfActionsDefineString}])(uint8_t indexOnEfsmType)";
     }
 }

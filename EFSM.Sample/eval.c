@@ -94,5 +94,9 @@ void EvalInterface(EFSM_INSTANCE * efsmInstance)
 			printf("Running state machine...\n");
 			EFSM_Process();
 		}
+		else if (!strcmp(iBuf, "getstate"))
+		{
+			printf("Current state is: %d\n", efsmInstanceArray[0]->state);
+		}
 	}	
 }

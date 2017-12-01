@@ -1,94 +1,33 @@
 #include "efsm6.h"
 #include <stdint.h>
 #include "efsm_core.h"
+#include "test.h"
 
-uint8_t (*efsm6_Inputs[EFSM_EFSM6_NUMBER_OF_INPUTS])();
-void (*efsm6_OutputActions[EFSM_EFSM6_NUMBER_OF_OUTPUTS])();
+/*State machine "efsm6" source code.*/
 
-/*Input query functions.*/
 
-uint8_t EFSM_efsm6_InputA()
-{
-    printf("InputA");
-    return 0;
-}
+uint8_t (*efsm6_Inputs[EFSM_EFSM6_NUMBER_OF_INPUTS])(uint8_t indexOnEfsmType);
+void (*efsm6_OutputActions[EFSM_EFSM6_NUMBER_OF_OUTPUTS])(uint8_t indexOnEfsmType);
 
-uint8_t EFSM_efsm6_InputB()
-{
-    printf("InputB");
-    return 0;
-}
+/*Inputs*/
+uint8_t EFSM_efsm6_InputA(uint8_t indexOnEfsmType){ printf("inputA\n"); return InputValues[0]; }
+uint8_t EFSM_efsm6_InputB(uint8_t indexOnEfsmType){ printf("inputB\n"); return InputValues[1]; }
+uint8_t EFSM_efsm6_InputC(uint8_t indexOnEfsmType){ printf("inputC\n"); return InputValues[2]; }
+uint8_t EFSM_efsm6_InputD(uint8_t indexOnEfsmType){ printf("inputD\n"); return InputValues[3]; }
+uint8_t EFSM_efsm6_InputE(uint8_t indexOnEfsmType){ printf("inputE\n"); return InputValues[4]; }
 
-uint8_t EFSM_efsm6_InputC()
-{
-    printf("InputC");
-    return 0;
-}
+/*Actions*/
 
-uint8_t EFSM_efsm6_InputD()
-{
-    printf("InputD");
-    return 0;
-}
-
-uint8_t EFSM_efsm6_InputE()
-{
-    printf("InputE");
-    return 0;
-}
-
-/*Output action functions.*/
-
-void EFSM_efsm6_ActionA()
-{
-    printf("Executing ActionA");
-}
-
-void EFSM_efsm6_ActionB()
-{
-    printf("Executing ActionB");
-}
-
-void EFSM_efsm6_ActionC()
-{
-    printf("Executing ActionC");
-}
-
-void EFSM_efsm6_ActionD()
-{
-    printf("Executing ActionD");
-}
-
-void EFSM_efsm6_ActionE()
-{
-    printf("Executing ActionE");
-}
-
-void EFSM_efsm6_ActionF()
-{
-    printf("Executing ActionF");
-}
-
-void EFSM_efsm6_ActionG()
-{
-    printf("Executing ActionG");
-}
-
-void EFSM_efsm6_ActionH()
-{
-    printf("Executing ActionH");
-}
-
-void EFSM_efsm6_ActionI()
-{
-    printf("Executing ActionI");
-}
-
-void EFSM_efsm6_ActionJ()
-{
-    printf("Executing ActionJ");
-}
-
+void EFSM_efsm6_ActionA(uint8_t indexOnEfsmType){ printf("actionA\n"); }
+void EFSM_efsm6_ActionB(uint8_t indexOnEfsmType){ printf("actionB\n"); }
+void EFSM_efsm6_ActionC(uint8_t indexOnEfsmType){ printf("actionC\n"); }
+void EFSM_efsm6_ActionD(uint8_t indexOnEfsmType){ printf("actionD\n"); }
+void EFSM_efsm6_ActionE(uint8_t indexOnEfsmType){ printf("actionE\n"); }
+void EFSM_efsm6_ActionF(uint8_t indexOnEfsmType){ printf("actionF\n"); }
+void EFSM_efsm6_ActionG(uint8_t indexOnEfsmType){ printf("actionG\n"); }
+void EFSM_efsm6_ActionH(uint8_t indexOnEfsmType){ printf("actionH\n"); }
+void EFSM_efsm6_ActionI(uint8_t indexOnEfsmType){ printf("actionI\n"); }
+void EFSM_efsm6_ActionJ(uint8_t indexOnEfsmType){ printf("actionJ\n"); }
 
 /* efsm6 */
 uint16_t efsm_efsm6_binaryData[] = {
@@ -367,3 +306,128 @@ void EFSM_efsm6_Init()
     efsm6_OutputActions[9] = &EFSM_efsm6_ActionJ;
 }
 
+///*State machine "Additional" source code.*/
+//
+//
+//uint8_t (*Additional_Inputs[EFSM_ADDITIONAL_NUMBER_OF_INPUTS])(uint8_t indexOnEfsmType);
+//void (*Additional_OutputActions[EFSM_ADDITIONAL_NUMBER_OF_OUTPUTS])(uint8_t indexOnEfsmType);
+//
+//
+///* Additional */
+//uint16_t efsm_Additional_binaryData[] = {
+//
+//    /*[0]: Number of states */
+//    2, 
+//    
+//    /*[1]: Total number of inputs. */
+//    2, 
+//    
+//    /*[2]: Initial state identifier. */
+//    0, 
+//    
+//    /*[3]: EFSM binary index of state ToasterOff */
+//    5, 
+//    
+//    /*[4]: EFSM binary index of state ToasterOn */
+//    17, 
+//    
+//    /*[5]: State ToasterOff base index. */
+//    /*[5]: Number of inputs. */
+//    1, 
+//    
+//    /*[6]: Number of transitions. */
+//    1, 
+//    
+//    /*[7]: EFSM binary index of IQFN data for state ToasterOff */
+//    9, 
+//    
+//    /*[8]: EFSM binary index of transition EngagingToaster data. */
+//    10, 
+//    
+//    /*[9]: State ToasterOff start of IQFN data. */
+//    /*[9]: IQFN function reference index for prototype IsStartButtonPressed */
+//    0, 
+//    
+//    /*[10]: Transition EngagingToaster data. */
+//    /*[10]: EFSM binary index of transition EngagingToaster actions data. */
+//    14, 
+//    
+//    /*[11]: Next state after transition. */
+//    1, 
+//    
+//    /*[12]: Number of opcodes. */
+//    1, 
+//    
+//    /*[13]: Opcodes 0 and 1 */
+//    128, 
+//    
+//    /*[14]: Transition Actions data. */
+//    /*[14]: Number of transition actions for transition EngagingToaster */
+//    2, 
+//    
+//    /*[15]: Action TurnOnToaster function reference index. */
+//    0, 
+//    
+//    /*[16]: Action StartTimer function reference index. */
+//    2, 
+//    
+//    /*[17]: State ToasterOn base index. */
+//    /*[17]: Number of inputs. */
+//    1, 
+//    
+//    /*[18]: Number of transitions. */
+//    1, 
+//    
+//    /*[19]: EFSM binary index of IQFN data for state ToasterOn */
+//    21, 
+//    
+//    /*[20]: EFSM binary index of transition TurningToasterOff data. */
+//    22, 
+//    
+//    /*[21]: State ToasterOn start of IQFN data. */
+//    /*[21]: IQFN function reference index for prototype IsTimerExpired */
+//    1, 
+//    
+//    /*[22]: Transition TurningToasterOff data. */
+//    /*[22]: EFSM binary index of transition TurningToasterOff actions data. */
+//    26, 
+//    
+//    /*[23]: Next state after transition. */
+//    0, 
+//    
+//    /*[24]: Number of opcodes. */
+//    1, 
+//    
+//    /*[25]: Opcodes 0 and 1 */
+//    129, 
+//    
+//    /*[26]: Transition Actions data. */
+//    /*[26]: Number of transition actions for transition TurningToasterOff */
+//    2, 
+//    
+//    /*[27]: Action ResetTimer function reference index. */
+//    4, 
+//    
+//    /*[28]: Action TurnOffToaster function reference index. */
+//    1 
+//    
+//};
+//
+//EFSM_BINARY AdditionalBinary;
+//
+//void EFSM_Additional_Init()
+//{
+//
+//    /*Associate the raw binary with the binary container.*/
+//    AdditionalBinary.id = 43981;
+//    AdditionalBinary.data = efsm_Additional_binaryData;
+//    
+//    Additional_Inputs[0] = &EFSM_Additional_IsStartButtonPressed;
+//    Additional_Inputs[1] = &EFSM_Additional_IsTimerExpired;
+//    
+//    Additional_OutputActions[0] = &EFSM_Additional_TurnOnToaster;
+//    Additional_OutputActions[1] = &EFSM_Additional_TurnOffToaster;
+//    Additional_OutputActions[2] = &EFSM_Additional_StartTimer;
+//    Additional_OutputActions[3] = &EFSM_Additional_ResetTimer;
+//}
+//
