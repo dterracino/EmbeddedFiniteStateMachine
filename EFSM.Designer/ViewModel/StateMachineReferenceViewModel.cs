@@ -24,7 +24,10 @@ namespace EFSM.Designer.ViewModel
 
             RenameCommand = new RelayCommand(Rename);
             EditCommand = new RelayCommand(() => Edit());
+
+            CheckNumberOfInstancesValue();
         }
+
 
         public ICommand RenameCommand { get; }
         public ICommand EditCommand { get; }
@@ -35,6 +38,8 @@ namespace EFSM.Designer.ViewModel
 
             textEditService.EditText(Name, "New Name", "Rename", s => Name = s);
         }
+
+        public string DisplayedName => $"{_model.Name} ({_model.NumberOfInstances})";
 
         public string Name
         {
@@ -67,6 +72,15 @@ namespace EFSM.Designer.ViewModel
             _model = stateMachine;
             // ReSharper disable once ExplicitCallerInfoArgument
             RaisePropertyChanged(null);
+        }
+
+        private void CheckNumberOfInstancesValue()
+        {
+            if (_model.NumberOfInstances < 1)
+            {
+                _model.NumberOfInstances = 1;
+                RaisePropertyChanged(nameof(DisplayedName));
+            }
         }
     }
 }

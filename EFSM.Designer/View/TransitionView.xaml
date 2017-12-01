@@ -9,6 +9,7 @@
              xmlns:converters="clr-namespace:EFSM.Designer.Converters"
              xmlns:behavior="clr-namespace:EFSM.Designer.Behaviors"
              xmlns:viewModel="clr-namespace:EFSM.Designer.ViewModel"
+             xmlns:command="http://www.galasoft.ch/mvvmlight"
              d:DataContext="{d:DesignInstance viewModel:TransitionViewModel, d:IsDesignTimeCreatable=False}"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
@@ -28,12 +29,18 @@
         <converters:CenterConverter x:Key="CenterConverter"/>
     </UserControl.Resources>
 
-    <UserControl.InputBindings>
-        <MouseBinding MouseAction="RightClick" Command="{Binding Path=EditCommand}"/>
+    <!--<UserControl.InputBindings>
         <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding Path=EditCommand}"/>
-    </UserControl.InputBindings>
-    
+    </UserControl.InputBindings>-->
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="MouseDoubleClick">
+            <command:EventToCommand Command="{Binding EditCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <Grid>
+
 
         <!-- The "IsSelected" indicator -->
         <Path Data="{Binding Path=LineGeometry}" StrokeThickness="10" IsHitTestVisible="True" x:Name="SelectionPath" Stroke="Transparent">
