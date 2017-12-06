@@ -11,5 +11,20 @@ namespace EFSM.Designer.View
         {
             InitializeComponent();
         }
+
+        private void StateMachineView_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ToolsView_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
