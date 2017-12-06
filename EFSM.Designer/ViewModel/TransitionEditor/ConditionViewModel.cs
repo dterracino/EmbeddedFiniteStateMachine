@@ -13,11 +13,6 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 {
     public class ConditionViewModel : ViewModelBase
     {
-        private const string InputErrorMessage = "Cannot have any children";
-        private const string AndErrorMessage = "Has to have at least one child";
-        private const string OrErrorMessage = "Has to have at least one child";
-        private const string NotErrorMessage = "Has to have one and only one child";
-
         public event EventHandler ConditionChanged;
 
         private bool _isValid = true;
@@ -75,7 +70,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
         private void Validate()
         {
-            ////Check the minimum number of children
+            //Check the minimum number of children
             if (_editService.MinimumNumberOfChildren != null &&
                 Conditions.Count < _editService.MinimumNumberOfChildren.Value)
             {

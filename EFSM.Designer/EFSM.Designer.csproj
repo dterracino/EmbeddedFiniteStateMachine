@@ -172,6 +172,7 @@
     <Compile Include="Behaviors\SimpleMoveableBehavior.cs" />
     <Compile Include="Behaviors\StateDragBehavior.cs" />
     <Compile Include="Behaviors\TransitionCreatorBehavior.cs" />
+    <Compile Include="Behaviors\SelectableDraggableBehavior.cs" />
     <Compile Include="Common\BitmapProcessor.cs" />
     <Compile Include="Common\Cloner.cs" />
     <Compile Include="Common\GraphicsUtil.cs" />

@@ -101,7 +101,7 @@
         <!-- The grab / tweeze point -->
         <Path StrokeThickness="1" IsHitTestVisible="True" x:Name="GrabPoint">
             <i:Interaction.Behaviors>
-                <behavior:SimpleMoveableBehavior/>
+                <behavior:SelectableDraggableBehavior SelectionService="{Binding Path=Parent.SelectionService}"  UndoProvider="{Binding Path=Parent.UndoProvider}"/>
             </i:Interaction.Behaviors>
 
             <Path.Style>
