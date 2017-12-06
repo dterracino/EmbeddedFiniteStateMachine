@@ -51,7 +51,7 @@
                             <controls:AutoGreyableImage Source="/EFSM.Designer;component/Images/Delete.gif" ></controls:AutoGreyableImage>
                         </Button>
                         <Separator/>
-                        <RadioButton IsChecked="{Binding Path=StateMachine.IsPointerMode}" GroupName="Mode" Content="Pointer"/>
+                        <RadioButton IsChecked="{Binding Path=StateMachine.IsPointerMode}" GroupName="Mode" Content="Pointer" Checked="RadioButton_Checked"/>
                         <RadioButton IsChecked="{Binding Path=StateMachine.IsConnectorMode}"  GroupName="Mode" Content="Connections"/>
                         <Separator/>
                         <Button ToolTip="Undo (Ctrl+Z)" ToolTipService.ShowOnDisabled="True" Command="{Binding Path=UndoCommand}">
@@ -85,7 +85,7 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
-                            <local:ToolsView DataContext="{x:Static viewModel:ViewModelLocator.StateTools}" Grid.Column="0"></local:ToolsView>
+                            <local:ToolsView DataContext="{x:Static viewModel:ViewModelLocator.StateTools}" Grid.Column="0" Loaded="ToolsView_Loaded"></local:ToolsView>
                             <GridSplitter Grid.Row="1" ResizeBehavior="PreviousAndNext" HorizontalAlignment="Stretch" Height="4"></GridSplitter>
                             <local:PropertyGridView Grid.Row="2" SelectionService="{Binding Path=StateMachine.SelectionService}" />
                         </Grid>
@@ -94,7 +94,7 @@
                         
                         <GridSplitter Grid.Column="1" Style="{StaticResource ColumnGridSplitter}" ResizeBehavior="PreviousAndCurrent"/>
                         <ScrollViewer Grid.Column="2" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" >
-                            <local:StateMachineView x:Name="StateMachineView" DataContext="{Binding StateMachine}" Background="Gray"></local:StateMachineView>
+                            <local:StateMachineView x:Name="StateMachineView" DataContext="{Binding StateMachine}" Background="Gray" Loaded="StateMachineView_Loaded"></local:StateMachineView>
                         </ScrollViewer>
                         
                         
@@ -103,7 +103,7 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Inputs" DataContext="{Binding Path=Inputs}">
+            <TabItem Header="Inputs" DataContext="{Binding Path=Inputs}" Margin="-2,-2,-2,2">
                 <local:ConnectorsView/>
             </TabItem>
 
