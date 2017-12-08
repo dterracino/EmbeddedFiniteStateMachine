@@ -115,7 +115,7 @@ namespace EFSM.Designer.Behaviors
         private void ElementOnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             var position = GetPositionFromMouse(e);
-            Clicked(position);
+            SelectionService?.RightClick(Selectable);
         }
     }
 }

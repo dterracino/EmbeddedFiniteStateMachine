@@ -14,6 +14,7 @@ namespace EFSM.Designer.ViewModel
     public abstract class DesignerViewModelBase : ViewModelBase, ISelectable, IAreaSelector
     {
         public ICommand OnPreviewMouseLeftButtonUpCommand { get; private set; }
+        public ICommand OnPreviewMouseRightButtonUpCommand { get; private set; }
         public ICommand OnDropCommand { get; private set; }
         public ICommand DeleteCommand { get; private set; }
 
@@ -35,6 +36,7 @@ namespace EFSM.Designer.ViewModel
         {
             DeleteCommand = new RelayCommand(Delete, CanDelete);
             OnPreviewMouseLeftButtonUpCommand = new RelayCommand<MouseEventArgs>(OnPreviewMouseLeftButtonUp);
+            OnPreviewMouseRightButtonUpCommand = new RelayCommand<MouseEventArgs>(OnPreviewMouseRightButtonUp);
             OnDropCommand = new RelayCommand<DragEventArgs>(OnDrop);
         }
 
@@ -140,6 +142,10 @@ namespace EFSM.Designer.ViewModel
         }
 
         public virtual void OnPreviewMouseLeftButtonUp(MouseEventArgs e)
+        {
+        }
+
+        public virtual void OnPreviewMouseRightButtonUp(MouseEventArgs e)
         {
         }
     }

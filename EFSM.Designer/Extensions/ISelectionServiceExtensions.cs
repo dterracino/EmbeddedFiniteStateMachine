@@ -41,6 +41,23 @@ namespace EFSM.Designer.Extensions
             }
         }
 
+        public static void RightClick(this ISelectionService selectionService, ISelectable selectable)
+        {
+            if (selectionService == null)
+                return;
+
+            if (selectable == null)
+                return;
+
+            if (!selectable.IsSelected)
+            {
+                selectionService.SelectNone();
+
+                //Select the current item.
+                selectionService.Select(selectable);
+            }
+        }
+
         /// <summary>
         /// Ensures that the item is selected (no changes are made if the item is already selected).
         /// </summary>
