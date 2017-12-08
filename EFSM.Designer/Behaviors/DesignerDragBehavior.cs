@@ -104,5 +104,18 @@ namespace EFSM.Designer.Behaviors
             _moveables = null;
 
         }
+
+        protected override void OnAttached()
+        {
+            base.OnAttached();
+
+            AssociatedObject.PreviewMouseRightButtonUp += ElementOnMouseRightButtonUp;
+        }
+
+        private void ElementOnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            var position = GetPositionFromMouse(e);
+            Clicked(position);
+        }
     }
 }

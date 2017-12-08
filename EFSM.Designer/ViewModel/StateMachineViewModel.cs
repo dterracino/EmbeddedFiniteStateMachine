@@ -10,6 +10,7 @@ using EFSM.Domain;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,6 +27,8 @@ namespace EFSM.Designer.ViewModel
         private double _height = DefaultHeight;
 
         private Point _newTransitionEnd;
+        private bool _isBulkDeleteInProgress = false;
+        private bool _isStateDeleteInProgress = false;
 
         private readonly ObservableCollection<TransitionViewModel> _transitions = new ObservableCollection<TransitionViewModel>();
         private readonly bool _isReadOnly;
@@ -112,6 +115,11 @@ namespace EFSM.Designer.ViewModel
             InitializeInputViewModel();
             InitializeOutputViewModel();
             _isInitialized = true;
+
+            States.CollectionChanged -= StatesCollectionChanged;
+            States.CollectionChanged += StatesCollectionChanged;
+            Transitions.CollectionChanged -= TransitionsCollectionChanged;
+            Transitions.CollectionChanged += TransitionsCollectionChanged;
         }
 
         public void AddNewState(StateFactory factory, Point location)
@@ -119,6 +127,27 @@ namespace EFSM.Designer.ViewModel
             var state = factory.Create();
 
             CreateNewState((StateType)state.StateType, location);
+        }
+
+        public void DeleteOfSelected()
+        {
+            _isBulkDeleteInProgress = true;
+            var statesForDelete = States.Where(s => s.IsSelected).ToList();
+
+            foreach (var stateForDelete in statesForDelete)
+            {
+                States.Remove(stateForDelete);
+            }
+
+            var transitionsForDelete = Transitions.Where(t => t.IsSelected).ToList();
+
+            foreach (var transitionForDelete in transitionsForDelete)
+            {
+                transitionForDelete.Delete();
+            }
+
+            _isBulkDeleteInProgress = false;
+            SaveUndoState();
         }
 
         /// <summary>
@@ -393,20 +422,6 @@ namespace EFSM.Designer.ViewModel
             return _model.Clone();
         }
 
-        internal void RemoveTransition(TransitionViewModel transition)
-        {
-            RemoveTransitionWithoutSavingUndoState(transition);
-            SaveUndoState();
-        }
-
-        internal void RemoveTransitionWithoutSavingUndoState(TransitionViewModel transition)
-        {
-            if (_transitions.Contains(transition))
-            {
-                _transitions.Remove(transition);
-            }
-        }
-
         public void CancelCreatingTransition()
         {
             IsCreatingTransition = false;
@@ -449,7 +464,7 @@ namespace EFSM.Designer.ViewModel
 
         public void SaveUndoState()
         {
-            if (_isInitialized)
+            if (_isInitialized && !_isBulkDeleteInProgress && !_isStateDeleteInProgress)
             {
                 _undoProvider?.SaveUndoState();
                 _dirtyService?.MarkDirty();
@@ -466,6 +481,45 @@ namespace EFSM.Designer.ViewModel
             foreach (var state in selection)
             {
                 SelectionService.Select(state);
+            }
+        }
+
+        private void TransitionsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                foreach (var item in e.OldItems)
+                {
+                    if (item is TransitionViewModel transition)
+                    {
+                        transition.Source = null;
+                        transition.Target = null;
+                    }
+                }
+
+                SaveUndoState();
+            }
+        }
+
+        private void StatesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                _isStateDeleteInProgress = true;
+
+                foreach (var item in e.OldItems)
+                {
+                    var state = item as StateViewModel;
+
+                    foreach (var transition in state?.Transitions?.ToList())
+                    {
+                        Transitions.Remove(transition);
+                    }
+                }
+
+                _isStateDeleteInProgress = false;
+
+                SaveUndoState();
             }
         }
     }

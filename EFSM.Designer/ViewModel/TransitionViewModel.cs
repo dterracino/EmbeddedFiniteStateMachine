@@ -399,10 +399,7 @@ namespace EFSM.Designer.ViewModel
 
         public void Delete()
         {
-            Source = null;
-            Target = null;
-            _parent.RemoveTransition(this);
-            //Call undo provider
+            Parent.DeleteOfSelected();
         }
 
         public void DeleteOutputId(Guid outputId)

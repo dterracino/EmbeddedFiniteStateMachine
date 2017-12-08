@@ -25,6 +25,7 @@ namespace EFSM.Designer.ViewModel
         private Point _startLocation;
         private readonly IViewService _viewService;
         private readonly List<TransitionViewModel> _transitions = new List<TransitionViewModel>();
+        public List<TransitionViewModel> Transitions => _transitions;
 
         public ICommand EditCommand { get; }
         public ICommand DeleteCommand { get; }
@@ -219,14 +220,7 @@ namespace EFSM.Designer.ViewModel
 
         public void Delete()
         {
-            foreach (var transition in _transitions.ToArray())
-            {
-                Parent.RemoveTransitionWithoutSavingUndoState(transition);
-                _transitions.Remove(transition);
-            }
-
-            Parent.States.Remove(this);
-            Parent.SaveUndoState();
+            Parent.DeleteOfSelected();
         }
     }
 }
