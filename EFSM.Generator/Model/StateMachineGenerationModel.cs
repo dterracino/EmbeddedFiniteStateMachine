@@ -88,14 +88,14 @@ namespace EFSM.Generator.Model
         public string NumOutputsDefine => $"#define TEST_NAME 6";
 
         public string LocalBinaryVariableName => $"efsm_{SourceStateMachine.Name}_binaryData";
-        public string BinaryContainerName => $"{SourceStateMachine.Name}Binary";
+        public string BinaryContainerName => $"{SourceStateMachine.Name.Replace(' ', '_')}_Binary";   
         public UInt16 BinaryContainerId => 0xabcd;
         public string NumberOfInputsDefineString => $"EFSM_{IndexDefineName.ToUpper()}_NUMBER_OF_INPUTS";
 
         public string NumberOfActionsDefineString => $"EFSM_{IndexDefineName.ToUpper()}_NUMBER_OF_OUTPUTS";
         public string InputReferenceArrayName => $"{IndexDefineName}_Inputs";
-        public string InputReferenceArrayString => $"(*{IndexDefineName}_Inputs[{NumberOfInputsDefineString}])(uint8_t indexOnEfsmType)";
+        public string InputReferenceArrayString => $"(*{IndexDefineName.Replace(' ', '_')}_Inputs[{NumberOfInputsDefineString.Replace(' ', '_')}])(uint8_t indexOnEfsmType)";
         public string ActionReferenceArrayName => $"{IndexDefineName}_OutputActions";
-        public string ActionReferenceArrayString => $"(*{IndexDefineName}_OutputActions[{NumberOfActionsDefineString}])(uint8_t indexOnEfsmType)";
+        public string ActionReferenceArrayString => $"(*{IndexDefineName.Replace(' ', '_')}_OutputActions[{NumberOfActionsDefineString.Replace(' ', '_')}])(uint8_t indexOnEfsmType)";
     }
 }
