@@ -27,7 +27,7 @@ namespace EFSM.Generator.Model
         {
             get
             {
-                return $"{FunctionNamePrefix}_{ParentStateMachineName}_{Name}";
+                return $"{FunctionNamePrefix}_{ParentStateMachineName}_{Name}".Replace(' ', '_');
             }
         }
         //public string FunctionName => $"EFSM_{Parent.Name.FixFunctionName()}_Input_{Model.Name.FixFunctionName()}";

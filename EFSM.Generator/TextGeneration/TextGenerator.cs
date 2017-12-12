@@ -77,6 +77,16 @@ namespace EFSM.Generator.TextGeneration
             _isAwaitingNewLine = true;
         }
 
+        public void StandardSeparator()
+        {
+            AppendLine($"/*\n----------------------------------------------------------------------------------------------------\n*/");
+        }
+
+        public void StandardSeparator(string text)
+        {        
+            AppendLine($"/*\n----------------------------------------------------------------------------------------------------\n{text}\n*/");                       
+        }
+
         public int IndentLevel => _indentLevel;
 
         public override string ToString()

@@ -23,7 +23,7 @@ namespace EFSM.Generator.Model
         {
             get
             {
-                return $"{FunctionNamePrefix}_{ParentStateMachineName}_{Name}";
+                return $"{FunctionNamePrefix}_{ParentStateMachineName}_{Name}".Replace(' ', '_');
             }
         }
     }
