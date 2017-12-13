@@ -1,75 +1,66 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Sample Generated Files">
+      <UniqueIdentifier>{9775797a-11ae-4970-89bf-f863e9d1caa7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    <Filter Include="CLI Evaluation Header Files">
+      <UniqueIdentifier>{5e9e7058-50ac-423d-b5f4-520191768d95}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="CLI Evaluation Source Files">
+      <UniqueIdentifier>{0983a91e-253e-4579-a66a-5eecbc0548cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Embedded Platform Source Files">
+      <UniqueIdentifier>{3a8d710d-2e81-4195-9008-532fa08d98bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Embedded Platform Header Files">
+      <UniqueIdentifier>{4c286203-0e59-4546-8bc4-ceadb2934ca0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="efsm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="efsm_options.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="efsm_generated.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="efsm_core.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="efsm_binary_protocol.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="eval.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="test.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="efsm6.h">
-      <Filter>Header Files</Filter>
+      <Filter>Sample Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="fanControl.h">
-      <Filter>Header Files</Filter>
+      <Filter>Sample Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="test.h">
+      <Filter>CLI Evaluation Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eval.h">
+      <Filter>CLI Evaluation Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="efsm_binary_protocol.h">
+      <Filter>Embedded Platform Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="efsm_core.h">
+      <Filter>Embedded Platform Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="efsm_interface.h">
+      <Filter>Embedded Platform Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="efsm_core.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="efsm_generated.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="eval.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="efsm6.c">
-      <Filter>Source Files</Filter>
+      <Filter>Sample Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="fanControl.c">
-      <Filter>Source Files</Filter>
+      <Filter>Sample Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test.c">
+      <Filter>CLI Evaluation Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eval.c">
+      <Filter>CLI Evaluation Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.c">
+      <Filter>CLI Evaluation Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="efsm_core.c">
+      <Filter>Embedded Platform Source Files</Filter>
     </ClCompile>
     <ClCompile Include="efsm_interface.c">
-      <Filter>Source Files</Filter>
+      <Filter>Embedded Platform Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -3,7 +3,6 @@
 #define EFSM_CORE_H
 
 #include <stdint.h>
-#include "efsm_generated.h"
 
 #define EFSM_BINARY_0_SIZE										10
 #define EFSM_BINARY_1_SIZE										10
@@ -89,22 +88,7 @@ typedef struct
 	uint16_t index;
 }EFSM_EVAL_TRANSITIONS_RESULT;
 
-extern uint16_t efsmBinary0Raw[EFSM_BINARY_0_SIZE];
-extern EFSM_BINARY efsmBinary0;
-
-extern uint16_t efsmBinary1Raw[EFSM_BINARY_1_SIZE];
-extern EFSM_BINARY efsmBinary1;
-
-extern void(*Actions0[EFSM_NUM_ACTIONS_FOR_ID_0])();
-extern void(*Actions1[EFSM_NUM_ACTIONS_FOR_ID_1])();
-
-extern uint8_t(*InputQueries0[EFSM_NUM_INPUTS_FOR_ID_0])();
-extern uint8_t(*InputQueries1[EFSM_NUM_INPUTS_FOR_ID_1])();
-
-extern EFSM_INSTANCE * efsmInstanceArray[EFSM_NUM_STATE_MACHINES];
-
-extern EFSM_INSTANCE efsm0;
-extern EFSM_INSTANCE efsm1;
+extern EFSM_INSTANCE * efsmInstanceArray[];
 
 void EFSM_InitializeProcess();
 void EFSM_InitializeInstance(EFSM_INSTANCE * efsmInstance, EFSM_BINARY * efsmBinary, void(**Actions)(uint8_t i), uint8_t(**InputQueries)(uint8_t i), uint8_t indexOnEfsmType);

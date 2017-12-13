@@ -1,19 +1,12 @@
-#include "efsm.h"
 #include "stdint.h"
 #include "efsm_core.h"
 #include "efsm_binary_protocol.h"
-#include "test.h"
-#include "efsm6.h"
-#include "fanControl.h"
+#include "efsm_interface.h"
 
 void(*Actions0[EFSM_NUM_ACTIONS_FOR_ID_0])();
 uint8_t(*InputQueries0[EFSM_NUM_INPUTS_FOR_ID_0])();
 
 EFSM_INSTANCE * efsmInstanceArray[EFSM_NUM_STATE_MACHINES];
-
-EFSM_INSTANCE efsm0;
-EFSM_INSTANCE efsm6;
-EFSM_INSTANCE fanControlEfsm;
 
 /*
 Returns the number of states administered by the EFSM binary. References off of index 0

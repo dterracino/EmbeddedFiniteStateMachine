@@ -1,4 +1,5 @@
 #include "efsm_core.h"
+#include "efsm_interface.h"
 #include "test.h"
 
 /*Include the generated header file from the EFSM.Designer project here.*/
@@ -7,16 +8,26 @@
 /*Declare the state machine instances here.*/
 EFSM_INSTANCE efsm6;
 
-/*
-Gets things ready for calls to EFSM_Process().
-*/
+/*Gets things ready for calls to EFSM_Process(), which is defined in efsm_core.c.*/
 void EFSM_InitializeProcess()
 {
-	/*Load the instance pointer array.*/
-	/*efsmInstanceArray[0] = &fanControlEfsm;
-	EFSM_FanController_Init();
-	EFSM_InitializeInstance(&fanControlEfsm, &FanControllerBinary, FanController_OutputActions, FanController_Inputs, 0);*/
+	/*
+	Steps
 
+	1) Initialize the instance pointer array. The instances are not auto-generated, and must be declared by the developer.
+	Example:
+	efsmInstanceArray[0] = &fanControlEfsm;
+	
+	2) Call the project initialization function. It is auto-generated and may be found in the generated source file
+	for the project.
+	Example:
+	EFSM_FanController_Project_Init();	
+	
+	3) Initialize each instance.
+	Example:
+	EFSM_InitializeInstance(&fanControlEfsm, &FanControllerBinary, FanController_OutputActions, FanController_Inputs, 0);	
+	*/
+	
 	efsmInstanceArray[0] = &efsm6;
 	EFSM_efsm6_Init();
 	EFSM_InitializeInstance(&efsm6, &efsm6Binary, efsm6_OutputActions, efsm6_Inputs, 0);
