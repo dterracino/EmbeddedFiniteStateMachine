@@ -8,33 +8,32 @@ namespace EFSM.Generator
     {
         internal string GenerateHeader(ProjectGenerationModel project)
         {
-            StringBuilder headerFile = new StringBuilder();                     
+            StringBuilder headerFile = new StringBuilder();            
 
             var headerNameOnly = project.HeaderFileName.Split('.')[0];
 
             headerFile.AppendLine($"#ifndef {project.Model.GenerationOptions.HeaderFileHeader}_H");
-            headerFile.AppendLine($"#define {project.Model.GenerationOptions.HeaderFileHeader}_H");
+            headerFile.AppendLine($"#define {project.Model.GenerationOptions.HeaderFileHeader}_H");       
 
             headerFile.AppendLine();
             headerFile.AppendLine("#include <stdint.h>");
             headerFile.AppendLine("#include \"efsm_core.h\"");
             headerFile.AppendLine();
 
-
             for (int stateMachineIndex = 0; stateMachineIndex < project.StateMachinesGenerationModel.Length; stateMachineIndex++)
-            {
+            {                
                 var currentStateMachine = project.StateMachinesGenerationModel[stateMachineIndex];
                 var stateMachineName = project.StateMachinesGenerationModel[stateMachineIndex].IndexDefineName;
                 var numberOfInputs = project.StateMachinesGenerationModel[stateMachineIndex].Inputs.Length;
                 var numberOfActions = project.StateMachinesGenerationModel[stateMachineIndex].Actions.Length;
-
-                headerFile.AppendLine($"/*State machine \"{stateMachineName}\" information.*/\n");               
+                
+                headerFile.AppendLine($"/*\n----------------------------------------------------------------------------------------------------\nState machine \"{stateMachineName}\" information.\n*/");
 
                 headerFile.AppendLine($"#define {currentStateMachine.NumberOfInputsDefineString}      {numberOfInputs}");
                 headerFile.AppendLine($"#define {currentStateMachine.NumberOfActionsDefineString}      {numberOfActions}");
 
                 headerFile.AppendLine();
-              
+                                
                 headerFile.AppendLine($"extern uint8_t {currentStateMachine.InputReferenceArrayString};");
                 headerFile.AppendLine($"extern void {currentStateMachine.ActionReferenceArrayString};");
 

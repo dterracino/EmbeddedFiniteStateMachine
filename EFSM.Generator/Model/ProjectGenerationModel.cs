@@ -33,7 +33,7 @@ namespace EFSM.Generator.Model
         public string ProjectName
         {
             get { return CodeFileName.Split('.')[0]; }
-        }
+        }        
 
         public StateMachineGenerationModel[] StateMachinesGenerationModel { get; }
     }

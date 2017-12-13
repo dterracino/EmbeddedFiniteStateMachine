@@ -157,17 +157,36 @@ namespace EFSM.Generator
                               "-To avoid introducing errors.\n" +
                               "-Additions are lost every time a file is generated (this can be counterproductive).\n\n" +
 
+                              "An important distinction to make is between a state machine definition, and an actual state machine.\n" +
+                              "In the EFSM environment, a state machine definition and a state machine are defined as follows:\n\n" +
+
+                              "   State Machine Definition\n"+
+                              "      -A set of binary instructions (an array of 16 bit integers).\n" +
+                              "      -An array of pointers to the functions required for evaluating inputs.\n" +
+                              "      -An array of pointers to the functions required for performing actions.\n" +
+                              "      -Serves as a template for behavior.\n\n" +
+
+                              "   State Machine\n"+
+                              "      -A variable of type EFSM_INSTANCE which has been initialized to a particular\n"+
+                              "       state machine definition.\n\n"+
+
                               "Contents of this File:\n\n" +
 
                               $"-Binary Structure {(plural?"Declarations":"Declaration")} ({(plural?"variables":"variable")} of type EFSM_BINARY)\n" +
                               "-Arrays for Function Pointers\n" +
                               "-Initialization Function\n" +
-                              $"-EFSM State Machine {(plural?"Binaries":"Binary")} ({(plural?"arrays":"an array")} of type uint16_t)\n";
+                              $"-EFSM State Machine Binary {(plural?"Arrays":"Array")} ({(plural?"arrays":"an array")} of type uint16_t)\n";
 
             code.AppendLine("/*\n----------------------------------------------------------------------------------------------------");
             code.AppendLine(notesString);
             
-            code.StandardSeparator($"Binary Structure {(plural?"Declarations":"Declaration")}.");
+            code.StandardSeparator($"Binary Structure {(plural?"Declarations":"Declaration")}.\n\n" + 
+
+                "Note:\n"+
+                "Reference to a set of binary instructions (an array of 16 bit integers) is essentially\n"+
+                "\"wrapped\" in a corresponding structure of type EFSM_BINARY. In turn, it is the initialized\n"+
+                "instance of an EFSM_BINARY variable which is used by the EFSM execution mechanism. The \n"+
+                "typedef for the EFSM_BINARY struct may be found in efsm_core.h.");
 
             foreach (var stateMachine in binaryGenerationResult.StateMachines)
             {
@@ -175,7 +194,15 @@ namespace EFSM.Generator
                 code.AppendLine($"EFSM_BINARY {stateMachine.StateMachine.BinaryContainerName};");
             }
 
-            code.StandardSeparator("Arrays for Function Pointers.");                   
+            code.StandardSeparator("Arrays for Function Pointers.\n\n"+
+                "Note:\n"+
+                "These arrays are used by the EFSM execution mechanism to access the functions which perform actions\n"+
+                "and evaluate inputs as required by the binary instructions for a given state machine definition.\n"+
+                "A given state machine definition will have a single array of pointers to input query functions, and\n"+
+                "a single array of pointers to action functions. They are initialized by calling the Initialization \n" +
+                "function (generated below), and are collectively referred to as the \"function reference arrays\" for \n" +
+                "a given state machine definition. ");                  
+            
             code.AppendLine();
 
             tempCount = 0;
@@ -196,7 +223,11 @@ namespace EFSM.Generator
                     code.AppendLine();
             }         
             
-            code.StandardSeparator("Initialization Function.");  
+            code.StandardSeparator("Initialization Function.\n\n"+
+                "Note:\n"+
+                "This function initializes the EFSM_BINARY variables, as well as the function reference arrays for \n"+
+                "every state machine definition. ");
+            
             code.AppendLine($"void EFSM_{project.ProjectName}_Init()\n{{");
             code.Indent();
 
@@ -241,7 +272,7 @@ namespace EFSM.Generator
             code.RemoveIndent();
             code.AppendLine("}\n");
 
-            code.StandardSeparator($"EFSM State Machine {(plural?"Binaries":"Binary")}");            
+            code.StandardSeparator($"EFSM State Machine Binary {(plural?"Arrays":"Array")}");            
 
             foreach (var stateMachine in binaryGenerationResult.StateMachines)
             {
