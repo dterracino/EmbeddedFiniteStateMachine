@@ -224,22 +224,22 @@ void EFSM_InitializeInstance(EFSM_INSTANCE * efsmInstance, EFSM_BINARY * efsmBin
 	efsmInstance->numberOfTransitions = EFSM_GetNumberOfTransitions(efsmInstance->baseIndexStateHeader, efsmBinary);
 }
 
-EFSM_INSTANCE efsm6;
+//EFSM_INSTANCE efsm6;
 
-/*
-Gets things ready for calls to EFSM_Process().
-*/
-void EFSM_InitializeProcess()
-{
-	/*Load the instance pointer array.*/	
-	/*efsmInstanceArray[0] = &fanControlEfsm;	
-	EFSM_FanController_Init();	
-	EFSM_InitializeInstance(&fanControlEfsm, &FanControllerBinary, FanController_OutputActions, FanController_Inputs, 0);*/
-
-	efsmInstanceArray[0] = &efsm6;
-	EFSM_efsm6_Init();
-	EFSM_InitializeInstance(&efsm6, &efsm6Binary, efsm6_OutputActions, efsm6_Inputs, 0);
-}
+///*
+//Gets things ready for calls to EFSM_Process().
+//*/
+//void EFSM_InitializeProcess()
+//{
+//	/*Load the instance pointer array.*/	
+//	/*efsmInstanceArray[0] = &fanControlEfsm;	
+//	EFSM_FanController_Init();	
+//	EFSM_InitializeInstance(&fanControlEfsm, &FanControllerBinary, FanController_OutputActions, FanController_Inputs, 0);*/
+//
+//	efsmInstanceArray[0] = &efsm6;
+//	EFSM_efsm6_Init();
+//	EFSM_InitializeInstance(&efsm6, &efsm6Binary, efsm6_OutputActions, efsm6_Inputs, 0);
+//}
 
 EFSM_EVAL_TRANSITIONS_RESULT EFSM_EvaluateTransitions(EFSM_INSTANCE * efsmInstance)
 {

@@ -151,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="efsm6.c" />
+    <ClCompile Include="efsm_interface.c" />
     <ClCompile Include="eval.c" />
     <ClCompile Include="fanControl.c" />
     <ClCompile Include="main.c" />
