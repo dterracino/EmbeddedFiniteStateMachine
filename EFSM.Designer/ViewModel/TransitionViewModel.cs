@@ -33,6 +33,7 @@ namespace EFSM.Designer.ViewModel
         private StateMachineConditionViewModel _condition;
         private readonly Lazy<TransitionPropertyGridSource> _propertyGridSource;
         private List<Guid> _actions;
+        private IMessageBoxService _messageBoxService;
 
         public StateMachineConditionViewModel Condition
         {
@@ -48,11 +49,12 @@ namespace EFSM.Designer.ViewModel
         private StateMachineTransition _model;
         private readonly IViewService _viewService;
 
-        public TransitionViewModel(StateMachineViewModel parent, StateMachineTransition model, IViewService viewService)
+        public TransitionViewModel(StateMachineViewModel parent, StateMachineTransition model, IViewService viewService, IMessageBoxService messageBoxService)
         {
             _parent = parent ?? throw new ArgumentNullException(nameof(parent));
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
+            _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
 
             _propertyGridSource = new Lazy<TransitionPropertyGridSource>(() => new TransitionPropertyGridSource(this));
 
@@ -106,9 +108,16 @@ namespace EFSM.Designer.ViewModel
 
         private void Edit()
         {
-            var viewModel = new TransitionEditorViewModel(_model, _parent, Reload);
+            try
+            {
+                var viewModel = new TransitionEditorViewModel(_model, _parent, Reload, _messageBoxService);
 
-            _viewService.ShowDialog(viewModel);
+                _viewService.ShowDialog(viewModel);
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
+            }
         }
 
         private void Reload(StateMachineTransition model)
@@ -399,7 +408,14 @@ namespace EFSM.Designer.ViewModel
 
         public void Delete()
         {
-            Parent.DeleteOfSelected();
+            try
+            {
+                Parent.DeleteOfSelected();
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
+            }
         }
 
         public void DeleteOutputId(Guid outputId)

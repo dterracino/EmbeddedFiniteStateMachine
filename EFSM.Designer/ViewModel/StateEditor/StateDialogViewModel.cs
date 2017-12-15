@@ -2,6 +2,7 @@
 using Cas.Common.WPF.Behaviors;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
+using EFSM.Designer.Extensions;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -27,12 +28,14 @@ namespace EFSM.Designer.ViewModel.StateEditor
         private OrderedListDesigner<StateMachineOutputActionViewModel> _entryActions;
         private OrderedListDesigner<StateMachineOutputActionViewModel> _exitActions;
         private Action<State> _updateParent;
+        private IMessageBoxService _messageBoxService;
 
-        public StateDialogViewModel(StateMachineViewModel parent, State model, Action<State> updateParent)
+        public StateDialogViewModel(StateMachineViewModel parent, State model, Action<State> updateParent, IMessageBoxService messageBoxService)
         {
             _parent = parent ?? throw new ArgumentNullException(nameof(parent));
             _model = model ?? throw new ArgumentNullException(nameof(model));
             Outputs = _parent.Outputs ?? throw new ArgumentNullException(nameof(_parent.Outputs));
+            _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
             _updateParent = updateParent;
 
             InitializeActions();
@@ -151,14 +154,21 @@ namespace EFSM.Designer.ViewModel.StateEditor
 
         private void Ok()
         {
-            if (_dirtyService.IsDirty)
+            try
             {
-                Save();
-                Close?.Invoke(this, new CloseEventArgs(true));
+                if (_dirtyService.IsDirty)
+                {
+                    Save();
+                    Close?.Invoke(this, new CloseEventArgs(true));
+                }
+                else
+                {
+                    Close?.Invoke(this, new CloseEventArgs(false));
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Close?.Invoke(this, new CloseEventArgs(false));
+                _messageBoxService.Show(ex);
             }
         }
 

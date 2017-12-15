@@ -41,7 +41,13 @@ namespace EFSM.Designer.Common
 
         private void SaveImage(StateMachine stateMachine, string pngPath)
         {
-            var stateMachineViewModel = new StateMachineViewModel(stateMachine, ApplicationContainer.Container.Resolve<IViewService>(), null, null, true);
+            var stateMachineViewModel = new StateMachineViewModel(
+                stateMachine,
+                ApplicationContainer.Container.Resolve<IViewService>(),
+                null,
+                null,
+                ApplicationContainer.Container.Resolve<IMessageBoxService>(),
+                true);
 
             //Render using this approach
             // https://stackoverflow.com/a/5189179/232566

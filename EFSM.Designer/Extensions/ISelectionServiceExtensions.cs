@@ -48,7 +48,6 @@ namespace EFSM.Designer.Extensions
 
             if (selectable == null)
                 return;
-
             if (!selectable.IsSelected)
             {
                 selectionService.SelectNone();

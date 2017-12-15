@@ -193,6 +193,7 @@
     <Compile Include="Engine\FilePersistor.cs" />
     <Compile Include="Engine\ProjectMassager.cs" />
     <Compile Include="Extensions\ConditionViewModelExtensions.cs" />
+    <Compile Include="Extensions\IMessageBoxServiceExtensions.cs" />
     <Compile Include="Extensions\INamedEntityExtensions.cs" />
     <Compile Include="Extensions\ISelectionServiceExtensions.cs" />
     <Compile Include="Extensions\StateExtensions.cs" />

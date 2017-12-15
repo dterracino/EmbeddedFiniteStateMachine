@@ -86,13 +86,25 @@
                                     <StackPanel.ContextMenu>
                                         <ContextMenu d:DataContext="{d:DesignInstance viewModel:StateMachineReferenceViewModel}">
                                             <MenuItem Command="{Binding Path=EditCommand}" Header="Edit..." />
+                                            <MenuItem IsCheckable="True" Header="Is Disabled?" IsChecked="{Binding IsDisabled}"/>
                                         </ContextMenu>
                                     </StackPanel.ContextMenu>
 
                                     <Image Source="/EFSM.Designer;component/Images/StateMachine_16x.png" Width="16" Height="16" VerticalAlignment="Center" Margin="1"/>
 
                                     <TextBlock Text="{Binding Path=DisplayedName}" VerticalAlignment="Center" Margin="1">
-
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsDisabled}" Value="True">
+                                                        <Setter Property="FontStyle" Value="Italic"/>
+                                                        <Setter Property="Foreground" Value="Gray"/>
+                                                        <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                        
                                         <TextBlock.InputBindings>
                                             <MouseBinding MouseAction="LeftDoubleClick" 
                                                           Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"

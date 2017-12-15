@@ -49,7 +49,14 @@ namespace EFSM.Designer.ViewModel
         private ObservableCollection<StateMachineInputViewModel> _inputs = new ObservableCollection<StateMachineInputViewModel>();
         private ObservableCollection<StateMachineOutputActionViewModel> _outputs = new ObservableCollection<StateMachineOutputActionViewModel>();
 
-        public StateMachineViewModel(StateMachine model, IViewService viewService, IUndoProvider undoProvider, IDirtyService dirtyService, bool isReadOnly = false)
+        public StateMachineViewModel(
+            StateMachine model,
+            IViewService viewService,
+            IUndoProvider undoProvider,
+            IDirtyService dirtyService,
+            IMessageBoxService messageBoxService,
+            bool isReadOnly = false
+            ) : base(messageBoxService)
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
@@ -143,7 +150,7 @@ namespace EFSM.Designer.ViewModel
 
             foreach (var transitionForDelete in transitionsForDelete)
             {
-                transitionForDelete.Delete();
+                Transitions.Remove(transitionForDelete);
             }
 
             _isBulkDeleteInProgress = false;
@@ -173,7 +180,7 @@ namespace EFSM.Designer.ViewModel
             string name = stateType == StateType.Initial ? "Initial State" : States.CreateUniqueName("State {0}");
 
             //Create the new view model.
-            var state = new StateViewModel(new State { Name = name, Id = Guid.NewGuid() }, this, _viewService)
+            var state = new StateViewModel(new State { Name = name, Id = Guid.NewGuid() }, this, _viewService, MessageBoxService)
             {
                 Location = location.Value,
                 StateType = stateType
@@ -269,7 +276,7 @@ namespace EFSM.Designer.ViewModel
 
             if (_model.States != null)
             {
-                States.AddRange(_model.States.Select(st => new StateViewModel(st, this, _viewService)));
+                States.AddRange(_model.States.Select(st => new StateViewModel(st, this, _viewService, MessageBoxService)));
             }
         }
 

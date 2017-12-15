@@ -1,4 +1,7 @@
-﻿using EFSM.Designer.Interfaces;
+﻿using Autofac;
+using Cas.Common.WPF.Interfaces;
+using EFSM.Designer.Extensions;
+using EFSM.Designer.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System;
@@ -16,11 +19,14 @@ namespace EFSM.Designer.ViewModel
         where TTool : ITool
     {
         private readonly TTool _tool;
+        private IMessageBoxService _messageBoxService;
 
-        public ToolViewModel(TTool tool)
+        public ToolViewModel(TTool tool, IMessageBoxService messageBoxService = null)
         {
             if (tool == null) throw new ArgumentNullException(nameof(tool));
             _tool = tool;
+
+            _messageBoxService = messageBoxService ?? ApplicationContainer.Container.Resolve<IMessageBoxService>();
 
             OnMouseLeftButtonDownCommand = new RelayCommand<MouseEventArgs>(MouseLeftButtonDown);
         }
@@ -37,18 +43,25 @@ namespace EFSM.Designer.ViewModel
 
         private void MouseLeftButtonDown(MouseEventArgs e)
         {
-            var container = e.OriginalSource as FrameworkElement;
-
-            //The tool will be a generic type, so why screw around?
-            var toolViewModel = container?.DataContext as ToolViewModel;
-
-            var tool = toolViewModel?.GetTool();
-
-            if (tool != null)
+            try
             {
-                var dataObject = new DataObject(typeof(ITool), tool);
+                var container = e.OriginalSource as FrameworkElement;
 
-                DragDrop.DoDragDrop(container, dataObject, DragDropEffects.Copy);
+                //The tool will be a generic type, so why screw around?
+                var toolViewModel = container?.DataContext as ToolViewModel;
+
+                var tool = toolViewModel?.GetTool();
+
+                if (tool != null)
+                {
+                    var dataObject = new DataObject(typeof(ITool), tool);
+
+                    DragDrop.DoDragDrop(container, dataObject, DragDropEffects.Copy);
+                }
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.ViewModel;
 using EFSM.Designer.ViewModel.TransitionEditor;
 using EFSM.Designer.ViewModel.TransitionEditor.Conditions;
@@ -14,7 +15,11 @@ namespace EFSM.Designer.Extensions
             if (conditionMetadata == null)
                 return null;
 
-            return new ConditionViewModel(conditionMetadata, owner, ApplicationContainer.Container.Resolve<ConditionEditServiceManager>());
+            return new ConditionViewModel(
+                conditionMetadata,
+                owner,
+                ApplicationContainer.Container.Resolve<ConditionEditServiceManager>(),
+                ApplicationContainer.Container.Resolve<IMessageBoxService>());
         }
 
         public static void DeleteInputFromConditions(this List<StateMachineConditionViewModel> conditions, StateMachineInputViewModel input)

@@ -1,9 +1,11 @@
 ﻿using Autofac;
 using Cas.Common.WPF;
 using Cas.Common.WPF.Interfaces;
+using EFSM.Designer.Extensions;
 using EFSM.Designer.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -23,12 +25,13 @@ namespace EFSM.Designer.ViewModel
         private bool _isSelectionBoxVisible;
         private Rect _selectionBox;
         private readonly IDirtyService _dirtyService;
+        protected IMessageBoxService MessageBoxService;
 
-        protected DesignerViewModelBase(IDirtyService dirtyService = null, ISelectionService selectionService = null)
+        protected DesignerViewModelBase(IMessageBoxService messageBoxService, IDirtyService dirtyService = null, ISelectionService selectionService = null)
         {
             _selectionService = selectionService ?? ApplicationContainer.Container.Resolve<ISelectionService>();
             _dirtyService = dirtyService ?? new DirtyService();
-
+            MessageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
             InitiateCommands();
         }
 
@@ -46,18 +49,25 @@ namespace EFSM.Designer.ViewModel
 
         protected virtual void Delete()
         {
-            var deletables = GetSelectedDeleteables().ToArray();
-
-            if (deletables.Any())
+            try
             {
-                foreach (var deletable in GetSelectedDeleteables())
+                var deletables = GetSelectedDeleteables().ToArray();
+
+                if (deletables.Any())
                 {
-                    deletable.Delete();
+                    foreach (var deletable in GetSelectedDeleteables())
+                    {
+                        deletable.Delete();
+                    }
+
+                    SelectionService.SelectNone();
+
+                    UndoProvider?.SaveUndoState();
                 }
-
-                SelectionService.SelectNone();
-
-                UndoProvider?.SaveUndoState();
+            }
+            catch (Exception ex)
+            {
+                MessageBoxService.Show(ex);
             }
         }
 

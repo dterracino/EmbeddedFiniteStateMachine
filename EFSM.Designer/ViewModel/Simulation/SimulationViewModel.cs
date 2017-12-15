@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Cas.Common.WPF.Interfaces;
+using EFSM.Designer.Extensions;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -14,10 +15,12 @@ namespace EFSM.Designer.ViewModel
         private StateMachine _model;
         private StateViewModel _currentState = null;
         private StateMachineViewModel _stateMachineViewModel = null;
+        private IMessageBoxService _messageBoxService;
 
-        public SimulationViewModel(StateMachine model)
+        public SimulationViewModel(StateMachine model, IMessageBoxService messageBoxService)
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));
+            _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
             InitializeModel();
             InitializeCommands();
             SelectInitialState();
@@ -57,14 +60,21 @@ namespace EFSM.Designer.ViewModel
 
         private void Simulate()
         {
-            var transitionViewModels = StateMachineViewModel.Transitions.Where(t => t.Source.Id == _currentState.Id);
-
-            foreach (var transitionViewModel in transitionViewModels)
+            try
             {
-                if (IsConditionFulfilled(transitionViewModel))
+                var transitionViewModels = StateMachineViewModel.Transitions.Where(t => t.Source.Id == _currentState.Id);
+
+                foreach (var transitionViewModel in transitionViewModels)
                 {
-                    SetCurrentState(transitionViewModel.Target);
+                    if (IsConditionFulfilled(transitionViewModel))
+                    {
+                        SetCurrentState(transitionViewModel.Target);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
             }
         }
 
@@ -88,7 +98,7 @@ namespace EFSM.Designer.ViewModel
         private void InitializeModel()
         {
             var viewService = ApplicationContainer.Container.Resolve<IViewService>();
-            StateMachineViewModel = new SimulationStateMachineViewModel(_model, viewService);
+            StateMachineViewModel = new SimulationStateMachineViewModel(_model, viewService, _messageBoxService);
         }
 
         private void SelectInitialState()

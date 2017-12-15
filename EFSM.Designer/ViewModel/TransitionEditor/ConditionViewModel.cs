@@ -1,5 +1,6 @@
 ﻿using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
+using EFSM.Designer.Extensions;
 using EFSM.Designer.ViewModel.TransitionEditor.Conditions;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
@@ -22,14 +23,19 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         private bool _areChildrenValid = true;
 
         private readonly ConditionEditServiceManager _serviceManager;
+        private IMessageBoxService _messageBoxService;
 
         private IConditionEditService _editService;
 
-        public ConditionViewModel(StateMachineCondition model, TransitionEditorViewModel owner, ConditionEditServiceManager serviceManager)
+        public ConditionViewModel(StateMachineCondition model,
+            TransitionEditorViewModel owner,
+            ConditionEditServiceManager serviceManager,
+            IMessageBoxService messageBoxService)
         {
             _model = model;
             _owner = owner ?? throw new ArgumentNullException(nameof(owner));
             _serviceManager = serviceManager ?? throw new ArgumentNullException(nameof(serviceManager));
+            _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
 
             Conditions = new ConditionsViewModel(this);
 
@@ -37,7 +43,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
             {
                 foreach (var childCondition in model.Conditions)
                 {
-                    Conditions.Add(new ConditionViewModel(childCondition, owner, serviceManager));
+                    Conditions.Add(new ConditionViewModel(childCondition, owner, serviceManager, _messageBoxService));
                 }
             }
 
@@ -157,17 +163,24 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
         private void AddCondition()
         {
-            if (!CanAddCondition)
-                return;
-
-            var model = new StateMachineCondition()
+            try
             {
-                ConditionType = ConditionType.Input
-            };
+                if (!CanAddCondition)
+                    return;
 
-            var condition = new ConditionViewModel(model, _owner, _serviceManager);
+                var model = new StateMachineCondition()
+                {
+                    ConditionType = ConditionType.Input
+                };
 
-            Conditions.Add(condition);
+                var condition = new ConditionViewModel(model, _owner, _serviceManager, _messageBoxService);
+
+                Conditions.Add(condition);
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
+            }
         }
 
         public bool CanSelectInput
@@ -186,13 +199,20 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
         private void Delete()
         {
-            if (ParentCollection?.Parent == null)
+            try
             {
-                _owner.Criteria.RootCondition = null;
+                if (ParentCollection?.Parent == null)
+                {
+                    _owner.Criteria.RootCondition = null;
+                }
+                else
+                {
+                    ParentCollection.Remove(this);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                ParentCollection.Remove(this);
+                _messageBoxService.Show(ex);
             }
         }
 

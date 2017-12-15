@@ -3,6 +3,7 @@ using Cas.Common.WPF;
 using Cas.Common.WPF.Behaviors;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
+using EFSM.Designer.Extensions;
 using EFSM.Designer.Interfaces;
 using EFSM.Designer.Messages;
 using EFSM.Domain;
@@ -20,6 +21,7 @@ namespace EFSM.Designer.ViewModel
         private readonly IUndoService<StateMachine> _undoService;
         private readonly IViewService _viewService;
         private readonly IDirtyService _parentDirtyService;
+        private IMessageBoxService _messageBoxService;
 
         public ICommand DeleteCommand { get; private set; }
         public ICommand OkCommand { get; private set; }
@@ -43,11 +45,14 @@ namespace EFSM.Designer.ViewModel
             StateMachine stateMachine,
             IViewService viewService,
             IDirtyService parentDirtyService,
-            Action<StateMachine> updateParentModel)
+            Action<StateMachine> updateParentModel,
+            IMessageBoxService messageBoxService
+            )
         {
             _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
             _parentDirtyService = parentDirtyService ?? throw new ArgumentNullException(nameof(parentDirtyService));
             _updateParentModel = updateParentModel;
+            _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
 
             InitiateStateMachineViewModel(stateMachine);
 
@@ -102,27 +107,48 @@ namespace EFSM.Designer.ViewModel
 
         private void SaveProject()
         {
-            Save();
-            MessengerInstance.Send(new SaveMessage());
+            try
+            {
+                Save();
+                MessengerInstance.Send(new SaveMessage());
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
+            }
         }
 
         private void SelectAll()
         {
-            StateMachine.SelectionService.SelectNone();
-
-            foreach (var state in StateMachine.States)
+            try
             {
-                StateMachine.SelectionService.Select(state);
+                StateMachine.SelectionService.SelectNone();
+
+                foreach (var state in StateMachine.States)
+                {
+                    StateMachine.SelectionService.Select(state);
+                }
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
             }
         }
 
         private void Simulate()
         {
-            var viewModel = ApplicationContainer.Container.Resolve<SimulationViewModel>(
+            try
+            {
+                var viewModel = ApplicationContainer.Container.Resolve<SimulationViewModel>(
                 new TypedParameter(typeof(StateMachine), GetModel())
                 );
 
-            _viewService.ShowDialog(viewModel);
+                _viewService.ShowDialog(viewModel);
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
+            }
         }
 
         private void InitiateStateMachineViewModel(StateMachine stateMachineModel)
@@ -204,25 +230,53 @@ namespace EFSM.Designer.ViewModel
 
         private void OkButtonClick()
         {
-            Save();
-            Close?.Invoke(this, new CloseEventArgs(true));
+            try
+            {
+                Save();
+                Close?.Invoke(this, new CloseEventArgs(true));
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
+            }
         }
 
         private void Delete()
         {
-            StateMachine.DeleteOfSelected();
+            try
+            {
+                StateMachine.DeleteOfSelected();
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
+            }
         }
 
         private StateMachine SaveMomento() => GetModel();
 
         private void Redo()
         {
-            InitiateStateMachineViewModel(_undoService.Redo());
+            try
+            {
+                InitiateStateMachineViewModel(_undoService.Redo());
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
+            }
         }
 
         private void Undo()
         {
-            InitiateStateMachineViewModel(_undoService.Undo());
+            try
+            {
+                InitiateStateMachineViewModel(_undoService.Undo());
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
+            }
         }
 
         public void SaveUndoState()

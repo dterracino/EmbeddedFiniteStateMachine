@@ -42,6 +42,8 @@ namespace EFSM.Designer
             builder.RegisterType<SelectionService>().As<ISelectionService>();
             builder.RegisterType<UndoService<StateMachine>>().As<IUndoService<StateMachine>>();
 
+            builder.RegisterType<MessageBoxService>().As<IMessageBoxService>();
+
             builder.RegisterAssemblyTypes(Assembly.Load(typeof(IConditionEditService).Assembly.ToString()))
                 .Where(t => typeof(IConditionEditService)
                 .IsAssignableFrom(t))

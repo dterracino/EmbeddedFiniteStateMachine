@@ -2,6 +2,7 @@
 using Cas.Common.WPF.Behaviors;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Const;
+using EFSM.Designer.Extensions;
 using EFSM.Designer.Interfaces;
 using EFSM.Designer.Messages;
 using EFSM.Domain;
@@ -22,14 +23,16 @@ namespace EFSM.Designer.ViewModel
 
         private ProjectViewModel _project;
         private string _filename;
+        private IMessageBoxService _messageBoxService;
 
         private readonly IDirtyService _dirtyService;
 
-        public MainViewModel(IViewService viewService, IPersistor persistor, IDirtyService dirtyService)
+        public MainViewModel(IViewService viewService, IPersistor persistor, IDirtyService dirtyService, IMessageBoxService messageBoxService)
         {
             _viewService = viewService;
             _persistor = persistor;
             _dirtyService = dirtyService;
+            _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
 
             SaveCommand = new RelayCommand(() => Save(), CanSave);
             SaveAsCommand = new RelayCommand(() => SaveAs());
@@ -99,36 +102,50 @@ namespace EFSM.Designer.ViewModel
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                _messageBoxService.Show(e);
             }
         }
 
         private void New()
         {
-            if (Save())
+            try
             {
-                Filename = null;
+                if (Save())
+                {
+                    Filename = null;
 
-                Project = new ProjectViewModel(_persistor.Create(), _dirtyService);
+                    Project = new ProjectViewModel(_persistor.Create(), _dirtyService, _messageBoxService);
 
-                _dirtyService.MarkClean();
+                    _dirtyService.MarkClean();
+                }
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
             }
         }
 
         private void Open()
         {
-            if (Save())
+            try
             {
-                var dialog = new OpenFileDialog()
+                if (Save())
                 {
-                    Filter = DesignerConstants.FileFilter
-                };
+                    var dialog = new OpenFileDialog()
+                    {
+                        Filter = DesignerConstants.FileFilter
+                    };
 
-                if (dialog.ShowDialog() == true)
-                {
-                    AddStateMachineProject(dialog.FileName);
-                    Filename = dialog.FileName;
+                    if (dialog.ShowDialog() == true)
+                    {
+                        AddStateMachineProject(dialog.FileName);
+                        Filename = dialog.FileName;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
             }
         }
 
@@ -148,15 +165,23 @@ namespace EFSM.Designer.ViewModel
 
         private bool Save()
         {
-            if (Project == null || !_dirtyService.IsDirty)
-                return true;
-
-            if (string.IsNullOrWhiteSpace(Filename))
+            try
             {
-                return SaveAs();
+                if (Project == null || !_dirtyService.IsDirty)
+                    return true;
+
+                if (string.IsNullOrWhiteSpace(Filename))
+                {
+                    return SaveAs();
+                }
+
+                SaveAndGenerate();
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
             }
 
-            SaveAndGenerate();
             return true;
         }
 
@@ -164,16 +189,23 @@ namespace EFSM.Designer.ViewModel
 
         private bool SaveAs()
         {
-            var dialog = new SaveFileDialog()
+            try
             {
-                Filter = DesignerConstants.FileFilter
-            };
+                var dialog = new SaveFileDialog()
+                {
+                    Filter = DesignerConstants.FileFilter
+                };
 
-            if (dialog.ShowDialog() == true)
+                if (dialog.ShowDialog() == true)
+                {
+                    Filename = dialog.FileName;
+                    SaveAndGenerate();
+                    return true;
+                }
+            }
+            catch (Exception ex)
             {
-                Filename = dialog.FileName;
-                SaveAndGenerate();
-                return true;
+                _messageBoxService.Show(ex);
             }
 
             return false;

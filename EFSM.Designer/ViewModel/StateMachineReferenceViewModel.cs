@@ -2,6 +2,7 @@
 using Cas.Common.WPF;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
+using EFSM.Designer.Extensions;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -15,12 +16,14 @@ namespace EFSM.Designer.ViewModel
         private StateMachine _model;
         private readonly IViewService _viewService;
         private readonly IMarkDirty _parentDirtyService;
+        private IMessageBoxService _messageBoxService;
 
-        public StateMachineReferenceViewModel(StateMachine model, IViewService viewService, IMarkDirty parentDirtyService)
+        public StateMachineReferenceViewModel(StateMachine model, IViewService viewService, IMarkDirty parentDirtyService, IMessageBoxService messageBoxService)
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
             _parentDirtyService = parentDirtyService ?? throw new ArgumentNullException(nameof(parentDirtyService));
+            _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
 
             RenameCommand = new RelayCommand(Rename);
             EditCommand = new RelayCommand(() => Edit());
@@ -34,12 +37,30 @@ namespace EFSM.Designer.ViewModel
 
         private void Rename()
         {
-            var textEditService = new TextEditService();
+            try
+            {
+                var textEditService = new TextEditService();
 
-            textEditService.EditText(Name, "New Name", "Rename", s => Name = s);
+                textEditService.EditText(Name, "New Name", "Rename", s => Name = s);
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
+            }
         }
 
         public string DisplayedName => $"{_model.Name} ({_model.NumberOfInstances})";
+
+        public bool IsDisabled
+        {
+            get => _model.IsDisabled;
+            set
+            {
+                _model.IsDisabled = value;
+                RaisePropertyChanged();
+                _parentDirtyService.MarkDirty();
+            }
+        }
 
         public string Name
         {
@@ -56,15 +77,23 @@ namespace EFSM.Designer.ViewModel
 
         public void Edit()
         {
-            Action<StateMachine> reloadModel = ReloadModel;
-            StateMachineDialogWindowViewModel viewModel = ApplicationContainer.Container
-                .Resolve<StateMachineDialogWindowViewModel>(
-                    new TypedParameter(typeof(StateMachine), GetModel()),
-                    new TypedParameter(typeof(IDirtyService), _parentDirtyService),
-                    new TypedParameter(typeof(Action<StateMachine>), reloadModel)
-                );
+            try
+            {
+                Action<StateMachine> reloadModel = ReloadModel;
+                StateMachineDialogWindowViewModel viewModel = ApplicationContainer.Container
+                    .Resolve<StateMachineDialogWindowViewModel>(
+                        new TypedParameter(typeof(StateMachine), GetModel()),
+                        new TypedParameter(typeof(IDirtyService), _parentDirtyService),
+                        new TypedParameter(typeof(Action<StateMachine>), reloadModel)
+                    );
 
-            _viewService.ShowDialog(viewModel);
+                _viewService.ShowDialog(viewModel);
+
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
+            }
         }
 
         private void ReloadModel(StateMachine stateMachine)

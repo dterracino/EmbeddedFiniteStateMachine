@@ -29,10 +29,6 @@
         <converters:CenterConverter x:Key="CenterConverter"/>
     </UserControl.Resources>
 
-    <!--<UserControl.InputBindings>
-        <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding Path=EditCommand}"/>
-    </UserControl.InputBindings>-->
-
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="MouseDoubleClick">
             <command:EventToCommand Command="{Binding EditCommand}" />

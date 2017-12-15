@@ -21,6 +21,7 @@ namespace EFSM.Designer.ViewModel
     {
         private readonly StateMachineProject _project;
         private readonly IMarkDirty _dirtyService;
+        private IMessageBoxService _messageBoxService;
 
         private const string DocumentationFileName = "doc.md";
 
@@ -28,10 +29,11 @@ namespace EFSM.Designer.ViewModel
         private StateMachineReferenceViewModel _selectedStateMachine;
         private readonly GenerationOptionsViewModel _generationOptions;
 
-        public ProjectViewModel(StateMachineProject project, IMarkDirty dirtyService)
+        public ProjectViewModel(StateMachineProject project, IMarkDirty dirtyService, IMessageBoxService messageBoxService)
         {
             _project = project;
             _dirtyService = dirtyService;
+            _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
 
             if (_project.StateMachines != null)
             {
@@ -42,7 +44,7 @@ namespace EFSM.Designer.ViewModel
                         )));
             }
 
-            _generationOptions = new GenerationOptionsViewModel(project.GenerationOptions, dirtyService);
+            _generationOptions = new GenerationOptionsViewModel(project.GenerationOptions, dirtyService, _messageBoxService);
 
             NewStateMachineCommand = new RelayCommand(NewStateMachine);
             DeleteStateMachineCommand = new RelayCommand(DeleteStateMachine, CanDeleteStateMachine);
@@ -98,7 +100,7 @@ namespace EFSM.Designer.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                _messageBoxService.Show(ex);
             }
         }
 
@@ -125,35 +127,49 @@ namespace EFSM.Designer.ViewModel
 
         private void NewStateMachine()
         {
-            var textEditService = new TextEditService();
-
-            string initialName = StateMachines
-                .Select(sm => sm.Name)
-                .CreateUniqueName("State Machine {0}");
-
-            textEditService.EditText(initialName, "State Machine Name", "Create State Machine", name =>
+            try
             {
-                var model = new StateMachine()
+                var textEditService = new TextEditService();
+
+                string initialName = StateMachines
+                    .Select(sm => sm.Name)
+                    .CreateUniqueName("State Machine {0}");
+
+                textEditService.EditText(initialName, "State Machine Name", "Create State Machine", name =>
                 {
-                    Name = name,
-                    Actions = new StateMachineOutputAction[] { },
-                    Inputs = new StateMachineInput[] { }
-                };
+                    var model = new StateMachine()
+                    {
+                        Name = name,
+                        Actions = new StateMachineOutputAction[] { },
+                        Inputs = new StateMachineInput[] { }
+                    };
 
-                var viewService = ApplicationContainer.Container.Resolve<IViewService>();
+                    var viewService = ApplicationContainer.Container.Resolve<IViewService>();
 
-                var viewModel = new StateMachineReferenceViewModel(model, viewService, DirtyService);
+                    var viewModel = new StateMachineReferenceViewModel(model, viewService, DirtyService, _messageBoxService);
 
-                StateMachines.Add(viewModel);
+                    StateMachines.Add(viewModel);
 
-                _dirtyService.MarkDirty();
-            });
+                    _dirtyService.MarkDirty();
+                });
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
+            }
         }
 
         private void DeleteStateMachine()
         {
-            _stateMachines.Remove(SelectedStateMachine);
-            _dirtyService.MarkDirty();
+            try
+            {
+                _stateMachines.Remove(SelectedStateMachine);
+                _dirtyService.MarkDirty();
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
+            }
         }
 
         private bool CanDeleteStateMachine() => SelectedStateMachine != null;

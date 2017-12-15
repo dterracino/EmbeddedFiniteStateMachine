@@ -16,5 +16,7 @@ namespace EFSM.Domain
         public StateMachineOutputAction[] Actions { get; set; }
 
         public int NumberOfInstances { get; set; }
+
+        public bool IsDisabled { get; set; }
     }
 }

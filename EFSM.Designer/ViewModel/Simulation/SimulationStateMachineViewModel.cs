@@ -7,7 +7,8 @@ namespace EFSM.Designer.ViewModel
 {
     public class SimulationStateMachineViewModel : StateMachineViewModel
     {
-        public SimulationStateMachineViewModel(StateMachine model, IViewService viewService) : base(model, viewService, null, null, true)
+        public SimulationStateMachineViewModel(StateMachine model, IViewService viewService, IMessageBoxService messageBoxService) : 
+            base(model, viewService, null, null, messageBoxService, true)
         {
             this.IsPointerMode = false;
         }

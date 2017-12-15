@@ -1,6 +1,7 @@
 ﻿using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
 using EFSM.Designer.Const;
+using EFSM.Designer.Extensions;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -14,40 +15,56 @@ namespace EFSM.Designer.ViewModel
     {
         private readonly GenerationOptions _model;
         private readonly IMarkDirty _dirtyService;
+        private IMessageBoxService _messageBoxService;
         public ICommand HeaderFilePathDialogCommand { get; private set; }
         public ICommand CodeFilePathDialogCommand { get; private set; }
 
-        public GenerationOptionsViewModel(GenerationOptions model, IMarkDirty dirtyService)
+        public GenerationOptionsViewModel(GenerationOptions model, IMarkDirty dirtyService, IMessageBoxService messageBoxService)
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _dirtyService = dirtyService ?? throw new ArgumentNullException(nameof(dirtyService));
+            _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
             HeaderFilePathDialogCommand = new RelayCommand<string>(OpenHeaderFilePathDialog);
             CodeFilePathDialogCommand = new RelayCommand<string>(OpenCodeFilePathDialog);
         }
 
         private void OpenCodeFilePathDialog(string projectFilePath)
         {
-            SaveFileDialog openFileDialog = new SaveFileDialog
+            try
             {
-                Filter = DesignerConstants.CodeFileFilter
-            };
+                SaveFileDialog openFileDialog = new SaveFileDialog
+                {
+                    Filter = DesignerConstants.CodeFileFilter
+                };
 
-            if (openFileDialog.ShowDialog() == true)
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    CodeFilePath = GetRelativePathToProject(projectFilePath, openFileDialog.FileName);
+                }
+            }
+            catch (Exception ex)
             {
-                CodeFilePath = GetRelativePathToProject(projectFilePath, openFileDialog.FileName);
+                _messageBoxService.Show(ex);
             }
         }
 
         private void OpenHeaderFilePathDialog(string projectFilePath)
         {
-            SaveFileDialog openFileDialog = new SaveFileDialog
+            try
             {
-                Filter = DesignerConstants.HeaderFileFilter
-            };
+                SaveFileDialog openFileDialog = new SaveFileDialog
+                {
+                    Filter = DesignerConstants.HeaderFileFilter
+                };
 
-            if (openFileDialog.ShowDialog() == true)
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    HeaderFilePath = GetRelativePathToProject(projectFilePath, openFileDialog.FileName);
+                }
+            }
+            catch (Exception ex)
             {
-                HeaderFilePath = GetRelativePathToProject(projectFilePath, openFileDialog.FileName);
+                _messageBoxService.Show(ex);
             }
         }
 

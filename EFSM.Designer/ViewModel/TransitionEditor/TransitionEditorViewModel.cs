@@ -3,6 +3,7 @@ using Cas.Common.WPF;
 using Cas.Common.WPF.Behaviors;
 using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
+using EFSM.Designer.Extensions;
 using EFSM.Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -23,13 +24,19 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         private readonly Action<StateMachineTransition> _updateParentModel;
         private readonly StateMachineViewModel _parent;
         private string _conditionText;
+        private IMessageBoxService _messageBoxService;
         private MarkdownConditionGenerator _markdownConditionGenerator = new MarkdownConditionGenerator();
 
-        public TransitionEditorViewModel(StateMachineTransition model, StateMachineViewModel parent, Action<StateMachineTransition> updateParentModel)
+        public TransitionEditorViewModel(
+            StateMachineTransition model,
+            StateMachineViewModel parent,
+            Action<StateMachineTransition> updateParentModel,
+            IMessageBoxService messageBoxService)
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _updateParentModel = updateParentModel;
             _parent = parent ?? throw new ArgumentNullException(nameof(parent));
+            _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
 
             Inputs = new ObservableCollection<StateMachineInputViewModel>(parent.Inputs);
             Outputs = new ObservableCollection<StateMachineOutputActionViewModel>(parent.Outputs);
@@ -43,7 +50,7 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
             Name = Transition.Name;
 
-            Criteria = new CriteriaTransitionViewModel(this);
+            Criteria = new CriteriaTransitionViewModel(this, _messageBoxService);
 
             OkCommand = new RelayCommand(Ok);
             _dirtyService.MarkClean();
@@ -164,11 +171,18 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
         private void Ok()
         {
-            if (_dirtyService.IsDirty)
+            try
             {
-                Save();
+                if (_dirtyService.IsDirty)
+                {
+                    Save();
+                }
+                Close?.Invoke(this, new CloseEventArgs(_dirtyService.IsDirty));
             }
-            Close?.Invoke(this, new CloseEventArgs(_dirtyService.IsDirty));
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
+            }
         }
 
         private void Save()

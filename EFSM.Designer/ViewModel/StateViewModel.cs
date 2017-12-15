@@ -1,5 +1,6 @@
 ﻿using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Common;
+using EFSM.Designer.Extensions;
 using EFSM.Designer.Interfaces;
 using EFSM.Designer.Metadata;
 using EFSM.Designer.Model;
@@ -26,14 +27,16 @@ namespace EFSM.Designer.ViewModel
         private readonly IViewService _viewService;
         private readonly List<TransitionViewModel> _transitions = new List<TransitionViewModel>();
         public List<TransitionViewModel> Transitions => _transitions;
+        private IMessageBoxService _messageBoxService;
 
         public ICommand EditCommand { get; }
         public ICommand DeleteCommand { get; }
 
-        public StateViewModel(State state, StateMachineViewModel parent, IViewService viewService)
+        public StateViewModel(State state, StateMachineViewModel parent, IViewService viewService, IMessageBoxService messageBoxService)
         {
             _model = state ?? throw new ArgumentNullException(nameof(state));
             _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
+            _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
             Parent = parent ?? throw new ArgumentNullException(nameof(parent));
 
             Location = new Point(_model.X, _model.Y);
@@ -48,9 +51,16 @@ namespace EFSM.Designer.ViewModel
 
         private void Edit()
         {
-            var viewModel = new StateDialogViewModel(Parent, GetModel(), Reload);
+            try
+            {
+                var viewModel = new StateDialogViewModel(Parent, GetModel(), Reload, _messageBoxService);
 
-            _viewService.ShowDialog(viewModel);
+                _viewService.ShowDialog(viewModel);
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
+            }
         }
 
         private void Reload(State newModel)
@@ -220,7 +230,14 @@ namespace EFSM.Designer.ViewModel
 
         public void Delete()
         {
-            Parent.DeleteOfSelected();
+            try
+            {
+                Parent.DeleteOfSelected();
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Cas.Common.WPF.Interfaces;
 using EFSM.Designer.Extensions;
 using EFSM.Designer.ViewModel.TransitionEditor.Conditions;
 using EFSM.Domain;
@@ -18,10 +19,12 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
         private string _addConditionToolTip;
         private const string DefaultToolTip = "Add Condition";
         private const string NoInputsToolTip = "It is needed to add input first";
+        private IMessageBoxService _messageBoxService;
 
-        public CriteriaTransitionViewModel(TransitionEditorViewModel owner)
+        public CriteriaTransitionViewModel(TransitionEditorViewModel owner, IMessageBoxService messageBoxService)
         {
             _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+            _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
             RootCondition = _owner.Transition.Condition?.GetModel().ToViewModel(owner);
 
             AddConditionCommand = new RelayCommand(AddCondition, CanAddCondition);
@@ -61,7 +64,18 @@ namespace EFSM.Designer.ViewModel.TransitionEditor
 
         private void AddCondition()
         {
-            RootCondition = new ConditionViewModel(new StateMachineCondition(), _owner, ApplicationContainer.Container.Resolve<ConditionEditServiceManager>());
+            try
+            {
+                RootCondition = new ConditionViewModel(
+                    new StateMachineCondition(),
+                    _owner,
+                    ApplicationContainer.Container.Resolve<ConditionEditServiceManager>(),
+                    _messageBoxService);
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Show(ex);
+            }
         }
 
         private bool CanAddCondition()
