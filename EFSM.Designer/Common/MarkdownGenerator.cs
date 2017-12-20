@@ -31,7 +31,7 @@ namespace EFSM.Designer.Common
 
                 SaveImage(stateMachine, pngPath);
 
-                textFile.Append(AddImage(pngPath));
+                textFile.Append(AddImage($"StateMachine_{i}.png"));
 
                 textFile.Append(Environment.NewLine);
             }
@@ -231,11 +231,9 @@ namespace EFSM.Designer.Common
             return s;
         }
 
-        private string AddImage(string imagePath)
+        private string AddImage(string imageName)
         {
-            string saving = imagePath.Remove(0, imagePath.IndexOf(@":\") + 2);
-            saving = saving.Replace(" ", "%20");
-            return $"![image](/{saving})";
+            return $"![image]({imageName})";
         }
 
         private StringBuilder AddExitFunctions(State state, StateMachineOutputAction[] actions)

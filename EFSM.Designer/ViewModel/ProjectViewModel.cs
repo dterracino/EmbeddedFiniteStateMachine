@@ -88,7 +88,7 @@ namespace EFSM.Designer.ViewModel
                 }
                 catch (Exception ex)
                 {
-                    string errorMessage = "Exception during code generation: " + ex.Message;
+                    string errorMessage = "\nException during code generation: " + ex.Message;
 
                     if (!string.IsNullOrWhiteSpace(documentationFullPath))
                     {
