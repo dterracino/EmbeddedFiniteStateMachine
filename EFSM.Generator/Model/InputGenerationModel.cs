@@ -32,7 +32,7 @@ namespace EFSM.Generator.Model
         }
         //public string FunctionName => $"EFSM_{Parent.Name.FixFunctionName()}_Input_{Model.Name.FixFunctionName()}";
 
-        public string FunctionPrototype => $"uint8_t EFSM_{Parent.Name}_{Name}(uint8_t indexOnEfsmType);";
+        public string FunctionPrototype => $"uint8_t EFSM_{Parent.Name.Replace(' ', '_')}_{Name.Replace(' ', '_')}(uint8_t indexOnEfsmType);";
 
         //public override string IndexDefineName => $"EFSM_{Parent.Name.FixDefineName()}_INPUT_{Model.Name.FixDefineName()}_INDEX";
 

@@ -90,9 +90,9 @@ namespace EFSM.Generator.Model
         public string LocalBinaryVariableName => $"efsm_{SourceStateMachine.Name.Replace(' ', '_')}_binaryData";
         public string BinaryContainerName => $"{SourceStateMachine.Name.Replace(' ', '_')}_Binary";   
         public UInt16 BinaryContainerId => 0xabcd;
-        public string NumberOfInputsDefineString => $"EFSM_{IndexDefineName.ToUpper()}_NUMBER_OF_INPUTS";
+        public string NumberOfInputsDefineString => $"EFSM_{IndexDefineName.Replace(' ', '_').ToUpper()}_NUMBER_OF_INPUTS";
 
-        public string NumberOfActionsDefineString => $"EFSM_{IndexDefineName.ToUpper()}_NUMBER_OF_OUTPUTS";
+        public string NumberOfActionsDefineString => $"EFSM_{IndexDefineName.Replace(' ', '_').ToUpper()}_NUMBER_OF_OUTPUTS";
         public string InputReferenceArrayName => $"{IndexDefineName.Replace(' ','_')}_Inputs";
         public string InputReferenceArrayString => $"(*{IndexDefineName.Replace(' ', '_')}_Inputs[{NumberOfInputsDefineString.Replace(' ', '_')}])(uint8_t indexOnEfsmType)";
         public string ActionReferenceArrayName => $"{IndexDefineName}_OutputActions".Replace(' ', '_');
