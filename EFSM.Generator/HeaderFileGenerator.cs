@@ -39,8 +39,9 @@ namespace EFSM.Generator
 
                 headerFile.AppendLine($"extern EFSM_BINARY {currentStateMachine.BinaryContainerName};");
                 headerFile.Append("\n");
-              
-                headerFile.AppendLine($"void EFSM_{project.StateMachinesGenerationModel[stateMachineIndex].IndexDefineName}_Init();");
+
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //headerFile.AppendLine($"void EFSM_{project.StateMachinesGenerationModel[stateMachineIndex].IndexDefineName}_Init();");
                 headerFile.AppendLine();                
                 headerFile.AppendLine("/*Input function prototypes.*/\n");
 
@@ -68,6 +69,9 @@ namespace EFSM.Generator
                 headerFile.AppendLine();
             }
 
+            headerFile.AppendLine($"/*\n----------------------------------------------------------------------------------------------------\nGeneral (applies to all state machine definitions).\n*/\n");
+            headerFile.AppendLine("/*State machine definitions initialization prototype.*/");
+            headerFile.AppendLine($"void EFSM_{project.ProjectName}_Init();");
             headerFile.AppendLine();
             headerFile.AppendLine("#endif");
             return headerFile.ToString();
