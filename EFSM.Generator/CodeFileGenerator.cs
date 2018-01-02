@@ -203,7 +203,7 @@ namespace EFSM.Generator
 
                 for (int i = 0; i < stateMachineDefinition.StateMachine.NumberOfInstances; i++)
                 {
-                    code.AppendLine($"EFSM_INSTANCE {stateMachineDefinition.StateMachine.IndexDefineName.Replace(' ', '_')}_Instance_{i.ToString()}");
+                    code.AppendLine($"EFSM_INSTANCE {stateMachineDefinition.StateMachine.IndexDefineName.Replace(' ', '_')}_Instance_{i.ToString()};");
                 }
 
                 code.AppendLine();
@@ -211,7 +211,7 @@ namespace EFSM.Generator
 
             code.StandardSeparator($"State Machine Instance Array Declaration");
 
-            code.AppendLine($"EFSM_INSTANCE * efsmInstanceArray[{binaryGenerationResult.TotalNumberOfInstancesDefine}]");
+            code.AppendLine($"EFSM_INSTANCE * efsmInstanceArray[{binaryGenerationResult.TotalNumberOfInstancesDefine}];");
 
             code.StandardSeparator("Arrays for Function Pointers.\n\n"+
                 "Note:\n"+
@@ -415,11 +415,12 @@ namespace EFSM.Generator
             foreach (var efsmDef in binaryGenerationResult.StateMachines)
             {
                 for (int i = 0; i < efsmDef.StateMachine.NumberOfInstances; i++)
-                {                    
+                {
                     argString = $"&{efsmDef.StateMachine.IndexDefineName.Replace(' ', '_')}_Instance_{i.ToString()}, " +     //Current Instance
                                 $"&{efsmDef.StateMachine.BinaryContainerName}, " +     //Relevant Binary
                                 $"{efsmDef.StateMachine.ActionReferenceArrayName}, " +     //Actions array for relevant binary
-                                $"{efsmDef.StateMachine.InputReferenceArrayName}";   //Inputs array for relevant binary                              
+                                $"{efsmDef.StateMachine.InputReferenceArrayName}, " +   //Inputs array for relevant binary   
+                                $"{i.ToString()}";                                                      //Instance of type index. 
 
                     code.AppendLine($"EFSM_InitializeInstance({argString});");
                 }
@@ -428,7 +429,7 @@ namespace EFSM.Generator
             code.RemoveIndent();
             code.AppendLine("}\n");
 
-            code.StandardSeparator("/*EFSM Process Initialization.*/");
+            code.StandardSeparator("EFSM Process Initialization.");
 
             code.AppendLine();
 
