@@ -6,7 +6,7 @@ namespace EFSM.Generator
 {
     internal class HeaderFileGenerator
     {
-        internal string GenerateHeader(ProjectGenerationModel project)
+        internal string GenerateHeader(ProjectGenerationModel project, ProjectBinaryGenerationResult binaryGenerationResult)
         {
             StringBuilder headerFile = new StringBuilder();            
 
@@ -19,6 +19,10 @@ namespace EFSM.Generator
             headerFile.AppendLine("#include <stdint.h>");
             headerFile.AppendLine("#include \"efsm_core.h\"");
             headerFile.AppendLine();
+
+            headerFile.AppendLine($"/*\n----------------------------------------------------------------------------------------------------\nGeneral information.\n*/");
+            headerFile.AppendLine();
+            headerFile.AppendLine($"#define {binaryGenerationResult.TotalNumberOfInstancesDefine}       {binaryGenerationResult.TotalNumberOfInstances.ToString()}");
 
             for (int stateMachineIndex = 0; stateMachineIndex < project.StateMachinesGenerationModel.Length; stateMachineIndex++)
             {                
@@ -72,6 +76,7 @@ namespace EFSM.Generator
             headerFile.AppendLine($"/*\n----------------------------------------------------------------------------------------------------\nGeneral (applies to all state machine definitions).\n*/\n");
             headerFile.AppendLine("/*State machine definitions initialization prototype.*/");
             headerFile.AppendLine($"void EFSM_{project.ProjectName}_Init();");
+            headerFile.AppendLine($"void EFSM_InitializeProcess();");
             headerFile.AppendLine();
             headerFile.AppendLine("#endif");
             return headerFile.ToString();

@@ -12,6 +12,23 @@ namespace EFSM.Generator.Model
         {
             StateMachines = stateMachines;
         }
+
+        public int TotalNumberOfInstances
+        {
+            get
+            {
+                int sum = 0;
+
+                foreach (var efsmDef in StateMachines)
+                {
+                    sum += efsmDef.StateMachine.NumberOfInstances;
+                }
+
+                return sum;
+            }
+        }
+
+        public string TotalNumberOfInstancesDefine { get { return "EFSM_TOTAL_NUMBER_OF_STATE_MACHINE_INSTANCES"; } }
     }
 
     internal class StateMachineBinaryGenerationResult

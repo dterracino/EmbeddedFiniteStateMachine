@@ -180,7 +180,7 @@ namespace EFSM.Generator
             code.AppendLine("/*\n----------------------------------------------------------------------------------------------------");
             code.AppendLine(notesString);
             
-            code.StandardSeparator($"Binary Structure {(plural?"Declarations":"Declaration")}.\n\n" + 
+            code.StandardSeparator($"Binary Structure Declaration{(plural?"s":"")}.\n\n" + 
 
                 "Note:\n"+
                 "Reference to a set of binary instructions (an array of 16 bit integers) is essentially\n"+
@@ -193,6 +193,25 @@ namespace EFSM.Generator
                 /*Declare the containing binary.*/
                 code.AppendLine($"EFSM_BINARY {stateMachine.StateMachine.BinaryContainerName};");
             }
+
+            code.StandardSeparator($"State Machine Instance{(plural ? "s" : "")}");
+
+            //Given every state machine definition, there are also state machine instances. Need to go through each state machine type, and create as many instances are required.
+            foreach (var stateMachineDefinition in binaryGenerationResult.StateMachines)
+            {
+                code.AppendLine($"/*{stateMachineDefinition.StateMachine.IndexDefineName} Instances*/");
+
+                for (int i = 0; i < stateMachineDefinition.StateMachine.NumberOfInstances; i++)
+                {
+                    code.AppendLine($"EFSM_INSTANCE {stateMachineDefinition.StateMachine.IndexDefineName.Replace(' ', '_')}_Instance_{i.ToString()}");
+                }
+
+                code.AppendLine();
+            }
+
+            code.StandardSeparator($"State Machine Instance Array Declaration");
+
+            code.AppendLine($"EFSM_INSTANCE * efsmInstanceArray[{binaryGenerationResult.TotalNumberOfInstancesDefine}]");
 
             code.StandardSeparator("Arrays for Function Pointers.\n\n"+
                 "Note:\n"+
@@ -212,10 +231,13 @@ namespace EFSM.Generator
                 code.AppendLine($"/*State Machine \"{stateMachine.StateMachine.IndexDefineName}\"*/");
                 code.AppendLine();
                 code.AppendLine("/*Array for pointers to input query functions.*/");
+                
                 /*Declare the input function reference array.*/
                 code.AppendLine($"uint8_t {stateMachine.StateMachine.InputReferenceArrayString};");
                 code.AppendLine();
+
                 code.AppendLine("/*Array for pointers to action functions.*/");
+                
                 /*Declare the output action function reference array.*/
                 code.AppendLine($"void {stateMachine.StateMachine.ActionReferenceArrayString};");
 
@@ -330,6 +352,23 @@ namespace EFSM.Generator
 
             tempCount = 0;
 
+            /*Generate code to initialize instance array.*/
+            code.AppendLine("/*efsmInstanceArray initialization.*/");
+            code.AppendLine();
+
+            foreach (var efsmDef in binaryGenerationResult.StateMachines)
+            {
+                for (int i = 0; i < efsmDef.StateMachine.NumberOfInstances; i++)
+                {                    
+                    code.AppendLine($"efsmInstanceArray[{tempCount.ToString()}] = &{(efsmDef.StateMachine.IndexDefineName.Replace(' ', '_'))}_Instance_{i.ToString()};");
+                    tempCount++;
+                }
+            }
+
+            code.AppendLine();
+
+            tempCount = 0;
+
             foreach (var stateMachine in binaryGenerationResult.StateMachines)
             {
                 /*Set up the binary.*/
@@ -366,10 +405,40 @@ namespace EFSM.Generator
                 tempCount++;
             }
 
+            /*Now, need to generate code which initializes the instances themselves.*/
+
+            code.AppendLine();
+            code.AppendLine("/*Instance initializations.*/");            
+
+            string argString;
+
+            foreach (var efsmDef in binaryGenerationResult.StateMachines)
+            {
+                for (int i = 0; i < efsmDef.StateMachine.NumberOfInstances; i++)
+                {                    
+                    argString = $"&{efsmDef.StateMachine.IndexDefineName.Replace(' ', '_')}_Instance_{i.ToString()}, " +     //Current Instance
+                                $"&{efsmDef.StateMachine.BinaryContainerName}, " +     //Relevant Binary
+                                $"{efsmDef.StateMachine.ActionReferenceArrayName}, " +     //Actions array for relevant binary
+                                $"{efsmDef.StateMachine.InputReferenceArrayName}";   //Inputs array for relevant binary                              
+
+                    code.AppendLine($"EFSM_InitializeInstance({argString});");
+                }
+            }
+
             code.RemoveIndent();
             code.AppendLine("}\n");
 
-            code.StandardSeparator();
+            code.StandardSeparator("/*EFSM Process Initialization.*/");
+
+            code.AppendLine();
+
+            code.AppendLine("void EFSM_InitializeProcess()\n{");
+            code.Indent();
+            code.AppendLine($"EFSM_{project.ProjectName}_Init();");
+            code.RemoveIndent();
+            code.AppendLine("}");
+            code.StandardSeparator();            
+
             code.AppendLine();
             return code.ToString();
         }

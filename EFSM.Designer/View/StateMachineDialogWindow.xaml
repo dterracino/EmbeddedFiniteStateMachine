@@ -68,7 +68,7 @@
                         </Button>
                         <Label Content="Number of instances:"/>
                         <TextBox Width="20" Text="{Binding Path=StateMachine.NumberOfInstances, Mode=TwoWay, 
-                            TargetNullValue={x:Static sys:String.Empty}, NotifyOnSourceUpdated=True,  UpdateSourceTrigger=PropertyChanged}" />
+                            TargetNullValue={x:Static sys:String.Empty}, NotifyOnSourceUpdated=True,  UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,2" VerticalAlignment="Bottom" />
                     </ToolBar>
 
                     <Grid Grid.Row="1">
