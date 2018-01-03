@@ -2,6 +2,7 @@ namespace EFSM.Domain
 {
     public class StateMachine
     {
+        private bool _isEnabled = true;
         public string Name { get; set; }
 
         public State[] States { get; set; }
@@ -17,6 +18,10 @@ namespace EFSM.Domain
 
         public int NumberOfInstances { get; set; }
 
-        public bool IsDisabled { get; set; }
+        public bool IsEnabled
+        {
+            get { return _isEnabled; }
+            set { _isEnabled = value; }
+        }
     }
 }

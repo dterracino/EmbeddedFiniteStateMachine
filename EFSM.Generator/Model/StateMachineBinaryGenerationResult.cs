@@ -21,7 +21,10 @@ namespace EFSM.Generator.Model
 
                 foreach (var efsmDef in StateMachines)
                 {
-                    sum += efsmDef.StateMachine.NumberOfInstances;
+                    if (efsmDef.StateMachine.IncludeInGeneration)
+                    {
+                        sum += efsmDef.StateMachine.NumberOfInstances;
+                    }                    
                 }
 
                 return sum;

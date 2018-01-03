@@ -16,7 +16,7 @@ namespace EFSM.Designer.ViewModel
         private StateMachine _model;
         private readonly IViewService _viewService;
         private readonly IMarkDirty _parentDirtyService;
-        private IMessageBoxService _messageBoxService;
+        private IMessageBoxService _messageBoxService;        
 
         public StateMachineReferenceViewModel(StateMachine model, IViewService viewService, IMarkDirty parentDirtyService, IMessageBoxService messageBoxService)
         {
@@ -33,7 +33,7 @@ namespace EFSM.Designer.ViewModel
 
 
         public ICommand RenameCommand { get; }
-        public ICommand EditCommand { get; }
+        public ICommand EditCommand { get; }            
 
         private void Rename()
         {
@@ -51,12 +51,12 @@ namespace EFSM.Designer.ViewModel
 
         public string DisplayedName => $"{_model.Name} ({_model.NumberOfInstances})";
 
-        public bool IsDisabled
+        public bool IsEnabled
         {
-            get => _model.IsDisabled;
+            get => _model.IsEnabled;
             set
             {
-                _model.IsDisabled = value;
+                _model.IsEnabled = value;
                 RaisePropertyChanged();
                 _parentDirtyService.MarkDirty();
             }

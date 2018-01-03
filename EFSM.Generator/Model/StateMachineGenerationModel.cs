@@ -23,6 +23,8 @@ namespace EFSM.Generator.Model
         private StateMachine SourceStateMachine { get; }
 
         public int NumberOfInstances { get; set; }
+
+        public bool IncludeInGeneration { get; set; }
         
         public InputGenerationModel[] Inputs
         {
