@@ -32,15 +32,15 @@ namespace EFSM.Designer.ViewModel
         {
             try
             {
-                OpenFileDialog openFileDialog = new OpenFileDialog
+                SaveFileDialog openFileDialog = new SaveFileDialog
                 {
                     Filter = DesignerConstants.CodeFileFilter
                 };
 
                 if (openFileDialog.ShowDialog() == true)
                 {
-                    //CodeFilePath = GetRelativePathToProject(projectFilePath, openFileDialog.FileName);
-                    CodeFilePath = openFileDialog.FileName;
+                    CodeFilePath = GetRelativePathToProject(projectFilePath, openFileDialog.FileName);
+                    //CodeFilePath = openFileDialog.FileName;
                 }
             }
             catch (Exception ex)
@@ -53,14 +53,15 @@ namespace EFSM.Designer.ViewModel
         {
             try
             {
-                OpenFileDialog openFileDialog = new OpenFileDialog
+                SaveFileDialog openFileDialog = new SaveFileDialog
                 {
                     Filter = DesignerConstants.HeaderFileFilter
                 };
 
                 if (openFileDialog.ShowDialog() == true)
-                {                    
-                    HeaderFilePath = openFileDialog.FileName;
+                {
+                    //HeaderFilePath = openFileDialog.FileName;
+                    CodeFilePath = GetRelativePathToProject(projectFilePath, openFileDialog.FileName);
                 }
             }
             catch (Exception ex)
