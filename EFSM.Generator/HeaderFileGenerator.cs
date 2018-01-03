@@ -24,6 +24,8 @@ namespace EFSM.Generator
             headerFile.AppendLine();
             headerFile.AppendLine($"#define {binaryGenerationResult.TotalNumberOfInstancesDefine}       {binaryGenerationResult.TotalNumberOfInstances.ToString()}");
 
+            headerFile.AppendLine($"extern EFSM_INSTANCE * efsmInstanceArray[];");
+
             for (int stateMachineIndex = 0; stateMachineIndex < project.StateMachinesGenerationModel.Length; stateMachineIndex++)
             {
                 if (project.StateMachinesGenerationModel[stateMachineIndex].IncludeInGeneration)
