@@ -103,6 +103,9 @@ namespace EFSM.Generator
         {
             StateMachineGenerationModel stateMachineGenerationModel = new StateMachineGenerationModel(stateMachine, stateMachineIndex);
 
+            /*Set a flag to indicate whether the state machine should be included in generation.*/
+            stateMachineGenerationModel.IncludeInGeneration = stateMachine.IsEnabled;
+
             /*Cycle through the states in that state machine, and fill in the  */
             foreach (var state in stateMachine.States)
             {

@@ -18,7 +18,7 @@ namespace EFSM.Generator
             //Generate the binary part
             var binaryResult = _binaryGenerator.Generate(generationModel);
 
-            string header = _headerFileGenerator.GenerateHeader(generationModel);
+            string header = _headerFileGenerator.GenerateHeader(generationModel, binaryResult);
             string code = _codeFileGenerator.GenerateCode(generationModel, binaryResult);
 
             if (!string.IsNullOrWhiteSpace(project.GenerationOptions.HeaderFilePath))

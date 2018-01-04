@@ -12,6 +12,7 @@ namespace EFSM.Generator.Model
             List<StateGenerationModel> states = new List<StateGenerationModel>();
             States = states;
             SourceStateMachine = model;
+            NumberOfInstances = model.NumberOfInstances;
         }
 
         public override string IndexDefineName { get { return SourceStateMachine.Name; } }
@@ -20,6 +21,10 @@ namespace EFSM.Generator.Model
         public List<StateGenerationModel> States { get; }
 
         private StateMachine SourceStateMachine { get; }
+
+        public int NumberOfInstances { get; set; }
+
+        public bool IncludeInGeneration { get; set; }
         
         public InputGenerationModel[] Inputs
         {
