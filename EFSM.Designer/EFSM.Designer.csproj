@@ -28,7 +28,7 @@
     <UpdateUrl>https://raw.githubusercontent.com/CaptiveAire/EmbeddedFiniteStateMachine/master/EFSM.Designer/clickonce/</UpdateUrl>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>17</ApplicationRevision>
+    <ApplicationRevision>18</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -108,6 +108,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Drawing.Primitives.4.3.0\lib\net45\System.Drawing.Primitives.dll</HintPath>
@@ -250,6 +251,10 @@
     <Compile Include="ViewModel\TransitionEditor\TransitionEditorViewModel.cs" />
     <Compile Include="ViewModel\TransitionToolTipViewModel.cs" />
     <Compile Include="ViewModel\TransitionViewModel.cs" />
+    <Compile Include="ViewModel\AboutViewModel.cs" />
+    <Compile Include="View\AboutView.xaml.cs">
+      <DependentUpon>AboutView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\ActionsView.xaml.cs">
       <DependentUpon>ActionsView.xaml</DependentUpon>
     </Compile>
@@ -287,6 +292,10 @@
       <DependentUpon>TransitionView.xaml</DependentUpon>
     </Compile>
     <Page Include="Controls\InputUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\AboutView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -409,7 +418,9 @@
     <Resource Include="Images\CompoundCondition.png" />
     <Resource Include="Images\SimpleCondition.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Images\Information_128x128.png" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\InsertAbove.png" />
     <Resource Include="Images\InsertBelow.png" />

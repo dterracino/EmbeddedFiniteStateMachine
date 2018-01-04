@@ -1,0 +1,51 @@
+﻿<Window x:Class="EFSM.Designer.View.AboutView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EFSM.Designer.View"
+        mc:Ignorable="d" SizeToContent="WidthAndHeight"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        ResizeMode="NoResize"
+        xmlns:behaviors="clr-namespace:Cas.Common.WPF.Behaviors;assembly=Cas.Common.WPF"
+        WindowStartupLocation="CenterOwner"
+        Title="About">
+    <i:Interaction.Behaviors>
+        <behaviors:CloseableBehavior/>
+    </i:Interaction.Behaviors>
+    <Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Image Source="/EFSM.Designer;component/Images/Information_128x128.png" Width="128" Margin="10"/>
+
+                <StackPanel Grid.Column="1" HorizontalAlignment="Stretch">
+                    <TextBlock FontWeight="Bold" FontSize="30" Margin="5" Text="Embedded Finite State Machine"/>
+                    <Grid Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Version: " FontSize="20" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" HorizontalAlignment="Stretch" IsReadOnly="True" Text="{Binding Path=Version, Mode=OneWay}" 
+                                 VerticalAlignment="Center" BorderThickness="0"  FontSize="20"/>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <Button Grid.Row="1" HorizontalAlignment="Right" Margin="4" MinWidth="60" IsCancel="True" IsDefault="True" Command="{Binding Path=CloseCommand}" Content="_Close"/>
+
+        </Grid>
+
+
+    </Grid>
+</Window>

@@ -30,6 +30,7 @@ namespace EFSM.Designer
             viewService.Register<SimulationViewModel, SimulationWindow>();
             viewService.Register<TransitionEditorViewModel, TransitionEditorDialog>();
             viewService.Register<StateDialogViewModel, StateEditorDialog>();
+            viewService.Register<AboutViewModel, AboutView>();
 
             builder.RegisterInstance(viewService).As<IViewService>();
 

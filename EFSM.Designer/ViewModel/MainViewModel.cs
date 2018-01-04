@@ -39,11 +39,18 @@ namespace EFSM.Designer.ViewModel
             OpenCommand = new RelayCommand(Open);
             NewCommand = new RelayCommand(New);
             EditCommand = new RelayCommand<StateMachineReferenceViewModel>(Edit);
+            AboutCommand = new RelayCommand(About);
 
             _dirtyService.PropertyChanged += DirtyService_PropertyChanged;
 
             New();
             MessengerInstance.Register<SaveMessage>(this, Save);
+        }
+
+        private void About()
+        {
+            var viewModel = new AboutViewModel();
+            _viewService.ShowDialog(viewModel);
         }
 
         private void DirtyService_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -56,6 +63,7 @@ namespace EFSM.Designer.ViewModel
         public ICommand OpenCommand { get; }
         public ICommand NewCommand { get; }
         public ICommand EditCommand { get; }
+        public ICommand AboutCommand { get; }
 
         public ProjectViewModel Project
         {
@@ -88,7 +96,7 @@ namespace EFSM.Designer.ViewModel
             {
                 string prefix = _dirtyService.IsDirty ? "*" : "";
 
-                string fileDisplayName = string.IsNullOrWhiteSpace(Filename) ? "Untiteld" : Filename;
+                string fileDisplayName = string.IsNullOrWhiteSpace(Filename) ? "Untitled" : Filename;
 
                 return $"{prefix}{fileDisplayName} - State Machine Designer";
             }
