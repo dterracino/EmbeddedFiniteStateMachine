@@ -86,7 +86,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>miMwsHdVvgT41YHRxKaUDtvqIRfrH9xWH2QVBU06gDw=</dsig:DigestValue>
+        <dsig:DigestValue>n5jY1wmxEsOYied2KwGbdUdROws7h7FU6OBslWrHhu0=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -98,19 +98,19 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>n6kvzh5ytR3e30O0iwbp5Mu6CXMvvU6gymdEfNbnhFs=</dsig:DigestValue>
+        <dsig:DigestValue>xTSSKeTMSdn9v0hswpzhJV9Q7PbuqjwEH5EU1ovS/wg=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="EFSM.Generator.dll" size="42496">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="EFSM.Generator.dll" size="46080">
       <assemblyIdentity name="EFSM.Generator" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>G62+nf1seiC/pHEoqy0J1amqYMIY7aeQwZLx50d7tJc=</dsig:DigestValue>
+        <dsig:DigestValue>I1pw6gIJisRDSJ+lWEKJnLNKRk3+0hDgnL/w1eauzBs=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
