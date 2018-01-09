@@ -22,9 +22,10 @@ namespace EFSM.Generator
 
             headerFile.AppendLine($"/*\n----------------------------------------------------------------------------------------------------\nGeneral information.\n*/");
             headerFile.AppendLine();
-            headerFile.AppendLine($"#define {binaryGenerationResult.TotalNumberOfInstancesDefine}       {binaryGenerationResult.TotalNumberOfInstances.ToString()}");
-
-            headerFile.AppendLine($"extern EFSM_INSTANCE * efsmInstanceArray[];");
+            headerFile.AppendLine($"#define {binaryGenerationResult.TotalNumberOfInstancesDefine}       {binaryGenerationResult.TotalNumberOfInstances.ToString()}");            
+                        
+            headerFile.AppendLine();
+            headerFile.AppendLine("void EFSM_GeneratedDiagnostics(EFSM_INSTANCE * efsmInstance);");
 
             for (int stateMachineIndex = 0; stateMachineIndex < project.StateMachinesGenerationModel.Length; stateMachineIndex++)
             {
@@ -83,6 +84,46 @@ namespace EFSM.Generator
             headerFile.AppendLine($"void EFSM_{project.ProjectName}_Init();");
             headerFile.AppendLine($"void EFSM_InitializeProcess();");
             headerFile.AppendLine();
+
+            headerFile.AppendLine($"/*\n----------------------------------------------------------------------------------------------------\nDiagnostics.\n*/\n");
+
+            if (project.DiagnosticsEnabled)
+            {
+                headerFile.AppendLine("#define EFSM_GENERATED_DIAGNOSTICS");
+                headerFile.AppendLine();
+                headerFile.AppendLine("/*State Machine State Accessor Prototypes*/");
+                headerFile.AppendLine();
+
+                foreach (var stateMachine in project.StateMachinesGenerationModel)
+                {
+                    if (stateMachine.IncludeInGeneration)
+                    {
+                        for (int i = 0; i < stateMachine.NumberOfInstances; i++)
+                        {
+                            headerFile.AppendLine($"uint32_t Get_{stateMachine.IndexDefineName.Replace(' ', '_')}_Instance_{i}_State();");                         
+                        }
+                    }
+                }
+
+                headerFile.AppendLine();
+                headerFile.AppendLine("/*State Machine Input Accessor Prototypes*/");
+                headerFile.AppendLine();
+
+                foreach (var stateMachine in project.StateMachinesGenerationModel)
+                {
+                    if (stateMachine.IncludeInGeneration)
+                    {
+                        for (int i = 0; i < stateMachine.NumberOfInstances; i++)
+                        {
+                            for (int j = 0; j < stateMachine.Inputs.Length; j++)
+                            {
+                                headerFile.AppendLine($"uint32_t Get_{stateMachine.IndexDefineName.Replace(' ', '_')}_{i}_Input_{j}();");
+                            }
+                        }
+                    }
+                }
+            }
+
             headerFile.AppendLine("#endif");
             return headerFile.ToString();
         }

@@ -302,7 +302,74 @@ namespace EFSM.Generator
             code.AppendLine($"EFSM_{project.ProjectName}_Init();");
             code.RemoveIndent();
             code.AppendLine("}");
-            code.StandardSeparator();            
+            code.StandardSeparator("Diagnostics");
+
+            code.AppendLine("void EFSM_GeneratedDiagnostics(EFSM_INSTANCE * efsmInstance)");
+            code.AppendLine("{");
+            code.AddIndent();
+
+            code.AppendLine("for(int i = 0; i < efsmInstance->totalNumberOfInputs; i++)");
+            code.AppendLine("{");
+            code.AddIndent();
+            code.AppendLine("efsmInstance->inputBuffer[i] = efsmInstance->InputQueries[i](efsmInstance->indexOnEfsmType);");
+            code.RemoveIndent();
+            code.AppendLine("}");
+            code.RemoveIndent();
+            code.AppendLine("}");
+            code.AppendLine();
+
+            if (project.DiagnosticsEnabled)
+            {
+                code.AppendLine("/*State Machine State Accessors*/");
+                code.AppendLine();
+
+                foreach (var stateMachine in project.StateMachinesGenerationModel)
+                {
+                    if (stateMachine.IncludeInGeneration)
+                    {
+                        for (int i = 0; i < stateMachine.NumberOfInstances; i++)
+                        {
+                            code.AppendLine($"uint32_t Get_{stateMachine.IndexDefineName.Replace(' ', '_')}_Instance_{i}_State()");
+                            code.AppendLine("{");
+                            code.AddIndent();
+
+                            code.AppendLine($"return {stateMachine.IndexDefineName.Replace(' ', '_')}_Instance_{i}.state;");
+                            
+                            code.RemoveIndent();
+                            code.AppendLine("}");
+                        }
+                    }
+                }
+
+                code.AppendLine();
+                code.AppendLine(/*State Machine Input Accessors*/);
+                code.AppendLine();
+
+                foreach (var stateMachine in project.StateMachinesGenerationModel)
+                {
+                    if (stateMachine.IncludeInGeneration)
+                    {
+                        for (int i = 0; i < stateMachine.NumberOfInstances; i++)
+                        {
+                            for (int j = 0; j < stateMachine.Inputs.Length; j++)
+                            {
+                                code.AppendLine($"/*Corresponds to input \"{stateMachine.Inputs[j].Name}\" for instance {i} of state machine definition \"{stateMachine.IndexDefineName}\".*/");
+                                //code.AppendLine($"UINT32 Get_{stateMachine.Name.Replace(' ', '_')}_{i}_Input_{j}()");
+                                code.AppendLine($"uint32_t Get_{stateMachine.IndexDefineName.Replace(' ', '_')}_{i}_Input_{j}()");
+                                code.AppendLine("{");
+                                code.AddIndent();
+
+                                code.AppendLine($"return {stateMachine.IndexDefineName.Replace(' ', '_')}_Instance_{i}.inputBuffer[{j}];");
+
+                                code.RemoveIndent();
+                                code.AppendLine("}");
+                                code.AppendLine();
+                            }
+                        }
+                    }
+                }
+            }
+            
 
             code.AppendLine();
             return code.ToString();

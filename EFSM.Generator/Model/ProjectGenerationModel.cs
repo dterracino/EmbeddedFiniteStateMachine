@@ -35,6 +35,8 @@ namespace EFSM.Generator.Model
             get { return CodeFileName.Split('.')[0]; }
         }        
 
+        public bool DiagnosticsEnabled { get { return true; }}
+
         public StateMachineGenerationModel[] StateMachinesGenerationModel { get; }
     }
 }
