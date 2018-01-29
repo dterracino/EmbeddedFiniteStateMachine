@@ -193,6 +193,8 @@ namespace EFSM.Designer.ViewModel
             {
                 item.DeleteInput(input);
             }
+
+            StateMachine.Inputs.Remove(input);
         }
 
         private void OutputDeleted(StateMachineOutputActionViewModel output)
