@@ -1,12 +1,20 @@
+/*Platform header files.*/
 #include "stdint.h"
 #include "efsm_core.h"
 #include "efsm_binary_protocol.h"
-#include "efsm_interface.h"
+#include "efsm_config.h"
+#include "stdio.h"
 
-void(*Actions0[EFSM_NUM_ACTIONS_FOR_ID_0])();
-uint8_t(*InputQueries0[EFSM_NUM_INPUTS_FOR_ID_0])();
+#if(EFSM_CONFIG_ENABLE_DIAGNOSTICS > 0)
+uint16_t diagnosticsBuffer[EFSM_DIAGNOSTICS_BUFFER_NUMBER_OF_ELEMENTS];
+uint16_t diagnosticsBufferIndex = 0;
+#endif
 
-EFSM_INSTANCE * efsmInstanceArray[EFSM_NUM_STATE_MACHINES];
+/*Include generated header file for a project here (there should only be one).*/
+
+
+
+uint16_t efsmSoftInputsBuffer[EFSM_SOFT_INPUTS_BUFFER_NUMBER_OF_ELEMENTS];
 
 /*
 Returns the number of states administered by the EFSM binary. References off of index 0
@@ -117,10 +125,8 @@ void EFSM_EvaluateInputs(EFSM_INSTANCE * efsmInstance)
 		/*Get the index of the relevant function pointer in the input function referance array (FRARR).*/
 		frarrInputIndex = efsmInstance->efsmBinary->data[efsmInstance->baseIndexIqfnData + i];
 
-		/*Run the input query and buffer the result.*/
-		//efsmInstance->inputBuffer[i] = efsmInstance->InputQueries[frarrInputIndex]();
-		//efsmInstance->inputBuffer[i] = efsmInstance->InputQueries[frarrInputIndex](efsmInstance->indexOnEfsmType);
-		efsmInstance->inputBuffer[frarrInputIndex] = efsmInstance->InputQueries[frarrInputIndex](efsmInstance->indexOnEfsmType);
+		/*Run the input query and buffer the result.*/	
+                efsmInstance->inputBuffer[frarrInputIndex] = efsmInstance->InputQueries[frarrInputIndex](efsmInstance->indexOnEfsmType);
 	}
 }
 
@@ -210,58 +216,38 @@ void EFSM_InitializeInstance(EFSM_INSTANCE * efsmInstance, EFSM_BINARY * efsmBin
 	/*Start reading the EFSM binary and initializing parameters.*/
 	efsmInstance->numberOfStates = EFSM_GetNumberOfStates(efsmBinary);
 	efsmInstance->totalNumberOfInputs = EFSM_GetTotalNumberOfInputs(efsmBinary);
-	efsmInstance->state = EFSM_GetInitialStateIdentifier(efsmBinary);
+	efsmInstance->previousState = EFSM_PREVIOUS_STATE_UNDEFINED;
+	efsmInstance->state = EFSM_GetInitialStateIdentifier(efsmBinary);	
 	efsmInstance->baseIndexCurrentState = EFSM_GetBaseIndexForState(efsmInstance->state, efsmBinary);
 	efsmInstance->baseIndexStateHeader = EFSM_GetBaseIndexForStateHeader(efsmInstance->state, efsmBinary);
 	efsmInstance->baseIndexIqfnData = EFSM_GetBaseIndexIqfnData(efsmInstance->baseIndexStateHeader, efsmBinary);
 	efsmInstance->numberOfTransitions = EFSM_GetNumberOfTransitions(efsmInstance->baseIndexStateHeader, efsmBinary);
 }
 
-//EFSM_INSTANCE efsm6;
-
-///*
-//Gets things ready for calls to EFSM_Process().
-//*/
-//void EFSM_InitializeProcess()
-//{
-//	/*Load the instance pointer array.*/	
-//	/*efsmInstanceArray[0] = &fanControlEfsm;	
-//	EFSM_FanController_Init();	
-//	EFSM_InitializeInstance(&fanControlEfsm, &FanControllerBinary, FanController_OutputActions, FanController_Inputs, 0);*/
-//
-//	efsmInstanceArray[0] = &efsm6;
-//	EFSM_efsm6_Init();
-//	EFSM_InitializeInstance(&efsm6, &efsm6Binary, efsm6_OutputActions, efsm6_Inputs, 0);
-//}
-
 EFSM_EVAL_TRANSITIONS_RESULT EFSM_EvaluateTransitions(EFSM_INSTANCE * efsmInstance)
 {
 	uint16_t baseIndexForTransition = 0;
 	uint16_t numberOfOpcodes = 0;
 	uint16_t * opcodes;
-	EFSM_EVAL_TRANSITIONS_RESULT result = { .status = EFSM_TRANSITION_NONE,.index = EFSM_TRANSITION_INDEX_DEFAULT };
-
-	printf("initializing workspace\n");
+	EFSM_EVAL_TRANSITIONS_RESULT result = { .status = EFSM_TRANSITION_NONE, .index = EFSM_TRANSITION_INDEX_DEFAULT };
+  
 	/*
+        Initializing workspace.
 	The general purpose of a workspace is to provide a pointer to a block of memory, WITH an associated size. In this
 	case, the workspace variable is intended for use in performing operations found in an EFSM binary.
 	*/
 	EFSM_WORKSPACE_UINT8 workspace = { .buffer = efsmInstance->workspace,.numberOfElements = EFSM_WORKSPACE_NUMBER_OF_ELEMENTS };
 		
 	for (uint16_t transition = 0; transition < efsmInstance->numberOfTransitions; transition++)
-	{
-		printf("evaluating conditions for transition %d\n", transition);
+	{		
 		/*Get the base EFSM binary index for the transition data.*/
 		baseIndexForTransition = EFSM_GetBaseIndexForTransition(efsmInstance, transition);		
-		printf("baseIndexForTransition was %d\n", baseIndexForTransition);
-
+		
 		/*Get a pointer to the relevant block of opcodes in the EFSM binary.*/
-		opcodes = &(efsmInstance->efsmBinary->data[baseIndexForTransition + EFSM_TRN_INSTR_OFFSET_OPCODES]);
-		DisplayBufferContentsUint8((uint8_t *)opcodes, 10, "opcodes");
+		opcodes = &(efsmInstance->efsmBinary->data[baseIndexForTransition + EFSM_TRN_INSTR_OFFSET_OPCODES]);		
 
 		/*Get the number of opcodes.*/
-		numberOfOpcodes = EFSM_GetNumberOfOpcodes(efsmInstance, baseIndexForTransition);		
-		printf("numberOfOpcodes was %d\n", numberOfOpcodes);
+		numberOfOpcodes = EFSM_GetNumberOfOpcodes(efsmInstance, baseIndexForTransition);			
 
 		if (EFSM_PerformLogicOpsOnInputs(opcodes, numberOfOpcodes, efsmInstance->inputBuffer, workspace))
 		{
@@ -291,80 +277,112 @@ uint16_t EFSM_GetNextState(EFSM_INSTANCE * efsmInstance, uint16_t transitionInde
 }
 
 void EFSM_PeformTransition(EFSM_INSTANCE * efsmInstance, uint16_t transitionIndex)
-{
-	
+{	
 	uint16_t baseIndexForTrnActions = 0;
 	uint16_t numberOfTransitionActions = 0;
 	uint16_t actionsArrayIndex = 0;
 	uint16_t * binary = efsmInstance->efsmBinary->data;
 
 	baseIndexForTrnActions = EFSM_GetBaseIndexForTrnActions(efsmInstance, transitionIndex);
-	printf("baseIndexForTrnActions was %d\n", baseIndexForTrnActions);
-
-	numberOfTransitionActions = binary[baseIndexForTrnActions + EFSM_TRN_ACTIONS_DATA_OFFSET_NUMBER_OF_TRANSITION_ACTIONS];
-	printf("numberOfTransitionActions was %d\n", numberOfTransitionActions);
+	numberOfTransitionActions = binary[baseIndexForTrnActions + EFSM_TRN_ACTIONS_DATA_OFFSET_NUMBER_OF_TRANSITION_ACTIONS];	
 
 	for (uint16_t actionIndex = 0; actionIndex < numberOfTransitionActions; actionIndex++)
-	{
-		printf("getting index of action array function to perform\n");
-		actionsArrayIndex = binary[baseIndexForTrnActions + EFSM_TRN_ACTIONS_DATA_OFFSET_TRANSITION_ACTIONS_ARRAY_INDICES + actionIndex];
-		printf("actionsArrayIndex was %d\n", actionsArrayIndex);
-		printf("running action\n");
+	{		
+		actionsArrayIndex = binary[baseIndexForTrnActions + EFSM_TRN_ACTIONS_DATA_OFFSET_TRANSITION_ACTIONS_ARRAY_INDICES + actionIndex];		
 		efsmInstance->Actions[actionsArrayIndex](efsmInstance->indexOnEfsmType);
 	}
+	
+	/*Save the previous state.*/
+	efsmInstance->previousState = efsmInstance->state;
 
-	printf("initializing instance parameters for next state.");
 	/*Initialize the efsmInstance to the data in the next state.*/
-	efsmInstance->state = EFSM_GetNextState(efsmInstance, transitionIndex);;
+	efsmInstance->state = EFSM_GetNextState(efsmInstance, transitionIndex);
 	efsmInstance->baseIndexCurrentState = EFSM_GetBaseIndexForState(efsmInstance->state, efsmInstance->efsmBinary);
 	efsmInstance->baseIndexStateHeader = EFSM_GetBaseIndexForStateHeader(efsmInstance->state, efsmInstance->efsmBinary);
 	efsmInstance->baseIndexIqfnData = EFSM_GetBaseIndexIqfnData(efsmInstance->baseIndexStateHeader, efsmInstance->efsmBinary);
 	efsmInstance->numberOfTransitions = EFSM_GetNumberOfTransitions(efsmInstance->baseIndexStateHeader, efsmInstance->efsmBinary);
 }
 
+void EFSM_Diagnostics(EFSM_INSTANCE * efsmInstance)
+{
+#ifdef EFSM_GENERATED_DIAGNOSTICS
+    EFSM_GeneratedDiagnostics(efsmInstance);
+#endif
+
+	/**/
+}
+
 void EFSM_Execute(EFSM_INSTANCE * efsmInstance)
 {	
-	EFSM_EVAL_TRANSITIONS_RESULT evalTransitionsResult;
+	EFSM_EVAL_TRANSITIONS_RESULT evalTransitionsResult;	
 
-	printf("state was %d\n", efsmInstance->state);
-	printf("executing instance with binary ID: %d\n", efsmInstance->efsmBinary->id);
-	printf("baseIndexCurrentState was %d\n", efsmInstance->baseIndexCurrentState);
-	printf("baseIndexStateHeader was %d\n", efsmInstance->baseIndexStateHeader);
-	printf("baseIndexIqfnData was %d\n", efsmInstance->baseIndexIqfnData);
-
-	DisplayBufferContentsUint8(efsmInstance->inputBuffer, 5, "input buffer");
-	printf("evaluating inputs.\n");
-
+    EFSM_Diagnostics(efsmInstance);
+	
 	/*Runs the input query functions (IQFNS's), as required by the current state, and buffers the results.*/
-	EFSM_EvaluateInputs(efsmInstance);
-	DisplayBufferContentsUint8(efsmInstance->inputBuffer, 5, "input buffer");
+	EFSM_EvaluateInputs(efsmInstance);	        
 
-	printf("evaluating transition conditions\n");
 	evalTransitionsResult = EFSM_EvaluateTransitions(efsmInstance);
 
 	/*If a set of input conditions required for a transition have been met...*/
 	if (evalTransitionsResult.status == EFSM_TRANSITION_REQUIRED)
 	{
-		/*Perform transition.*/
-		printf("peforming transition %d\n", evalTransitionsResult.index);
+		/*Perform transition.*/		
 		EFSM_PeformTransition(efsmInstance, evalTransitionsResult.index);
-	}
-
-	printf("efsm execution complete");
+	}	
 }
+
+void WriteBufferToFile(uint16_t * buffer, uint16_t numberOfElements, char * filename)
+{
+	FILE * fp;
+
+	fp = fopen(filename,"wb");
+	fwrite((uint8_t *)buffer, (numberOfElements * 2), 1, fp);
+	fclose(fp);
+}
+
+#define EFSM_DIAGNOSTICS_LOG_FILE_NAME						"efsmLogFile.txt"
+EFSM_INSTANCE * efsmInstanceArray[1];
 
 void EFSM_Process()
 {
 	unsigned char stateMachineIndex;
 	EFSM_INSTANCE * efsmInstance;
+//#if (EFSM_CONFIG_PROJECT_AVAILABLE > 0)
+
+	diagnosticsBufferIndex = 0;
 
 	/*Consider each state machine.*/
-	for (stateMachineIndex = 0; stateMachineIndex < EFSM_NUM_STATE_MACHINES; stateMachineIndex++)
+	for (stateMachineIndex = 0; stateMachineIndex < 0/*EFSM_TOTAL_NUMBER_OF_STATE_MACHINE_INSTANCES*/; stateMachineIndex++)
 	{
+	#if(EFSM_CONFIG_ENABLE_DIAGNOSTICS > 0)
+		/*Write data to log file.*/		
+		diagnosticsBuffer[diagnosticsBufferIndex++] = stateMachineIndex;
+		diagnosticsBuffer[diagnosticsBufferIndex++] = efsmInstance->state;
+		diagnosticsBuffer[diagnosticsBufferIndex++] = efsmInstance->previousState;
+		diagnosticsBuffer[diagnosticsBufferIndex++] = efsmInstance->totalNumberOfInputs;
+
+		/*Read all inputs for state machine into the buffer.*/
+		for (int inputIndex = 0; inputIndex < efsmInstance->totalNumberOfInputs; inputIndex++)
+		{
+			diagnosticsBuffer[diagnosticsBufferIndex++] = efsmInstance->inputBuffer[inputIndex] = efsmInstance->InputQueries[inputIndex](efsmInstance->indexOnEfsmType);
+		}
+
+		if (stateMachineIndex == (0/*EFSM_TOTAL_NUMBER_OF_STATE_MACHINE_INSTANCES*/ - 1))
+		{
+			diagnosticsBuffer[diagnosticsBufferIndex] = EFSM_DIAGNOSTICS_BUFFER_CTRL_CHAR_STOP;
+			WriteBufferToFile(diagnosticsBuffer, (diagnosticsBufferIndex + 1), EFSM_DIAGNOSTICS_LOG_FILE_NAME);
+		}		
+		else
+		{
+			diagnosticsBuffer[diagnosticsBufferIndex++] = EFSM_DIAGNOSTICS_BUFFER_CTRL_CHAR_CONTINUE;
+		}
+	#endif
+
 		/*Get a pointer to the state machine instance data per the stateMachineIndex.*/
 		efsmInstance = efsmInstanceArray[stateMachineIndex];
 
 		/*Run the state machine.*/
-		EFSM_Execute(efsmInstance);
+		EFSM_Execute(efsmInstance);		
 	}
+//#endif
 }

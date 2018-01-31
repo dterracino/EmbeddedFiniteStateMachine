@@ -106,6 +106,21 @@ namespace EFSM.Generator
             /*Set a flag to indicate whether the state machine should be included in generation.*/
             stateMachineGenerationModel.IncludeInGeneration = stateMachine.IsEnabled;
 
+            /*Add the inputs.*/
+            foreach (var input in stateMachine.Inputs)
+            {
+                var temp = new InputGenerationModel(stateMachine, input.Id, input.Name);
+                temp.FunctionReferenceIndex = stateMachine.GetInputIndex(temp.Id);
+                stateMachineGenerationModel.InputList.Add(temp);
+            }
+
+            /*Add the actions.*/
+            foreach (var action in stateMachine.Actions)
+            {
+                var temp = new ActionReferenceGenerationModel(action.Id, (int)stateMachine.GetActionReferenceIndex(action.Id), action.Name, stateMachine.Name);
+                stateMachineGenerationModel.ActionList.Add(temp);
+            }
+
             /*Cycle through the states in that state machine, and fill in the  */
             foreach (var state in stateMachine.States)
             {

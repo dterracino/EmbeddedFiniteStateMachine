@@ -3,7 +3,7 @@
 #include "test.h"
 #include "eval.h"
 #include <stdlib.h>
-#include "efsm_interface.h"
+//#include "efsm_interface.h"
 
 int main()
 {
@@ -16,7 +16,8 @@ int main()
 	//EFSM_InitializeInstance(&efsm0, &test0Binary, Test0Actions, Test0Inputs);
 	//DisplayInstanceData(&efsm0);
 
-	EvalInterface(&efsm6);
+	//EvalInterface(&efsm6);
+	
 	return 0;
 }
 

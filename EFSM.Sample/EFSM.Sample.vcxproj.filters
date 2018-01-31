@@ -39,6 +39,9 @@
     <ClInclude Include="efsm_interface.h">
       <Filter>Embedded Platform Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="efsm_config.h">
+      <Filter>Embedded Platform Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="efsm6.c">

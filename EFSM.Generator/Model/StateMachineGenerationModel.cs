@@ -7,12 +7,18 @@ namespace EFSM.Generator.Model
 {
     internal class StateMachineGenerationModel : IndexedBase<StateMachine>
     {
+        private InputGenerationModel[] _inputs;
+        private List<InputGenerationModel> _inputList;
+        private List<ActionReferenceGenerationModel> _actionList;
         public StateMachineGenerationModel(StateMachine model, int index):base(model, index)
         {
             List<StateGenerationModel> states = new List<StateGenerationModel>();
             States = states;
             SourceStateMachine = model;
             NumberOfInstances = model.NumberOfInstances;
+            _inputs = new InputGenerationModel[0];
+            _inputList = new List<InputGenerationModel>();
+            _actionList = new List<ActionReferenceGenerationModel>();
         }
 
         public override string IndexDefineName { get { return SourceStateMachine.Name; } }
@@ -25,55 +31,69 @@ namespace EFSM.Generator.Model
         public int NumberOfInstances { get; set; }
 
         public bool IncludeInGeneration { get; set; }
-        
+
+        //public InputGenerationModel[] Inputs
+        //{
+        //    get
+        //    {
+        //        /*Aggregate inputs from states and return.*/
+        //        var inputList = new List<InputGenerationModel>();
+
+        //        foreach (var state in States)
+        //        {
+        //            foreach (var input in state.inputList)
+        //            {
+        //                if (inputList.Exists(i => i.Id == input.Id) == false)
+        //                    inputList.Add(input);
+        //            }
+        //        }
+
+        //        var returnValue = inputList.OrderBy(i => i.FunctionReferenceIndex).ToArray();
+
+        //        return returnValue;
+        //    }
+        //}
+
+        public List<InputGenerationModel> InputList { get { return _inputList; } }
+
         public InputGenerationModel[] Inputs
         {
             get
             {
-                /*Aggregate inputs from states and return.*/
-                var inputList = new List<InputGenerationModel>();
-
-                foreach (var state in States)
-                {
-                    foreach (var input in state.inputList)
-                    {
-                        if (inputList.Exists(i => i.Id == input.Id) == false)
-                            inputList.Add(input);
-                    }
-                }
-
-                var returnValue = inputList.OrderBy(i => i.FunctionReferenceIndex).ToArray();
-
-                return returnValue;
+                return InputList.ToArray();
             }
         }
 
+        //public ActionReferenceGenerationModel[] Actions
+        //{
+        //    get
+        //    {
+        //        var actionList = new List<ActionReferenceGenerationModel>();
 
+        //        foreach (var st in States)
+        //        {
+        //            foreach (var transition in st.transitionList)
+        //            {
+        //                foreach (var action in transition.Actions)
+        //                {
+        //                    if (actionList.Exists(a => a.Id == action.Id) == false)
+        //                    {
+        //                        actionList.Add(action);
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        //        var returnValue = actionList.OrderBy(a => a.FunctionReferenceIndex).ToArray();
+
+        //        return returnValue;
+        //    }
+        //}
+        public List<ActionReferenceGenerationModel> ActionList { get { return _actionList; } }
 
         public ActionReferenceGenerationModel[] Actions
         {
-            get
-            {
-                var actionList = new List<ActionReferenceGenerationModel>();
-
-                foreach (var st in States)
-                {
-                    foreach (var transition in st.transitionList)
-                    {
-                        foreach (var action in transition.Actions)
-                        {
-                            if (actionList.Exists(a => a.Id == action.Id) == false)
-                            {
-                                actionList.Add(action);
-                            }
-                        }
-                    }
-                }
-
-                var returnValue = actionList.OrderBy(a => a.FunctionReferenceIndex).ToArray();
-
-                return returnValue;
-            }
+            get { return ActionList.ToArray(); }
         }
 
         //public override string IndexDefineName => $"EFSM_{Model.Name.FixDefineName()}_INDEX";
