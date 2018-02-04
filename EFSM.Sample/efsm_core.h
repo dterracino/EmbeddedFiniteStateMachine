@@ -37,6 +37,35 @@
 
 #define EFSM_PREVIOUS_STATE_UNDEFINED													0xffff
 
+
+/*
+------------------------------------------------------------------------------------------
+Definitions characterizing the arrangement of information in the debug buffer.
+*/
+#define EFSM_DEBUG_PROTOCOL_INDEX_POSTING_STATUS										0
+
+#define EFSM_DEBUG_PROTOCOL_INDEX_CYCLE_CMD_ABSOLUTE_INSTANCE_INDEX						1
+#define EFSM_DEBUG_PROTOCOL_INDEX_CYCLE_CMD_NUMBER_OF_INPUTS							2
+#define EFSM_DEBUG_PROTOCOL_INDEX_CYCLE_CMD_INPUTS_START								3
+
+#define EFSM_DEBUG_PROTOCOL_INDEX_RESTART_CMD_ABSOLUTE_INSTANCE_INDEX					1 
+
+#define EFSM_DEBUG_PROTOCOL_INDEX_RESP_DIAG_ABSOLUTE_INSTANCE_INDEX						1
+#define EFSM_DEBUG_PROTOCOL_INDEX_RESP_DIAG_CURRENT_STATE								2
+#define EFSM_DEBUG_PROTOCOL_INDEX_RESP_DIAG_PREVIOUS_STATE								3
+#define EFSM_DEBUG_PROTOCOL_INDEX_RESP_DIAG_TOTAL_NUMBER_OF_INPUTS						4
+#define EFSM_DEBUG_PROTOCOL_INDEX_RESP_DIAG_INPUTS_START								5
+
+/*EFSM Debug Posting Statuses*/
+#define EFSM_DEBUG_PROTOCOL_POSTING_STATUS_MASTER_COMMAND_CYCLE							1
+#define EFSM_DEBUG_PROTOCOL_POSTING_STATUS_MASTER_COMMAND_RESTART						2
+#define EFSM_DEBUG_PROTOCOL_POSTING_STATUS_SLAVE_RESPONSE_DIAGNOSTICS					3
+#define EFSM_DEBUG_PROTOCOL_POSTING_STATUS_NULL											0
+
+/*Related to EFSM debugging and diagnostics.*/
+#define EFSM_DEBUG_BUFFER_SIZE															10
+#define EFSM_DEBUG_INTERFACE_FILE_NAME													debugFileName
+
 /*Defines related to EFSM diagnostics.*/
 #define EFSM_MB_DIAGNOSTICS_NUM_REGISTERS_PER_INSTANCE                                  1
 #define EFSM_DIAGNOSTICS_INPUT_READINGS_BUFFER_SIZE                                     32
@@ -91,11 +120,24 @@ typedef struct
 	uint16_t index;
 }EFSM_EVAL_TRANSITIONS_RESULT;
 
+typedef struct
+{
+	uint8_t debugBuffer[EFSM_DEBUG_BUFFER_SIZE];
+	uint8_t debugBufferFrameSize;							/*The number of bytes currently relevant in .debugBuffer*/
+	uint8_t postingStatus;
+	uint8_t instanceAbsoluteIndex;
+	uint8_t numberOfInputs;
+}EFSM_DEBUG_CONTROL;
+
+extern EFSM_DEBUG_CONTROL efsmDebugControl;
+
 extern EFSM_INSTANCE * efsmInstanceArray[];
-extern uint16_t efsmSoftInputsBuffer[];
+
+extern char debugFileName[];
 
 //void EFSM_InitializeProcess();
 void EFSM_InitializeInstance(EFSM_INSTANCE * efsmInstance, EFSM_BINARY * efsmBinary, void(**Actions)(uint8_t i), uint8_t(**InputQueries)(uint8_t i), uint8_t indexOnEfsmType);
+void EfsmDebugManager();
 void EFSM_Process();
 
 #endif

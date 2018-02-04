@@ -1,2 +1,1 @@
-cl main.c efsm_core.c 
-main.exe
+cl main.c efsm_core.c efsmDebugTester.c

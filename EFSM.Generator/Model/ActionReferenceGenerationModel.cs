@@ -17,6 +17,7 @@ namespace EFSM.Generator.Model
         public int FunctionReferenceIndex { get; }
         public string Name { get; }
         public string FunctionPrototype => $"void EFSM_{ParentStateMachineName.Replace(' ', '_')}_{Name.Replace(' ', '_')}(uint8_t indexOnEfsmType);";
+        public string FunctionSignature => $"void EFSM_{ParentStateMachineName.Replace(' ', '_')}_{Name.Replace(' ', '_')}(uint8_t indexOnEfsmType)";
         public string ParentStateMachineName { get; }
         public string FunctionNamePrefix { get; }
         public string FunctionName

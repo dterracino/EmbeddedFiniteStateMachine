@@ -342,7 +342,7 @@ namespace EFSM.Generator
                 }
 
                 code.AppendLine();
-                code.AppendLine(/*State Machine Input Accessors*/);
+                code.AppendLine("/*State Machine Input Accessors*/");
                 code.AppendLine();
 
                 foreach (var stateMachine in project.StateMachinesGenerationModel)
@@ -369,7 +369,34 @@ namespace EFSM.Generator
                     }
                 }
             }
-            
+
+            if (project.DebugMode == DebugMode.Desktop)
+            {
+                code.StandardSeparator("EFSM Debugging");
+
+                foreach (var stateMachine in binaryGenerationResult.StateMachines)
+                {
+                    foreach (var input in stateMachine.StateMachine.Inputs)
+                    {
+                        code.AppendLine(input.FunctionSignature);
+                        code.AppendLine("{\n");
+                        code.AddIndent();
+
+                        code.RemoveIndent();
+                        code.AppendLine("}");
+                    }
+
+                    foreach (var action in stateMachine.StateMachine.Actions)
+                    {
+                        code.AppendLine(action.FunctionSignature);
+                        code.AppendLine("{");
+                        code.AddIndent();
+
+                        code.RemoveIndent();
+                        code.AppendLine("}");
+                    }
+                }
+            }
 
             code.AppendLine();
             return code.ToString();

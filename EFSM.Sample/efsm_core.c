@@ -2,19 +2,19 @@
 #include "stdint.h"
 #include "efsm_core.h"
 #include "efsm_binary_protocol.h"
-#include "efsm_config.h"
 #include "stdio.h"
 
-#if(EFSM_CONFIG_ENABLE_DIAGNOSTICS > 0)
-uint16_t diagnosticsBuffer[EFSM_DIAGNOSTICS_BUFFER_NUMBER_OF_ELEMENTS];
-uint16_t diagnosticsBufferIndex = 0;
-#endif
-
 /*Include generated header file for a project here (there should only be one).*/
+#include "efsmDebugTester.h"
 
-
-
-uint16_t efsmSoftInputsBuffer[EFSM_SOFT_INPUTS_BUFFER_NUMBER_OF_ELEMENTS];
+#if (EFSM_CONFIG_PROJECT_AVAILABLE > 0)
+	#if(EFSM_CONFIG_ENABLE_DEBUGGING > 0)
+		EFSM_DEBUG_CONTROL efsmDebugControl;
+		#if(EFSM_CONFIG_DEBUG_MODE == EFSM_DEBUG_MODE_DESKTOP)		
+			char debugFileName[500];
+		#endif
+	#endif
+#endif
 
 /*
 Returns the number of states administered by the EFSM binary. References off of index 0
@@ -303,21 +303,24 @@ void EFSM_PeformTransition(EFSM_INSTANCE * efsmInstance, uint16_t transitionInde
 	efsmInstance->numberOfTransitions = EFSM_GetNumberOfTransitions(efsmInstance->baseIndexStateHeader, efsmInstance->efsmBinary);
 }
 
-void EFSM_Diagnostics(EFSM_INSTANCE * efsmInstance)
-{
-#ifdef EFSM_GENERATED_DIAGNOSTICS
-    EFSM_GeneratedDiagnostics(efsmInstance);
-#endif
-
-	/**/
-}
+//void EFSM_Diagnostics(EFSM_INSTANCE * efsmInstance)
+//{
+//#ifdef EFSM_GENERATED_DIAGNOSTICS
+//    EFSM_GeneratedDiagnostics(efsmInstance);
+//#endif
+//
+//	/**/
+//}
 
 void EFSM_Execute(EFSM_INSTANCE * efsmInstance)
 {	
 	EFSM_EVAL_TRANSITIONS_RESULT evalTransitionsResult;	
 
-    EFSM_Diagnostics(efsmInstance);
+    //EFSM_Diagnostics(efsmInstance);
+	printf("current state: %d\n", efsmInstance->state);
+	printf("executing instance on type: %d\n", efsmInstance->indexOnEfsmType);
 	
+
 	/*Runs the input query functions (IQFNS's), as required by the current state, and buffers the results.*/
 	EFSM_EvaluateInputs(efsmInstance);	        
 
@@ -326,63 +329,153 @@ void EFSM_Execute(EFSM_INSTANCE * efsmInstance)
 	/*If a set of input conditions required for a transition have been met...*/
 	if (evalTransitionsResult.status == EFSM_TRANSITION_REQUIRED)
 	{
+		printf("performing transition.\n");
 		/*Perform transition.*/		
 		EFSM_PeformTransition(efsmInstance, evalTransitionsResult.index);
 	}	
 }
 
-void WriteBufferToFile(uint16_t * buffer, uint16_t numberOfElements, char * filename)
-{
-	FILE * fp;
+#if (EFSM_CONFIG_PROJECT_AVAILABLE > 0)
+#if(EFSM_CONFIG_ENABLE_DEBUGGING > 0)
 
-	fp = fopen(filename,"wb");
-	fwrite((uint8_t *)buffer, (numberOfElements * 2), 1, fp);
+#if(EFSM_CONFIG_DEBUG_MODE == EFSM_DEBUG_MODE_DESKTOP)
+void WriteBufferToFile(void * buffer, uint8_t numberOfBytes, char * filename)
+{
+	FILE * fp = fopen(filename, "r+");
+	fwrite((uint8_t *)buffer, numberOfBytes, 1, fp);
 	fclose(fp);
 }
 
-#define EFSM_DIAGNOSTICS_LOG_FILE_NAME						"efsmLogFile.txt"
-EFSM_INSTANCE * efsmInstanceArray[1];
+void ReadFileToBuffer(void * buffer, uint8_t numberOfBytes, char * filename)
+{
+	FILE * fp = fopen(filename, "r+");
+	fread(buffer, numberOfBytes, 1, fp);
+	fclose(fp);
+}
+#endif
+
+void EFSM_Debug_UpdateDebugBuffer()
+{
+#if(EFSM_CONFIG_DEBUG_MODE == EFSM_DEBUG_MODE_DESKTOP)
+	ReadFileToBuffer(efsmDebugControl.debugBuffer, EFSM_DEBUG_BUFFER_SIZE, EFSM_DEBUG_INTERFACE_FILE_NAME);
+#endif
+}
+
+void EFSM_Debug_PostDebugBuffer()
+{
+#if(EFSM_CONFIG_DEBUG_MODE == EFSM_DEBUG_MODE_DESKTOP)
+	WriteBufferToFile(efsmDebugControl.debugBuffer, efsmDebugControl.debugBufferFrameSize, EFSM_DEBUG_INTERFACE_FILE_NAME);
+#endif
+}
+
+void EFSM_Debug_SetPostingStatus(uint8_t status)
+{
+	efsmDebugControl.debugBuffer[EFSM_DEBUG_PROTOCOL_INDEX_POSTING_STATUS] = status;
+	efsmDebugControl.debugBufferFrameSize = 1;
+}
+
+EFSM_INSTANCE * EFSM_Debug_GetInstance()
+{
+	EFSM_INSTANCE * result = 0;
+
+	if (efsmInstanceArray[efsmDebugControl.instanceAbsoluteIndex])
+	{
+		result = efsmInstanceArray[efsmDebugControl.instanceAbsoluteIndex];
+	}
+
+	return result;
+}
+
+/*This function writes diagnostic data to the debug buffer.*/
+void EFSM_Debug_WriteDiagnostics()
+{
+	EFSM_INSTANCE * efsmInstanceHandle = EFSM_Debug_GetInstance();
+
+	efsmDebugControl.postingStatus = EFSM_DEBUG_PROTOCOL_POSTING_STATUS_SLAVE_RESPONSE_DIAGNOSTICS;
+	efsmDebugControl.debugBuffer[EFSM_DEBUG_PROTOCOL_INDEX_POSTING_STATUS] = efsmDebugControl.postingStatus;
+	efsmDebugControl.debugBuffer[EFSM_DEBUG_PROTOCOL_INDEX_RESP_DIAG_ABSOLUTE_INSTANCE_INDEX] = efsmDebugControl.instanceAbsoluteIndex;
+	efsmDebugControl.debugBuffer[EFSM_DEBUG_PROTOCOL_INDEX_RESP_DIAG_CURRENT_STATE] = efsmInstanceHandle->state;
+	efsmDebugControl.debugBuffer[EFSM_DEBUG_PROTOCOL_INDEX_RESP_DIAG_PREVIOUS_STATE] = efsmInstanceHandle->previousState;
+	efsmDebugControl.debugBuffer[EFSM_DEBUG_PROTOCOL_INDEX_RESP_DIAG_TOTAL_NUMBER_OF_INPUTS] = efsmInstanceHandle->totalNumberOfInputs;
+
+	/*Stage the inputs, as read using the input query functions for the given state machine instance.*/
+	uint8_t totalNumberOfInputs = EFSM_Debug_GetInstance()->totalNumberOfInputs;
+	uint8_t efsmDebugBufferIndex = EFSM_DEBUG_PROTOCOL_INDEX_RESP_DIAG_INPUTS_START;
+
+	for (uint8_t inputIndex = 0; inputIndex < totalNumberOfInputs; inputIndex++)
+	{
+		efsmDebugControl.debugBuffer[efsmDebugBufferIndex] = efsmInstanceHandle->InputQueries[inputIndex](efsmInstanceHandle->indexOnEfsmType);
+		efsmDebugBufferIndex++;
+	}
+
+	efsmDebugControl.debugBufferFrameSize = efsmDebugBufferIndex;
+}
+
+void EFSM_Debug_EvaluateBuffer()
+{
+	/*Get the posting status first.*/
+	efsmDebugControl.postingStatus = efsmDebugControl.debugBuffer[EFSM_DEBUG_PROTOCOL_INDEX_POSTING_STATUS];
+
+	switch (efsmDebugControl.postingStatus)
+	{
+	case EFSM_DEBUG_PROTOCOL_POSTING_STATUS_MASTER_COMMAND_CYCLE:
+
+		efsmDebugControl.instanceAbsoluteIndex = efsmDebugControl.debugBuffer[EFSM_DEBUG_PROTOCOL_INDEX_CYCLE_CMD_ABSOLUTE_INSTANCE_INDEX];
+		efsmDebugControl.numberOfInputs = efsmDebugControl.debugBuffer[EFSM_DEBUG_PROTOCOL_INDEX_CYCLE_CMD_NUMBER_OF_INPUTS];
+
+		break;
+
+	case EFSM_DEBUG_PROTOCOL_POSTING_STATUS_MASTER_COMMAND_RESTART:
+
+		break;
+
+	case EFSM_DEBUG_PROTOCOL_POSTING_STATUS_SLAVE_RESPONSE_DIAGNOSTICS:
+
+		break;
+
+	default:
+
+		break;
+	}
+}
+
+void EfsmDebugManager()
+{
+	EFSM_Debug_UpdateDebugBuffer();
+	EFSM_Debug_EvaluateBuffer();
+
+	if (efsmDebugControl.postingStatus == EFSM_DEBUG_PROTOCOL_POSTING_STATUS_MASTER_COMMAND_CYCLE)
+	{
+		printf("Cycling...\n\n");
+		EFSM_Execute(EFSM_Debug_GetInstance());
+		EFSM_Debug_WriteDiagnostics();
+		EFSM_Debug_PostDebugBuffer();
+	}
+	else if (efsmDebugControl.postingStatus == EFSM_DEBUG_PROTOCOL_POSTING_STATUS_MASTER_COMMAND_RESTART)
+	{
+		printf("Restarting...\n\n");
+		EFSM_InitializeProcess();
+		EFSM_Debug_SetPostingStatus(EFSM_DEBUG_PROTOCOL_POSTING_STATUS_NULL);
+		EFSM_Debug_PostDebugBuffer();
+	}
+}
+#endif
+#endif
 
 void EFSM_Process()
 {
 	unsigned char stateMachineIndex;
 	EFSM_INSTANCE * efsmInstance;
-//#if (EFSM_CONFIG_PROJECT_AVAILABLE > 0)
-
-	diagnosticsBufferIndex = 0;
+#if (EFSM_CONFIG_PROJECT_AVAILABLE > 0)	
 
 	/*Consider each state machine.*/
-	for (stateMachineIndex = 0; stateMachineIndex < 0/*EFSM_TOTAL_NUMBER_OF_STATE_MACHINE_INSTANCES*/; stateMachineIndex++)
+	for (stateMachineIndex = 0; stateMachineIndex < EFSM_TOTAL_NUMBER_OF_STATE_MACHINE_INSTANCES; stateMachineIndex++)
 	{
-	#if(EFSM_CONFIG_ENABLE_DIAGNOSTICS > 0)
-		/*Write data to log file.*/		
-		diagnosticsBuffer[diagnosticsBufferIndex++] = stateMachineIndex;
-		diagnosticsBuffer[diagnosticsBufferIndex++] = efsmInstance->state;
-		diagnosticsBuffer[diagnosticsBufferIndex++] = efsmInstance->previousState;
-		diagnosticsBuffer[diagnosticsBufferIndex++] = efsmInstance->totalNumberOfInputs;
-
-		/*Read all inputs for state machine into the buffer.*/
-		for (int inputIndex = 0; inputIndex < efsmInstance->totalNumberOfInputs; inputIndex++)
-		{
-			diagnosticsBuffer[diagnosticsBufferIndex++] = efsmInstance->inputBuffer[inputIndex] = efsmInstance->InputQueries[inputIndex](efsmInstance->indexOnEfsmType);
-		}
-
-		if (stateMachineIndex == (0/*EFSM_TOTAL_NUMBER_OF_STATE_MACHINE_INSTANCES*/ - 1))
-		{
-			diagnosticsBuffer[diagnosticsBufferIndex] = EFSM_DIAGNOSTICS_BUFFER_CTRL_CHAR_STOP;
-			WriteBufferToFile(diagnosticsBuffer, (diagnosticsBufferIndex + 1), EFSM_DIAGNOSTICS_LOG_FILE_NAME);
-		}		
-		else
-		{
-			diagnosticsBuffer[diagnosticsBufferIndex++] = EFSM_DIAGNOSTICS_BUFFER_CTRL_CHAR_CONTINUE;
-		}
-	#endif
-
 		/*Get a pointer to the state machine instance data per the stateMachineIndex.*/
 		efsmInstance = efsmInstanceArray[stateMachineIndex];
 
 		/*Run the state machine.*/
 		EFSM_Execute(efsmInstance);		
 	}
-//#endif
+#endif
 }

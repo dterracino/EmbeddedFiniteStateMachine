@@ -42,6 +42,9 @@
     <ClInclude Include="efsm_config.h">
       <Filter>Embedded Platform Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="efsmDebugTester.h">
+      <Filter>Sample Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="efsm6.c">
@@ -62,7 +65,10 @@
     <ClCompile Include="efsm_core.c">
       <Filter>Embedded Platform Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="efsm_interface.c">
+    <ClCompile Include="efsmDebugTester.c">
+      <Filter>Sample Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="efsm_function_defs.c">
       <Filter>Embedded Platform Source Files</Filter>
     </ClCompile>
   </ItemGroup>
