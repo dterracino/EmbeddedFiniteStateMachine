@@ -59,14 +59,4 @@ void EFSM_InitializeProcess();
 Diagnostics.
 */
 
-#define EFSM_GENERATED_DIAGNOSTICS
-
-/*State Machine State Accessor Prototypes*/
-
-uint32_t Get_EFSMDebugTester_Instance_0_State();
-
-/*State Machine Input Accessor Prototypes*/
-
-uint32_t Get_EFSMDebugTester_0_Input_0();
-uint32_t Get_EFSMDebugTester_0_Input_1();
 #endif

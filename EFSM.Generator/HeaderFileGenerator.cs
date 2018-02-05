@@ -96,7 +96,7 @@ namespace EFSM.Generator
 
             headerFile.AppendLine($"/*\n----------------------------------------------------------------------------------------------------\nDiagnostics.\n*/\n");
 
-            if (project.DiagnosticsEnabled)
+            if (project.DebuggingEnabled)
             {
                 headerFile.AppendLine("#define EFSM_GENERATED_DIAGNOSTICS");
                 headerFile.AppendLine();

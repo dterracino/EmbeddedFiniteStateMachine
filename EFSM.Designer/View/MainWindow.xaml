@@ -54,7 +54,7 @@
             </MenuItem>
 
             <MenuItem Header="_Tools">
-                <MenuItem Header="_Generate" Command="{Binding Project.GenerateCommand}" CommandParameter="{Binding ProjectDirectory}" InputGestureText="F6" />
+                <MenuItem Header="_Generate" Command="{Binding Project.GenerateCommand}" CommandParameter="{Binding ProjectDirectory}" InputGestureText="F6" />                
             </MenuItem>
 
             <MenuItem Header="_Help">

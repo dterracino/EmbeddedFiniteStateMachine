@@ -404,7 +404,7 @@ void EFSM_Debug_WriteDiagnostics()
 
 	for (uint8_t inputIndex = 0; inputIndex < totalNumberOfInputs; inputIndex++)
 	{
-		efsmDebugControl.debugBuffer[efsmDebugBufferIndex] = efsmInstanceHandle->InputQueries[inputIndex](efsmInstanceHandle->indexOnEfsmType);
+		efsmDebugControl.debugBuffer[efsmDebugBufferIndex] = efsmInstanceHandle->inputBuffer[inputIndex];
 		efsmDebugBufferIndex++;
 	}
 

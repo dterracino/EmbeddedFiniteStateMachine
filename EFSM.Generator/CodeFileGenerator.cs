@@ -26,6 +26,14 @@ namespace EFSM.Generator
             code.AppendLine($"#include \"{project.HeaderFileName}\"");
             code.AppendLine($"#include <stdint.h>");
             code.AppendLine("#include \"efsm_core.h\"");
+
+            if ((project.DebugMode == DebugMode.Desktop) && project.DebuggingEnabled)
+            {
+                code.AppendLine("#include \"stdio.h\"");
+                code.AppendLine("#include \"stdlib.h\"");
+            }
+
+
             code.AppendLine();
 
             var plural = false;
@@ -104,9 +112,7 @@ namespace EFSM.Generator
             }
 
             code.StandardSeparator($"State Machine Instance Array Declaration");
-
             code.AppendLine($"EFSM_INSTANCE * efsmInstanceArray[{binaryGenerationResult.TotalNumberOfInstancesDefine}];");
-
             code.StandardSeparator("Arrays for Function Pointers.\n\n"+
                 "Note:\n"+
                 "These arrays are used by the EFSM execution mechanism to access the functions which perform actions\n"+
@@ -370,7 +376,7 @@ namespace EFSM.Generator
                 }
             }
 
-            if (project.DebugMode == DebugMode.Desktop)
+            if ((project.DebugMode == DebugMode.Desktop) && (project.DebuggingEnabled))
             {
                 code.StandardSeparator("EFSM Debugging");
 
@@ -379,23 +385,43 @@ namespace EFSM.Generator
                     foreach (var input in stateMachine.StateMachine.Inputs)
                     {
                         code.AppendLine(input.FunctionSignature);
-                        code.AppendLine("{\n");
+                        code.AppendLine("{");
                         code.AddIndent();
-
+                        code.AppendLine($"return efsmDebugControl.debugBuffer[EFSM_DEBUG_PROTOCOL_INDEX_CYCLE_CMD_INPUTS_START + {input.FunctionReferenceIndex}];");
                         code.RemoveIndent();
                         code.AppendLine("}");
                     }
+
+                    code.AppendLine();
 
                     foreach (var action in stateMachine.StateMachine.Actions)
                     {
                         code.AppendLine(action.FunctionSignature);
                         code.AppendLine("{");
                         code.AddIndent();
-
+                        
                         code.RemoveIndent();
                         code.AppendLine("}");
                     }
                 }
+
+                /*Generate the main function.*/
+                code.AppendLine();
+                code.AppendLine("int main(int argc, char *argv[])");
+                code.AppendLine("{");
+                code.AddIndent();
+                code.AppendLine("printf(\"Starting the EFSM Debug Manager...\\n\\n\");");
+                code.AppendLine("strcpy(debugFileName, argv[1]);\n");
+                code.AppendLine("while(1)");
+                code.AppendLine("{");
+                code.AddIndent();
+                code.AppendLine("EfsmDebugManager();");                
+                code.RemoveIndent();                
+                code.AppendLine("}");
+                code.AppendLine();
+                code.AppendLine("return 0;");
+                code.RemoveIndent();
+                code.AppendLine("}");
             }
 
             code.AppendLine();

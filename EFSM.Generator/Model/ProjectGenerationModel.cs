@@ -37,9 +37,10 @@ namespace EFSM.Generator.Model
             get { return CodeFileName.Split('.')[0]; }
         }        
 
-        public bool DiagnosticsEnabled { get { return true; }}
+        public bool DebuggingEnabled { get { return false; }}
+        public bool DiagnosticsEnabled { get { return true; } }
 
-        public byte DebuggingEnabled { get { return 0; } }
+        //public byte DebuggingEnabled { get { return 0; } }
         public DebugMode DebugMode { get { return DebugMode.Desktop; } }
 
         public string DebugModeEmbeddedDefine { get { return "EFSM_DEBUG_MODE_EMBEDDED"; } }

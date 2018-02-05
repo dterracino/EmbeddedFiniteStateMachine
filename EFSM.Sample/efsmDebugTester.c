@@ -254,21 +254,3 @@ uint32_t Get_EFSMDebugTester_0_Input_1()
     return EFSMDebugTester_Instance_0.inputBuffer[1];
 }
 
-/*
-----------------------------------------------------------------------------------------------------
-EFSM Debugging
-*/
-uint8_t EFSM_EFSMDebugTester_InputA(uint8_t indexOnEfsmType)
-{
-
-}
-uint8_t EFSM_EFSMDebugTester_InputB(uint8_t indexOnEfsmType)
-{
-
-}
-void EFSM_EFSMDebugTester_ActionA(uint8_t indexOnEfsmType)
-{
-}
-void EFSM_EFSMDebugTester_ActionB(uint8_t indexOnEfsmType)
-{
-}
