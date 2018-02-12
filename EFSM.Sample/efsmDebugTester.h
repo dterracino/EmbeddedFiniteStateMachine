@@ -18,10 +18,11 @@ Configuration parameters and debugging.
 */
 #define EFSM_DEBUG_MODE_EMBEDDED             0
 #define EFSM_DEBUG_MODE_DESKTOP              1
+#define EFSM_DEBUG_MODE_NONE                 2
 
 #define EFSM_CONFIG_PROJECT_AVAILABLE        1
-#define EFSM_CONFIG_ENABLE_DEBUGGING         1
-#define EFSM_CONFIG_DEBUG_MODE               EFSM_DEBUG_MODE_DESKTOP
+#define EFSM_CONFIG_ENABLE_DEBUGGING         0
+#define EFSM_CONFIG_DEBUG_MODE               EFSM_DEBUG_MODE_NONE
 /*
 ----------------------------------------------------------------------------------------------------
 State machine "EFSMDebugTester" information.
@@ -59,4 +60,14 @@ void EFSM_InitializeProcess();
 Diagnostics.
 */
 
+#define EFSM_GENERATED_DIAGNOSTICS
+
+/*State Machine State Accessor Prototypes*/
+
+uint32_t Get_EFSMDebugTester_Instance_0_State();
+
+/*State Machine Input Accessor Prototypes*/
+
+uint32_t Get_EFSMDebugTester_0_Input_0();
+uint32_t Get_EFSMDebugTester_0_Input_1();
 #endif

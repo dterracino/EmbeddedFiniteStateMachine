@@ -2,6 +2,8 @@
 {
     public class GenerationOptions
     {
+        public DebugMode DebugMode { get; set; }
+
         public string HeaderFilePath { get; set; }
 
         public string HeaderFileHeader { get; set; }

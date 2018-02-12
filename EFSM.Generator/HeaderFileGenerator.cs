@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using EFSM.Generator.Model;
 using System.Linq;
+using EFSM.Domain;
 
 namespace EFSM.Generator
 {
@@ -30,10 +31,11 @@ namespace EFSM.Generator
             headerFile.AppendLine($"/*\n----------------------------------------------------------------------------------------------------\nConfiguration parameters and debugging.\n*/");
 
             headerFile.AppendLine($"#define {project.DebugModeEmbeddedDefine}             0");
-            headerFile.AppendLine($"#define {project.DebugModeDesktopDefine}              1\n");
+            headerFile.AppendLine($"#define {project.DebugModeDesktopDefine}              1");
+            headerFile.AppendLine($"#define {project.DebugModeNoneDefine}                 2\n");
 
             headerFile.AppendLine("#define EFSM_CONFIG_PROJECT_AVAILABLE        1");
-            headerFile.AppendLine("#define EFSM_CONFIG_ENABLE_DEBUGGING         1");
+            headerFile.AppendLine($"#define EFSM_CONFIG_ENABLE_DEBUGGING         {((project.DebugMode == DebugMode.None)?"0":"1")}");
             headerFile.AppendLine($"#define EFSM_CONFIG_DEBUG_MODE               {project.DebugModeDefine}");            
 
             for (int stateMachineIndex = 0; stateMachineIndex < project.StateMachinesGenerationModel.Length; stateMachineIndex++)

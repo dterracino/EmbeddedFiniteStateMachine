@@ -138,22 +138,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="efsm6.h" />
     <ClInclude Include="efsmDebugTester.h" />
     <ClInclude Include="efsm_binary_protocol.h" />
     <ClInclude Include="efsm_config.h" />
     <ClInclude Include="efsm_core.h" />
     <ClInclude Include="efsm_interface.h" />
     <ClInclude Include="eval.h" />
-    <ClInclude Include="fanControl.h" />
     <ClInclude Include="test.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="efsm6.c" />
     <ClCompile Include="efsmDebugTester.c" />
     <ClCompile Include="efsm_function_defs.c" />
     <ClCompile Include="eval.c" />
-    <ClCompile Include="fanControl.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="efsm_core.c" />
     <ClCompile Include="test.c" />

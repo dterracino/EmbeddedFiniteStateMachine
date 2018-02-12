@@ -411,7 +411,8 @@ namespace EFSM.Generator
                 code.AppendLine("{");
                 code.AddIndent();
                 code.AppendLine("printf(\"Starting the EFSM Debug Manager...\\n\\n\");");
-                code.AppendLine("strcpy(debugFileName, argv[1]);\n");
+                code.AppendLine("strcpy(debugStatusTxFilename, argv[1]);");
+                code.AppendLine("strcpy(debugCommandRxFilename, argv[2]);\n");
                 code.AppendLine("while(1)");
                 code.AppendLine("{");
                 code.AddIndent();

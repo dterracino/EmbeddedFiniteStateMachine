@@ -8,11 +8,12 @@ int main(int argc, char *argv[])
 {
 	printf("Starting the EFSM Debug Manager...\n\n");
 
-	//strcpy(debugFileName, argv[1]);
+	strcpy(debugStatusTxFilename, argv[1]);
+	strcpy(debugCommandRxFilename, argv[2]);
 
 	while (1)
 	{		
-		//EfsmDebugManager();
+		EfsmDebugManager();
 	}
 
 	return 0;

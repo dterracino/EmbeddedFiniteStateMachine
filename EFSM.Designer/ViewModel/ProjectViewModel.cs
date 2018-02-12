@@ -48,14 +48,47 @@ namespace EFSM.Designer.ViewModel
 
             NewStateMachineCommand = new RelayCommand(NewStateMachine);
             DeleteStateMachineCommand = new RelayCommand(DeleteStateMachine, CanDeleteStateMachine);
-            GenerateCommand = new RelayCommand<string>((s) => Generate(s), (s) => CanGenerate(s));
+            GenerateCommand = new RelayCommand<string>((s) => GenerateWithNoDebug(s), (s) => CanGenerate(s));
+            GenerateAndDebugCommand = new RelayCommand<string>((s) => GenerateAndDebug(s), (s) => CanGenerate(s));
         }
 
         public ICommand NewStateMachineCommand { get; }
         public ICommand DeleteStateMachineCommand { get; }
         public ICommand GenerateCommand { get; }
 
-        private void Generate(string projectPath)
+        public ICommand GenerateAndDebugCommand { get; }
+
+        private void GenerateAndDebug(string projectPath)
+        {
+            /*Set a status in the project model indicating the debug mode.*/
+            var project = GetModel();
+
+            project.GenerationOptions.DebugMode = DebugMode.Desktop;
+
+           // var debugDirectory = $"{Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory())).Parent.FullName()}\\EFSM.Sample";
+
+            //Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
+
+            var dir = $"{Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName}";
+
+            dir = Directory.GetParent(dir).FullName + "\\StateMachineDebugging";
+
+            /*Generate the project accordingly.*/
+            Generate(dir, DebugMode.Desktop);
+
+            /*Launch a debug window.*/
+        }
+
+        private void GenerateWithNoDebug(string projectPath)
+        {
+            var project = GetModel();
+
+            project.GenerationOptions.DebugMode = DebugMode.None;
+
+            Generate(projectPath, DebugMode.None);
+        }
+
+        private void Generate(string projectPath, DebugMode debugMode)
         {
             try
             {
@@ -64,6 +97,8 @@ namespace EFSM.Designer.ViewModel
 
                 //Get the project model
                 var project = GetModel();
+
+                project.GenerationOptions.DebugMode = debugMode;
 
                 string documentationFullPath = string.Empty;
 
@@ -116,7 +151,7 @@ namespace EFSM.Designer.ViewModel
         {
             if (CanGenerate(projectPath))
             {
-                Generate(projectPath);
+                Generate(projectPath, DebugMode.None);
             }
         }
 
