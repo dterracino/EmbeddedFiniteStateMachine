@@ -327,10 +327,10 @@
 
 ##### No Exit Actions
 #### State: STOP_DF
-##### Entry Actions
-* HeatEnterStopDf
+##### No Entry Actions
+##### Exit Actions
+* HeatExitStopDf
 
-##### No Exit Actions
 #### State: DF_PRE_PGAS
 ##### Entry Actions
 * HeatEnterPrePGas
@@ -368,6 +368,8 @@
 * DfPreSparkToStop
 * DfPreMGasToStop
 * DfSparkOffToStop
+* OnNormalToOnTesting
+* OnTestingToOnNormal
 #### Transition: InitIdle
 ##### No Output Actions
 ##### Condition
@@ -432,6 +434,14 @@
 ##### No Output Actions
 ##### Condition
  ( ! IsHvacCallingForHeat OR ! IsBlowerOn ) 
+#### Transition: OnNormalToOnTesting
+##### No Output Actions
+##### Condition
+ IsTestingModeRequested
+#### Transition: OnTestingToOnNormal
+##### No Output Actions
+##### Condition
+! IsTestingModeRequested
 ![image](StateMachine_2.png)
 ## State Machine Name: Cooling_DF
 ### States:
@@ -526,11 +536,11 @@
 #### Transition: Stage1ToStopCooling
 ##### No Output Actions
 ##### Condition
- ( ! IsHvacCallingForCooling OR ! IsBlowerOn ) 
+ ( ! IsHvacCallingForCooling OR ! IsBlowerOn OR  IsTestingModeRequested ) 
 #### Transition: EvapToStopCooling
 ##### No Output Actions
 ##### Condition
- ( ! IsHvacCallingForCooling OR ! IsBlowerOn ) 
+ ( ! IsHvacCallingForCooling OR ! IsBlowerOn OR  IsTestingModeRequested ) 
 #### Transition: StopCoolingToIdle
 ##### No Output Actions
 ##### Condition
@@ -550,13 +560,214 @@
 #### Transition: Stage2ToStopCooling
 ##### No Output Actions
 ##### Condition
- ( ! IsHvacCallingForCooling OR ! IsBlowerOn ) 
+ ( ! IsHvacCallingForCooling OR ! IsBlowerOn OR  IsTestingModeRequested ) 
 #### Transition: Stage3ToStopCooling
 ##### No Output Actions
 ##### Condition
- ( ! IsHvacCallingForCooling OR ! IsBlowerOn ) 
+ ( ! IsHvacCallingForCooling OR ! IsBlowerOn OR  IsTestingModeRequested ) 
 #### Transition: StartCoolingToStage1
 ##### No Output Actions
 ##### Condition
  (  IsBlowerOn AND ! IsTestingModeRequested AND  ( ! IsEvapEnabled OR  IsOaTempTooLowForEvap )  ) 
 ![image](StateMachine_3.png)
+## State Machine Name: Ovrd_Discharge_DF
+### States:
+* DO_IDLE
+* DO_MIN_OVRD_HEAT
+* DO_MAX_OVRD_HEAT
+* Initial State
+* DO_TEMP_RISE_OVRD_HEAT
+#### State: DO_IDLE
+##### Entry Actions
+* EnterDoIdle
+
+##### No Exit Actions
+#### State: DO_MIN_OVRD_HEAT
+##### Entry Actions
+* EnterDoMinOvrdHeat
+
+##### No Exit Actions
+#### State: DO_MAX_OVRD_HEAT
+##### Entry Actions
+* EnterDoMaxOvrdHeat
+
+##### No Exit Actions
+#### State: Initial State
+##### No Entry Actions
+##### No Exit Actions
+#### State: DO_TEMP_RISE_OVRD_HEAT
+##### Entry Actions
+* EnterDoTempRiseOvrdHeat
+
+##### No Exit Actions
+### Transitions:
+* IdleToMinOvrd
+* IdleToMaxOvrd
+* MinOvrdToIdle
+* MaxOvrdToIdle
+* InitToIdle
+* IdleToTempRiseOvrd
+* TempRiseOvrdToIdle
+#### Transition: IdleToMinOvrd
+##### No Output Actions
+##### Condition
+ (  IsStartMinHeatOvrdMet AND ! IsMaxTempRiseExceeded ) 
+#### Transition: IdleToMaxOvrd
+##### No Output Actions
+##### Condition
+ (  IsStartMaxHeatOvrdMet AND ! IsMaxTempRiseExceeded ) 
+#### Transition: MinOvrdToIdle
+##### No Output Actions
+##### Condition
+ (  IsEndMinHeatOvrdMet OR  IsMaxTempRiseExceeded ) 
+#### Transition: MaxOvrdToIdle
+##### No Output Actions
+##### Condition
+ (  IsEndMaxHeatOvrdMet OR  IsMaxTempRiseExceeded ) 
+#### Transition: InitToIdle
+##### No Output Actions
+##### Condition
+ IsStartupTimeExpired
+#### Transition: IdleToTempRiseOvrd
+##### No Output Actions
+##### Condition
+ IsMaxTempRiseExceeded
+#### Transition: TempRiseOvrdToIdle
+##### No Output Actions
+##### Condition
+! IsMaxTempRiseExceeded
+![image](StateMachine_4.png)
+## State Machine Name: Freezestat_DF
+### States:
+* FRZST_TIMED_MONITOR
+* FRZST_IDLE
+* FRZST_FAIL_RESUME
+* FRZST_FAIL_LOCK
+#### State: FRZST_TIMED_MONITOR
+##### Entry Actions
+* EnterMonitor
+
+##### No Exit Actions
+#### State: FRZST_IDLE
+##### Entry Actions
+* EnterIdle
+
+##### No Exit Actions
+#### State: FRZST_FAIL_RESUME
+##### Entry Actions
+* EnterFailResume
+
+##### No Exit Actions
+#### State: FRZST_FAIL_LOCK
+##### Entry Actions
+* EnterFailLock
+
+##### Exit Actions
+* ExitFailLock
+
+### Transitions:
+* IdleToMonitor
+* MonitorToFailResume
+* MonitorToFailLock
+* FailResumeToIdle
+* FailLockToIdle
+* MonitorToIdle
+#### Transition: IdleToMonitor
+##### No Output Actions
+##### Condition
+ (  IsStartupTimeElapsed AND  IsDischargeTempLow ) 
+#### Transition: MonitorToFailResume
+##### No Output Actions
+##### Condition
+ (  IsMonitorTimeExpired AND ! IsResumeCountMaxed ) 
+#### Transition: MonitorToFailLock
+##### No Output Actions
+##### Condition
+ (  IsMonitorTimeExpired AND  IsResumeCountMaxed ) 
+#### Transition: FailResumeToIdle
+##### No Output Actions
+##### Condition
+ IsStopHvacFlagSet
+#### Transition: FailLockToIdle
+##### No Output Actions
+##### Condition
+ IsResetExecuted
+#### Transition: MonitorToIdle
+##### No Output Actions
+##### Condition
+ IsDischargeTempRecovered
+![image](StateMachine_5.png)
+## State Machine Name: MixingBox_DF
+### States:
+* MBOX_OFF
+* MBOX_IDLE
+* MBOX_ON_TEST
+* MBOX_ON_PURGE
+* MBOX_ON_NORMAL
+#### State: MBOX_OFF
+##### Entry Actions
+* EnterOff
+
+##### No Exit Actions
+#### State: MBOX_IDLE
+##### Entry Actions
+* EnterIdle
+
+##### No Exit Actions
+#### State: MBOX_ON_TEST
+##### Entry Actions
+* EnterOnTest
+
+##### No Exit Actions
+#### State: MBOX_ON_PURGE
+##### Entry Actions
+* EnterOnPurge
+
+##### No Exit Actions
+#### State: MBOX_ON_NORMAL
+##### Entry Actions
+* EnterOnNormal
+
+##### No Exit Actions
+### Transitions:
+* OffToIdle
+* IdleToOff
+* IdleToOnTest
+* IdleToOnPurge
+* IdleToOnNormal
+* OnNormalToIdle
+* OnPurgeToIdle
+* OnTestToIdle
+#### Transition: OffToIdle
+##### No Output Actions
+##### Condition
+ (  IsMixboxConfigured AND  IsStartupTimeElapsed ) 
+#### Transition: IdleToOff
+##### No Output Actions
+##### Condition
+! IsMixboxConfigured
+#### Transition: IdleToOnTest
+##### No Output Actions
+##### Condition
+ IsTestingModeRequested
+#### Transition: IdleToOnPurge
+##### No Output Actions
+##### Condition
+ (  IsBlowerOn AND  IsPurgeOn AND ! IsTestingModeRequested ) 
+#### Transition: IdleToOnNormal
+##### No Output Actions
+##### Condition
+ (  IsBlowerOn AND ! IsTestingModeRequested AND ! IsPurgeOn ) 
+#### Transition: OnNormalToIdle
+##### No Output Actions
+##### Condition
+ ( ! IsMixboxConfigured OR ! IsBlowerOn OR  IsPurgeOn OR  IsTestingModeRequested ) 
+#### Transition: OnPurgeToIdle
+##### No Output Actions
+##### Condition
+ ( ! IsBlowerOn OR ! IsPurgeOn OR ! IsMixboxConfigured OR  IsTestingModeRequested ) 
+#### Transition: OnTestToIdle
+##### No Output Actions
+##### Condition
+ ( ! IsTestingModeRequested OR ! IsMixboxConfigured ) 
+![image](StateMachine_6.png)

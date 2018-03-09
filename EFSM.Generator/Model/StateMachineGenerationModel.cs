@@ -23,6 +23,9 @@ namespace EFSM.Generator.Model
 
         public override string IndexDefineName { get { return SourceStateMachine.Name; } }
 
+        public string IncludeThisStateMachineDefine { get { return $"{IndexDefineName}_INCLUDED"; } }
+        public string IncludeThisStateMachineDirectiveStart { get { return $"#if {IncludeThisStateMachineDefine} > 0"; } }
+        public string IncludeThisStateMachineDirectiveEnd { get { return "#endif"; } }
         /**/
         public List<StateGenerationModel> States { get; }
 

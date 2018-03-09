@@ -21,6 +21,17 @@ namespace EFSM.Generator
             headerFile.AppendLine("#include \"efsm_core.h\"");
             headerFile.AppendLine();
 
+            headerFile.AppendLine($"/*\n----------------------------------------------------------------------------------------------------\nCourtesy to the user...copy and paste.\n*/");
+            //headerFile.AppendLine("/*");
+            
+            foreach(var efsmDefinition in project.StateMachinesGenerationModel)
+            {
+                headerFile.AppendLine($"#define {efsmDefinition.IncludeThisStateMachineDefine}                  0");
+            }
+            
+            //headerFile.AppendLine("*/");
+            headerFile.AppendLine();
+
             headerFile.AppendLine($"/*\n----------------------------------------------------------------------------------------------------\nGeneral information.\n*/");
             headerFile.AppendLine();
             headerFile.AppendLine($"#define {binaryGenerationResult.TotalNumberOfInstancesDefine}       {binaryGenerationResult.TotalNumberOfInstances.ToString()}");            
@@ -94,6 +105,7 @@ namespace EFSM.Generator
             headerFile.AppendLine("/*State machine definitions initialization prototype.*/");
             headerFile.AppendLine($"void EFSM_{project.ProjectName}_Init();");
             headerFile.AppendLine($"void EFSM_InitializeProcess();");
+            headerFile.AppendLine("uint8_t IsEfsmInstancePresent(uint8_t index);");
             headerFile.AppendLine();
 
             headerFile.AppendLine($"/*\n----------------------------------------------------------------------------------------------------\nDiagnostics.\n*/\n");

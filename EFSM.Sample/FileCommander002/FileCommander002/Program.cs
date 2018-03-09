@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
 using System.Threading;
+using Microsoft.CSharp;
+using Microsoft.Win32;
 
 namespace FileCommander000
 {
@@ -36,12 +38,15 @@ namespace FileCommander000
     {
         static void Main(string[] args)
         {
+            Process.Start(msvc.exe, "C:\\Users\\georgek\\Documents\\CompileTest\\CompileTest.c");
             //FileStream controlFile = File.Open("C:\\Users\\georgek\\Documents\\EmbeddedFiniteStateMachine\\EFSM.Sample\\ctrlFile", FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
             //BinaryWriter writer = new BinaryWriter(controlFile);
             //BinaryReader reader = new BinaryReader(controlFile);
             Console.WriteLine("Hello World");
 
             Console.ReadKey();
+
+            
             //SimRunner simRunner = new SimRunner();
 
             //simRunner.Run();

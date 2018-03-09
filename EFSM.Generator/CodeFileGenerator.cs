@@ -88,8 +88,10 @@ namespace EFSM.Generator
             {
                 if (stateMachine.StateMachine.IncludeInGeneration)
                 {
-                    /*Declare the containing binary.*/
+                    /*Declare the containing binary.*/                    
+                    code.AppendLine(stateMachine.StateMachine.IncludeThisStateMachineDirectiveStart);
                     code.AppendLine($"EFSM_BINARY {stateMachine.StateMachine.BinaryContainerName};");
+                    code.AppendLine(stateMachine.StateMachine.IncludeThisStateMachineDirectiveEnd);
                 }                
             }
 
@@ -100,6 +102,7 @@ namespace EFSM.Generator
             {
                 if (stateMachineDefinition.StateMachine.IncludeInGeneration)
                 {
+                    code.AppendLine(stateMachineDefinition.StateMachine.IncludeThisStateMachineDirectiveStart);
                     code.AppendLine($"/*{stateMachineDefinition.StateMachine.IndexDefineName} Instances*/");
 
                     for (int i = 0; i < stateMachineDefinition.StateMachine.NumberOfInstances; i++)
@@ -107,6 +110,7 @@ namespace EFSM.Generator
                         code.AppendLine($"EFSM_INSTANCE {stateMachineDefinition.StateMachine.IndexDefineName.Replace(' ', '_')}_Instance_{i.ToString()};");
                     }
 
+                    code.AppendLine(stateMachineDefinition.StateMachine.IncludeThisStateMachineDirectiveEnd);
                     code.AppendLine();
                 }                
             }
@@ -130,6 +134,7 @@ namespace EFSM.Generator
             {
                 if (stateMachine.StateMachine.IncludeInGeneration)
                 {
+                    code.AppendLine(stateMachine.StateMachine.IncludeThisStateMachineDirectiveStart);
                     code.AppendLine($"/*State Machine Definition \"{stateMachine.StateMachine.IndexDefineName}\"*/");
                     code.AppendLine();
                     code.AppendLine("/*Array for pointers to input query functions.*/");
@@ -142,6 +147,7 @@ namespace EFSM.Generator
 
                     /*Declare the output action function reference array.*/
                     code.AppendLine($"void {stateMachine.StateMachine.ActionReferenceArrayString};");
+                    code.AppendLine(stateMachine.StateMachine.IncludeThisStateMachineDirectiveEnd);
 
                     if (tempCount != (binaryGenerationResult.StateMachines.Length - 1))
                         code.AppendLine();
@@ -154,6 +160,7 @@ namespace EFSM.Generator
             {
                 if (stateMachine.StateMachine.IncludeInGeneration)
                 {
+                    code.AppendLine(stateMachine.StateMachine.IncludeThisStateMachineDirectiveStart);
                     /*Create the state machine binary array.*/
                     int currentAddress = 0;
 
@@ -193,9 +200,11 @@ namespace EFSM.Generator
                                 currentAddress += segment.Content.Length;
                             }
                         }
-                    }
+                    }                    
 
                     code.AppendLine("};");
+                    code.AppendLine(stateMachine.StateMachine.IncludeThisStateMachineDirectiveEnd);
+                    code.AppendLine();
                 }                
             }          
 
@@ -221,11 +230,13 @@ namespace EFSM.Generator
             {
                 if (efsmDef.StateMachine.IncludeInGeneration)
                 {
+                    code.AppendLine(efsmDef.StateMachine.IncludeThisStateMachineDirectiveStart);
                     for (int i = 0; i < efsmDef.StateMachine.NumberOfInstances; i++)
                     {
                         code.AppendLine($"efsmInstanceArray[{tempCount.ToString()}] = &{(efsmDef.StateMachine.IndexDefineName.Replace(' ', '_'))}_Instance_{i.ToString()};");
                         tempCount++;
                     }
+                    code.AppendLine(efsmDef.StateMachine.IncludeThisStateMachineDirectiveEnd);
                 }                
             }
 
@@ -237,6 +248,7 @@ namespace EFSM.Generator
             {
                 if (stateMachine.StateMachine.IncludeInGeneration)
                 {
+                    code.AppendLine(stateMachine.StateMachine.IncludeThisStateMachineDirectiveStart);
                     /*Set up the binary.*/
                     code.AppendLine($"/*State Machine Definition \"{stateMachine.StateMachine.IndexDefineName}\" Initialization*/");
                     code.AppendLine();
@@ -269,6 +281,7 @@ namespace EFSM.Generator
                     }
 
                     tempCount++;
+                    code.AppendLine(stateMachine.StateMachine.IncludeThisStateMachineDirectiveEnd);
                 }               
             }
 
@@ -283,16 +296,20 @@ namespace EFSM.Generator
             {
                 if (efsmDef.StateMachine.IncludeInGeneration)
                 {
+                    code.AppendLine(efsmDef.StateMachine.IncludeThisStateMachineDirectiveStart);
+
                     for (int i = 0; i < efsmDef.StateMachine.NumberOfInstances; i++)
                     {
-                        argString = $"&{efsmDef.StateMachine.IndexDefineName.Replace(' ', '_')}_Instance_{i.ToString()}, " +     //Current Instance
-                                    $"&{efsmDef.StateMachine.BinaryContainerName}, " +     //Relevant Binary
-                                    $"{efsmDef.StateMachine.ActionReferenceArrayName}, " +     //Actions array for relevant binary
-                                    $"{efsmDef.StateMachine.InputReferenceArrayName}, " +   //Inputs array for relevant binary   
-                                    $"{i.ToString()}";                                                      //Instance of type index. 
+                        argString = $"&{efsmDef.StateMachine.IndexDefineName.Replace(' ', '_')}_Instance_{i.ToString()}, " +        //Current Instance
+                                    $"&{efsmDef.StateMachine.BinaryContainerName}, " +                                              //Relevant Binary
+                                    $"{efsmDef.StateMachine.ActionReferenceArrayName}, " +                                          //Actions array for relevant binary
+                                    $"{efsmDef.StateMachine.InputReferenceArrayName}, " +                                           //Inputs array for relevant binary   
+                                    $"{i.ToString()}";                                                                              //Instance of type index. 
 
                         code.AppendLine($"EFSM_InitializeInstance({argString});");
                     }
+
+                    code.AppendLine(efsmDef.StateMachine.IncludeThisStateMachineDirectiveEnd);
                 }               
             }
 
@@ -308,6 +325,44 @@ namespace EFSM.Generator
             code.AppendLine($"EFSM_{project.ProjectName}_Init();");
             code.RemoveIndent();
             code.AppendLine("}");
+            code.AppendLine();
+
+            code.AppendLine("uint8_t IsEfsmInstancePresent(uint8_t index)");
+            code.AppendLine("{");
+            code.AddIndent();
+            code.AppendLine("switch(index)");
+            code.AppendLine("{");
+            code.AddIndent();
+
+            int tempInstanceArrayIndex = 0;
+
+            foreach (var efsmDef in binaryGenerationResult.StateMachines)
+            {
+                if (efsmDef.StateMachine.IncludeInGeneration)
+                {
+                    for(int i = 0; i < efsmDef.StateMachine.NumberOfInstances; i++)
+                    {
+                        code.AppendLine($"case {tempInstanceArrayIndex}:");
+                        tempInstanceArrayIndex++;
+                    }
+
+                    code.AddIndent();
+                    code.AppendLine($"return {efsmDef.StateMachine.IncludeThisStateMachineDefine};");
+                    code.RemoveIndent();
+                }
+            }
+
+            code.AppendLine("default:");
+            code.AddIndent();
+            code.AppendLine("return 0;");
+            code.RemoveIndent();
+
+            code.RemoveIndent();
+            code.AppendLine("}");
+            code.RemoveIndent();
+            code.AppendLine("}");
+
+            code.AppendLine();
             code.StandardSeparator("Diagnostics");
 
             code.AppendLine("void EFSM_GeneratedDiagnostics(EFSM_INSTANCE * efsmInstance)");
@@ -322,59 +377,59 @@ namespace EFSM.Generator
             code.AppendLine("}");
             code.RemoveIndent();
             code.AppendLine("}");
-            code.AppendLine();
+            //code.AppendLine();
 
-            if (project.DiagnosticsEnabled)
-            {
-                code.AppendLine("/*State Machine State Accessors*/");
-                code.AppendLine();
+            //if (project.DiagnosticsEnabled)
+            //{
+            //    code.AppendLine("/*State Machine State Accessors*/");
+            //    code.AppendLine();
 
-                foreach (var stateMachine in project.StateMachinesGenerationModel)
-                {
-                    if (stateMachine.IncludeInGeneration)
-                    {
-                        for (int i = 0; i < stateMachine.NumberOfInstances; i++)
-                        {
-                            code.AppendLine($"uint32_t Get_{stateMachine.IndexDefineName.Replace(' ', '_')}_Instance_{i}_State()");
-                            code.AppendLine("{");
-                            code.AddIndent();
+            //    foreach (var stateMachine in project.StateMachinesGenerationModel)
+            //    {
+            //        if (stateMachine.IncludeInGeneration)
+            //        {
+            //            for (int i = 0; i < stateMachine.NumberOfInstances; i++)
+            //            {
+            //                code.AppendLine($"uint32_t Get_{stateMachine.IndexDefineName.Replace(' ', '_')}_Instance_{i}_State()");
+            //                code.AppendLine("{");
+            //                code.AddIndent();
 
-                            code.AppendLine($"return {stateMachine.IndexDefineName.Replace(' ', '_')}_Instance_{i}.state;");
-                            
-                            code.RemoveIndent();
-                            code.AppendLine("}");
-                        }
-                    }
-                }
+            //                code.AppendLine($"return {stateMachine.IndexDefineName.Replace(' ', '_')}_Instance_{i}.state;");
 
-                code.AppendLine();
-                code.AppendLine("/*State Machine Input Accessors*/");
-                code.AppendLine();
+            //                code.RemoveIndent();
+            //                code.AppendLine("}");
+            //            }
+            //        }
+            //    }
 
-                foreach (var stateMachine in project.StateMachinesGenerationModel)
-                {
-                    if (stateMachine.IncludeInGeneration)
-                    {
-                        for (int i = 0; i < stateMachine.NumberOfInstances; i++)
-                        {
-                            for (int j = 0; j < stateMachine.Inputs.Length; j++)
-                            {
-                                code.AppendLine($"/*Corresponds to input \"{stateMachine.Inputs[j].Name}\" for instance {i} of state machine definition \"{stateMachine.IndexDefineName}\".*/");
-                                //code.AppendLine($"UINT32 Get_{stateMachine.Name.Replace(' ', '_')}_{i}_Input_{j}()");
-                                code.AppendLine($"uint32_t Get_{stateMachine.IndexDefineName.Replace(' ', '_')}_{i}_Input_{j}()");
-                                code.AppendLine("{");
-                                code.AddIndent();
+            //    code.AppendLine();
+            //    code.AppendLine("/*State Machine Input Accessors*/");
+            //    code.AppendLine();
 
-                                code.AppendLine($"return {stateMachine.IndexDefineName.Replace(' ', '_')}_Instance_{i}.inputBuffer[{j}];");
+            //    foreach (var stateMachine in project.StateMachinesGenerationModel)
+            //    {
+            //        if (stateMachine.IncludeInGeneration)
+            //        {
+            //            for (int i = 0; i < stateMachine.NumberOfInstances; i++)
+            //            {
+            //                for (int j = 0; j < stateMachine.Inputs.Length; j++)
+            //                {
+            //                    code.AppendLine($"/*Corresponds to input \"{stateMachine.Inputs[j].Name}\" for instance {i} of state machine definition \"{stateMachine.IndexDefineName}\".*/");
+            //                    //code.AppendLine($"UINT32 Get_{stateMachine.Name.Replace(' ', '_')}_{i}_Input_{j}()");
+            //                    code.AppendLine($"uint32_t Get_{stateMachine.IndexDefineName.Replace(' ', '_')}_{i}_Input_{j}()");
+            //                    code.AppendLine("{");
+            //                    code.AddIndent();
 
-                                code.RemoveIndent();
-                                code.AppendLine("}");
-                                code.AppendLine();
-                            }
-                        }
-                    }
-                }
-            }
+            //                    code.AppendLine($"return {stateMachine.IndexDefineName.Replace(' ', '_')}_Instance_{i}.inputBuffer[{j}];");
+
+            //                    code.RemoveIndent();
+            //                    code.AppendLine("}");
+            //                    code.AppendLine();
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
 
             if ((project.DebugMode == DebugMode.Desktop) && (project.DebuggingEnabled))
             {

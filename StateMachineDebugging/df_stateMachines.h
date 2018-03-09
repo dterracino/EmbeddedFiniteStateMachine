@@ -9,7 +9,7 @@
 General information.
 */
 
-#define EFSM_TOTAL_NUMBER_OF_STATE_MACHINE_INSTANCES       4
+#define EFSM_TOTAL_NUMBER_OF_STATE_MACHINE_INSTANCES       7
 
 void EFSM_GeneratedDiagnostics(EFSM_INSTANCE * efsmInstance);
 /*
@@ -127,7 +127,7 @@ void EFSM_Heating_DF_HeatEnterIdle(uint8_t indexOnEfsmType);
 void EFSM_Heating_DF_HeatEnterPreAir(uint8_t indexOnEfsmType);
 void EFSM_Heating_DF_HeatEnterPrePGas(uint8_t indexOnEfsmType);
 void EFSM_Heating_DF_HeatEnterOnTesting(uint8_t indexOnEfsmType);
-void EFSM_Heating_DF_HeatEnterStopDf(uint8_t indexOnEfsmType);
+void EFSM_Heating_DF_HeatExitStopDf(uint8_t indexOnEfsmType);
 void EFSM_Heating_DF_HeatEnterOnNormal(uint8_t indexOnEfsmType);
 void EFSM_Heating_DF_HeatEnterSparkOff(uint8_t indexOnEfsmType);
 void EFSM_Heating_DF_HeatEnterPreMGas(uint8_t indexOnEfsmType);
@@ -176,6 +176,95 @@ void EFSM_Cooling_DF_CoolingInitIdle(uint8_t indexOnEfsmType);
 
 /*
 ----------------------------------------------------------------------------------------------------
+State machine "Ovrd_Discharge_DF" information.
+*/
+#define EFSM_OVRD_DISCHARGE_DF_NUMBER_OF_INPUTS      6
+#define EFSM_OVRD_DISCHARGE_DF_NUMBER_OF_OUTPUTS      4
+
+extern uint8_t (*Ovrd_Discharge_DF_Inputs[EFSM_OVRD_DISCHARGE_DF_NUMBER_OF_INPUTS])(uint8_t indexOnEfsmType);
+extern void (*Ovrd_Discharge_DF_OutputActions[EFSM_OVRD_DISCHARGE_DF_NUMBER_OF_OUTPUTS])(uint8_t indexOnEfsmType);
+extern EFSM_BINARY Ovrd_Discharge_DF_Binary;
+
+
+/*Input function prototypes.*/
+
+uint8_t EFSM_Ovrd_Discharge_DF_IsStartMinHeatOvrdMet(uint8_t indexOnEfsmType);
+uint8_t EFSM_Ovrd_Discharge_DF_IsStartMaxHeatOvrdMet(uint8_t indexOnEfsmType);
+uint8_t EFSM_Ovrd_Discharge_DF_IsEndMinHeatOvrdMet(uint8_t indexOnEfsmType);
+uint8_t EFSM_Ovrd_Discharge_DF_IsEndMaxHeatOvrdMet(uint8_t indexOnEfsmType);
+uint8_t EFSM_Ovrd_Discharge_DF_IsStartupTimeExpired(uint8_t indexOnEfsmType);
+uint8_t EFSM_Ovrd_Discharge_DF_IsMaxTempRiseExceeded(uint8_t indexOnEfsmType);
+
+/*Action function prototypes.*/
+
+void EFSM_Ovrd_Discharge_DF_EnterDoIdle(uint8_t indexOnEfsmType);
+void EFSM_Ovrd_Discharge_DF_EnterDoMinOvrdHeat(uint8_t indexOnEfsmType);
+void EFSM_Ovrd_Discharge_DF_EnterDoMaxOvrdHeat(uint8_t indexOnEfsmType);
+void EFSM_Ovrd_Discharge_DF_EnterDoTempRiseOvrdHeat(uint8_t indexOnEfsmType);
+
+
+/*
+----------------------------------------------------------------------------------------------------
+State machine "Freezestat_DF" information.
+*/
+#define EFSM_FREEZESTAT_DF_NUMBER_OF_INPUTS      7
+#define EFSM_FREEZESTAT_DF_NUMBER_OF_OUTPUTS      5
+
+extern uint8_t (*Freezestat_DF_Inputs[EFSM_FREEZESTAT_DF_NUMBER_OF_INPUTS])(uint8_t indexOnEfsmType);
+extern void (*Freezestat_DF_OutputActions[EFSM_FREEZESTAT_DF_NUMBER_OF_OUTPUTS])(uint8_t indexOnEfsmType);
+extern EFSM_BINARY Freezestat_DF_Binary;
+
+
+/*Input function prototypes.*/
+
+uint8_t EFSM_Freezestat_DF_IsStartupTimeElapsed(uint8_t indexOnEfsmType);
+uint8_t EFSM_Freezestat_DF_IsDischargeTempLow(uint8_t indexOnEfsmType);
+uint8_t EFSM_Freezestat_DF_IsDischargeTempRecovered(uint8_t indexOnEfsmType);
+uint8_t EFSM_Freezestat_DF_IsResumeCountMaxed(uint8_t indexOnEfsmType);
+uint8_t EFSM_Freezestat_DF_IsResetExecuted(uint8_t indexOnEfsmType);
+uint8_t EFSM_Freezestat_DF_IsMonitorTimeExpired(uint8_t indexOnEfsmType);
+uint8_t EFSM_Freezestat_DF_IsStopHvacFlagSet(uint8_t indexOnEfsmType);
+
+/*Action function prototypes.*/
+
+void EFSM_Freezestat_DF_EnterIdle(uint8_t indexOnEfsmType);
+void EFSM_Freezestat_DF_EnterMonitor(uint8_t indexOnEfsmType);
+void EFSM_Freezestat_DF_EnterFailResume(uint8_t indexOnEfsmType);
+void EFSM_Freezestat_DF_EnterFailLock(uint8_t indexOnEfsmType);
+void EFSM_Freezestat_DF_ExitFailLock(uint8_t indexOnEfsmType);
+
+
+/*
+----------------------------------------------------------------------------------------------------
+State machine "MixingBox_DF" information.
+*/
+#define EFSM_MIXINGBOX_DF_NUMBER_OF_INPUTS      5
+#define EFSM_MIXINGBOX_DF_NUMBER_OF_OUTPUTS      5
+
+extern uint8_t (*MixingBox_DF_Inputs[EFSM_MIXINGBOX_DF_NUMBER_OF_INPUTS])(uint8_t indexOnEfsmType);
+extern void (*MixingBox_DF_OutputActions[EFSM_MIXINGBOX_DF_NUMBER_OF_OUTPUTS])(uint8_t indexOnEfsmType);
+extern EFSM_BINARY MixingBox_DF_Binary;
+
+
+/*Input function prototypes.*/
+
+uint8_t EFSM_MixingBox_DF_IsMixboxConfigured(uint8_t indexOnEfsmType);
+uint8_t EFSM_MixingBox_DF_IsBlowerOn(uint8_t indexOnEfsmType);
+uint8_t EFSM_MixingBox_DF_IsPurgeOn(uint8_t indexOnEfsmType);
+uint8_t EFSM_MixingBox_DF_IsTestingModeRequested(uint8_t indexOnEfsmType);
+uint8_t EFSM_MixingBox_DF_IsStartupTimeElapsed(uint8_t indexOnEfsmType);
+
+/*Action function prototypes.*/
+
+void EFSM_MixingBox_DF_EnterOff(uint8_t indexOnEfsmType);
+void EFSM_MixingBox_DF_EnterIdle(uint8_t indexOnEfsmType);
+void EFSM_MixingBox_DF_EnterOnTest(uint8_t indexOnEfsmType);
+void EFSM_MixingBox_DF_EnterOnPurge(uint8_t indexOnEfsmType);
+void EFSM_MixingBox_DF_EnterOnNormal(uint8_t indexOnEfsmType);
+
+
+/*
+----------------------------------------------------------------------------------------------------
 General (applies to all state machine definitions).
 */
 
@@ -196,6 +285,9 @@ uint32_t Get_HVAC_DF_Instance_0_State();
 uint32_t Get_Blower_DF_Instance_0_State();
 uint32_t Get_Heating_DF_Instance_0_State();
 uint32_t Get_Cooling_DF_Instance_0_State();
+uint32_t Get_Ovrd_Discharge_DF_Instance_0_State();
+uint32_t Get_Freezestat_DF_Instance_0_State();
+uint32_t Get_MixingBox_DF_Instance_0_State();
 
 /*State Machine Input Accessor Prototypes*/
 
@@ -238,4 +330,22 @@ uint32_t Get_Cooling_DF_0_Input_8();
 uint32_t Get_Cooling_DF_0_Input_9();
 uint32_t Get_Cooling_DF_0_Input_10();
 uint32_t Get_Cooling_DF_0_Input_11();
+uint32_t Get_Ovrd_Discharge_DF_0_Input_0();
+uint32_t Get_Ovrd_Discharge_DF_0_Input_1();
+uint32_t Get_Ovrd_Discharge_DF_0_Input_2();
+uint32_t Get_Ovrd_Discharge_DF_0_Input_3();
+uint32_t Get_Ovrd_Discharge_DF_0_Input_4();
+uint32_t Get_Ovrd_Discharge_DF_0_Input_5();
+uint32_t Get_Freezestat_DF_0_Input_0();
+uint32_t Get_Freezestat_DF_0_Input_1();
+uint32_t Get_Freezestat_DF_0_Input_2();
+uint32_t Get_Freezestat_DF_0_Input_3();
+uint32_t Get_Freezestat_DF_0_Input_4();
+uint32_t Get_Freezestat_DF_0_Input_5();
+uint32_t Get_Freezestat_DF_0_Input_6();
+uint32_t Get_MixingBox_DF_0_Input_0();
+uint32_t Get_MixingBox_DF_0_Input_1();
+uint32_t Get_MixingBox_DF_0_Input_2();
+uint32_t Get_MixingBox_DF_0_Input_3();
+uint32_t Get_MixingBox_DF_0_Input_4();
 #endif
