@@ -22,14 +22,14 @@ namespace EFSM.Generator
             headerFile.AppendLine();
 
             headerFile.AppendLine($"/*\n----------------------------------------------------------------------------------------------------\nCourtesy to the user...copy and paste.\n*/");
-            //headerFile.AppendLine("/*");
+            headerFile.AppendLine("/*");
             
             foreach(var efsmDefinition in project.StateMachinesGenerationModel)
             {
-                headerFile.AppendLine($"#define {efsmDefinition.IncludeThisStateMachineDefine}                  0");
+                headerFile.AppendLine($"#define {efsmDefinition.IncludeThisStateMachineDefine}");
             }
             
-            //headerFile.AppendLine("*/");
+            headerFile.AppendLine("*/");
             headerFile.AppendLine();
 
             headerFile.AppendLine($"/*\n----------------------------------------------------------------------------------------------------\nGeneral information.\n*/");
